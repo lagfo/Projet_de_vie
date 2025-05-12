@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Projet De Vie</string>
+    <string name="splash_title">Mon projet de vie !</string>
+    <string name="splash_body"> Votre avenir entre vos mains.</string>
 </resources>
