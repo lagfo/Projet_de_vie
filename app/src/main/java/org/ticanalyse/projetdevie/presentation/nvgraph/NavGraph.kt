@@ -1,6 +1,7 @@
 package org.ticanalyse.projetdevie.presentation.nvgraph
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -21,7 +22,14 @@ fun NavGraph( startDestination: String) {
             composable(
                 route = Route.SplashScreen.route
             ){
-                SplashScreen(navController)
+                SplashScreen { route ->
+                    navigateToScreen(
+                        navController=navController,
+                        route=route,
+                        popUpToRoute = Route.SplashScreen.route,
+                        inclusive = true
+                        )
+                }
             }
 
             composable(
@@ -37,5 +45,23 @@ fun NavGraph( startDestination: String) {
             }
         }
 
+    }
+}
+
+private fun navigateToScreen(
+    navController: NavController,
+    route: String,
+    popUpToRoute: String? = null,
+    inclusive: Boolean = false
+) {
+    navController.navigate(route) {
+        popUpToRoute?.let { routeToPop ->
+            popUpTo(routeToPop) {
+                this.inclusive = inclusive
+                saveState = true
+            }
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }
