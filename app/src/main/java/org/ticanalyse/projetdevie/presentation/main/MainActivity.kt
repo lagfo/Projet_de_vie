@@ -28,14 +28,11 @@ import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        enableEdgeToEdge()
-
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
+        //enableEdgeToEdge()
         setContent {
             ProjetDeVieTheme {
                 val isSystemInDarkMode = isSystemInDarkTheme()
@@ -52,21 +49,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjetDeVieTheme {
-        Greeting("Android")
     }
 }
