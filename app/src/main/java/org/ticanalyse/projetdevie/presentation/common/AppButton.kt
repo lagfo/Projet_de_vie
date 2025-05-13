@@ -1,7 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.common
 
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -10,10 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 
 @Composable
 fun AppButton(
@@ -36,12 +32,4 @@ fun AppButton(
         )
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AppButtonPreview() {
-    ProjetDeVieTheme {
-        AppButton("Android") {}
-    }
 }
