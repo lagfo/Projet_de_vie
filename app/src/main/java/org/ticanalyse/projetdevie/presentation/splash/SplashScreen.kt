@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.nvgraph.Route
@@ -116,7 +115,7 @@ fun SplashScreen(
                     contentDescription = "Logo Tica",
                     modifier = Modifier.fillMaxWidth(1f)
                 )
-                Spacer(modifier = Modifier.height(50.dp)) // Exemple de padding
+                Spacer(modifier = Modifier.height(5.dp)) // Exemple de padding
             }
         }
     }
