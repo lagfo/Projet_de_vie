@@ -3,5 +3,5 @@
     <string name="splash_title">Mon projet de vie !</string>
     <string name="splash_body"> Votre avenir entre vos mains.</string>
     <string name="register_title"> Création de compte</string>
-    <string name="login_title"> Se connecter</string>
+    <string name="register_btn_title"> Créer un compte</string>
 </resources>

@@ -1,93 +1,50 @@
 package org.ticanalyse.projetdevie.presentation.common
 
-import android.app.DatePickerDialog
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
-import java.util.Calendar
+
 
 @Composable
-fun Input(
-    value: String,
-    onValueChange: (String) -> Unit,
-    onReadClick: () -> Unit,
-    onSpeechToTextClick: () -> Unit,
-    label: String,
-    keyboardType: KeyboardType = KeyboardType.Text
-){
-
-
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        shape = RoundedCornerShape(50),
-        leadingIcon = {
-            IconButton(onClick = onReadClick) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_ear_sound_24),
-                    contentDescription = "Lire le texte"
-                )
-            }
-        },
-        trailingIcon = {
-            IconButton(onClick = onSpeechToTextClick) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_mic_24),
-                    contentDescription = "Saisie vocale"
-                )
-            }
-        }
-    )
-
-}
-
-@Composable
-fun AppInput(
+fun AppInputField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    filterInput: ((String) -> String)? = null,
+    onSpeechResult: ((String) -> String)? = null
 ) {
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -95,25 +52,130 @@ fun AppInput(
         val data = result.data
         val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
         if (!matches.isNullOrEmpty()) {
-            onValueChange(matches[0])
+            val processed = onSpeechResult?.invoke(matches[0]) ?: matches[0]
+            onValueChange(processed)
         }
     }
 
-    Input(
+    OutlinedTextField(
+        value = value,
+        onValueChange = { newValue ->
+            val filtered = filterInput?.invoke(newValue) ?: newValue
+            onValueChange(filtered)
+        },
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(15),
+        leadingIcon = {
+            IconButton(onClick = { ttsManager.speak(value) }) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_ear_sound_24),
+                    contentDescription = "Lire le texte"
+                )
+            }
+        },
+        trailingIcon = {
+            IconButton(onClick = { sttManager.startSpeechToText(speechLauncher) }) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_mic_24),
+                    contentDescription = "Saisie vocale"
+                )
+            }
+        }
+    )
+}
+
+
+@Composable
+fun AppTextInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    ttsManager: TextToSpeechManager,
+    sttManager: SpeechToTextManager
+   ) {
+    AppInputField(
         value = value,
         onValueChange = onValueChange,
         label = label,
-        keyboardType = keyboardType,
-        onReadClick = { ttsManager.speak(value) },
-        onSpeechToTextClick = { sttManager.startSpeechToText(speechLauncher) }
+        ttsManager = ttsManager,
+        sttManager = sttManager,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
     )
 }
+
+@Composable
+fun AppAgeInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    ttsManager: TextToSpeechManager,
+    sttManager: SpeechToTextManager
+) {
+    AppInputField(
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        ttsManager = ttsManager,
+        sttManager = sttManager,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        filterInput = { it.filter { c -> c.isDigit() }.take(2) },
+        onSpeechResult = { it.filter { c -> c.isDigit() }.take(2) }
+    )
+}
+
+@Composable
+fun AppPhoneInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    ttsManager: TextToSpeechManager,
+    sttManager: SpeechToTextManager
+) {
+    val phoneTransformation = remember {
+        object : VisualTransformation {
+            override fun filter(text: AnnotatedString): TransformedText {
+                val digits = text.text.filter { it.isDigit() }
+                val formatted = digits.chunked(2).joinToString(" ")
+
+                val offsetMapping = object : OffsetMapping {
+                    override fun originalToTransformed(offset: Int): Int {
+                        return (offset + offset / 2).coerceAtMost(formatted.length)
+                    }
+
+                    override fun transformedToOriginal(offset: Int): Int {
+                        return offset - offset / 3
+                    }
+                }
+                return TransformedText(AnnotatedString(formatted), offsetMapping)
+            }
+        }
+    }
+
+    AppInputField(
+        value = value,
+        onValueChange = { onValueChange(it.filter { c -> c.isDigit() }) },
+        label = label,
+        ttsManager = ttsManager,
+        sttManager = sttManager,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+        visualTransformation = phoneTransformation
+    )
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSelection(
     value: String,
     onValueChange: (String) -> Unit,
+    onReadClick: () -> Unit,
     label: String,
     options: List<String>
 ){
@@ -129,11 +191,20 @@ fun AppSelection(
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            leadingIcon = {
+                IconButton(onClick = onReadClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_ear_sound_24),
+                        contentDescription = "Lire le texte"
+                    )
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
                 .padding(vertical = 4.dp),
-            shape = RoundedCornerShape(50)
+
+            shape = RoundedCornerShape(15)
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -151,83 +222,4 @@ fun AppSelection(
         }
     }
 
-}
-
-@Composable
-fun DateInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String
-) {
-    val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
-
-    if (showDialog) {
-        LaunchedEffect(Unit) {
-            val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-            DatePickerDialog(
-                context,
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    val dateStr = "%02d/%02d/%d".format(selectedDay, selectedMonth + 1, selectedYear)
-                    onValueChange(dateStr)
-                    showDialog = false
-                },
-                year,
-                month,
-                day
-            ).apply {
-                setOnDismissListener { showDialog = false }
-            }.show()
-        }
-    }
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = {},
-        label = { Text(label) },
-        readOnly = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { showDialog = true },
-        shape = RoundedCornerShape(50)
-    )
-}
-
-
-
-
-
-
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun AppSelectionPreview(){
-    ProjetDeVieTheme {
-        var genre by remember { mutableStateOf("") }
-        val genres = listOf("Homme", "Femme")
-        AppSelection (
-            value = genre,
-            onValueChange = { genre = it },
-            label = "Genre",
-            options = genres
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun DateInputPreview(){
-    ProjetDeVieTheme {
-        var dateNaissance by remember { mutableStateOf("") }
-        DateInput(
-            value = dateNaissance,
-            onValueChange = { dateNaissance = it },
-            label = "Date de naissance (JJ/MM/AAAA)"
-        )
-    }
 }
