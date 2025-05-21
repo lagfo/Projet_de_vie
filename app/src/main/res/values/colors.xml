@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary_color">#00A67E</color>
+    <color name="secondary_color">#A60028</color>
     <color name="text">#FF000000</color>
     <color name="input_background">#fff</color>
     <color name="placeholder">#A0A3BD</color>
