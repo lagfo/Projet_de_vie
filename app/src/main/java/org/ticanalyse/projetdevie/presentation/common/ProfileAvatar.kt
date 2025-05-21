@@ -1,4 +1,4 @@
-package org.ticanalyse.projetdevie.presentation.register
+package org.ticanalyse.projetdevie.presentation.common
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -12,12 +12,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -28,8 +30,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
@@ -38,12 +42,12 @@ import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 import java.io.File
 
 @Composable
-fun RegisterAvatar (){
+fun ProfileAvatar (
+    imageUri: MutableState<String>
+){
 
-    val imageUri = rememberSaveable { mutableStateOf ("") }
-    val painter = rememberAsyncImagePainter (imageUri.value.ifEmpty {R.drawable.baseline_photo_camera_24})
+    val painter = rememberAsyncImagePainter (imageUri.value.ifEmpty {R.drawable.mini_logo})
     val context = LocalContext.current
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri? ->
@@ -63,11 +67,9 @@ fun RegisterAvatar (){
 
 
     Column(
-        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ConstraintLayout(modifier = Modifier.fillMaxSize(),
-        ){
+        ConstraintLayout{
             val (avatar,cameraBtn)=createRefs()
             Box (modifier = Modifier
                 .constrainAs(avatar){}){
@@ -79,10 +81,10 @@ fun RegisterAvatar (){
                         .clip(CircleShape)
                         .fillMaxWidth(.35f)
                         .aspectRatio(1f)
-                        .background(color = Color.Blue)
+                        .background(color = colorResource(id=R.color.primary_color))
                         .border(
                             BorderStroke(
-                                width=2.dp,
+                                width=3.dp,
                                 color = colorResource(R.color.primary_color)),
                             shape = CircleShape
                         )
@@ -100,9 +102,17 @@ fun RegisterAvatar (){
                     contentDescription = null,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background (Color.Black)
-                        .size(50.dp)
+                        .background (color = colorResource(id=R.color.secondary_color))
+                        .border(
+                            BorderStroke(
+                                width=1.dp,
+                                color = Color.White
+                            ),
+                            shape = CircleShape
+                        )
+                        .size(40.dp)
                         .padding(10.dp)
+                        .aspectRatio(1f)
                         .clickable { cameraLaucher.launch(null) }
                 )
             }
@@ -110,9 +120,12 @@ fun RegisterAvatar (){
 
 
         }
+        Text(
+            text = stringResource(id=R.string.photo_profil),
+            style =  MaterialTheme.typography.displaySmall,
+            fontSize = 15.sp
+        )
     }
-
-
 
 }
 
@@ -120,6 +133,7 @@ fun RegisterAvatar (){
 @Composable
 fun RegisterAvatarPreview(){
     ProjetDeVieTheme {
-        RegisterAvatar ()
+        val imageUri = rememberSaveable { mutableStateOf ("") }
+        ProfileAvatar (imageUri)
     }
 }
