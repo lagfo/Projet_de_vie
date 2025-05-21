@@ -122,8 +122,7 @@ fun ProfileAvatar (
         }
         Text(
             text = stringResource(id=R.string.photo_profil),
-            style =  MaterialTheme.typography.displaySmall,
-            fontSize = 15.sp
+            style =  MaterialTheme.typography.labelSmall,
         )
     }
 

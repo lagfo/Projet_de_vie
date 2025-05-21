@@ -20,7 +20,7 @@ fun AppButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.primary_color),
+            containerColor = colorResource(id = R.color.secondary_color),
             contentColor = Color.White
         ),
         shape = CircleShape

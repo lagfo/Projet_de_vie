@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,8 +42,6 @@ import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.ProfileAvatar
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
-import org.ticanalyse.projetdevie.presentation.nvgraph.Route
-import org.ticanalyse.projetdevie.presentation.splash.SplashScreen
 
 
 @Composable
@@ -59,6 +59,7 @@ fun RegisterScreen (
     val genres = listOf("Homme", "Femme")
     val age = rememberSaveable { mutableStateOf ("") }
     val numTel = rememberSaveable { mutableStateOf ("") }
+    val onSubmit = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -99,6 +100,7 @@ fun RegisterScreen (
                 )
             }
 
+
             Column(modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 10.dp, end = 10.dp, top = 25.dp)) {
@@ -108,22 +110,15 @@ fun RegisterScreen (
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.mini_logo),
-                            contentDescription = "Logo",
-                            modifier = Modifier
-                                .fillMaxWidth(0.2f)
-                                .aspectRatio(1f)
-                        )
-
                         Card (
                             modifier = Modifier
                                 .fillMaxSize(),
                             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                             colors = CardDefaults.cardColors(Color.White),
                             shape = RoundedCornerShape(35.dp),
-                            border = BorderStroke(3.dp, color = colorResource(R.color.primary_color))
+                            border = BorderStroke(3.dp, color = colorResource(R.color.secondary_color))
                         ){
+
                             Column (modifier = Modifier
                                 .fillMaxSize()
                                 .padding(start = 5.dp, end = 5.dp)
@@ -134,70 +129,86 @@ fun RegisterScreen (
                                 Spacer(modifier = Modifier.height(15.dp))
                                 AppText(stringResource(R.string.register_title),ttsManager=ttsManager, fontSize = 16.sp)
                                 Spacer(modifier = Modifier.height(15.dp))
-                                AppTextInput (
-                                    value = nom.value,
-                                    onValueChange = { nom.value = it },
-                                    label = "Nom",
-                                    ttsManager=ttsManager,
-                                    sttManager=sttManager
-                                )
-                                AppTextInput (
-                                    value = prenom.value,
-                                    onValueChange = { prenom.value = it },
-                                    label = "Prénom",
-                                    ttsManager=ttsManager,
-                                    sttManager=sttManager
-                                )
-                                Row (
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceAround
-                                ) {
+                                LazyColumn {
+                                    item {
+                                        Column {
+                                            AppTextInput (
+                                                value = nom.value,
+                                                onValueChange = { nom.value = it },
+                                                label = stringResource(id = R.string.nom),
+                                                ttsManager=ttsManager,
+                                                sttManager=sttManager,
+                                                onSubmit=onSubmit.value
+                                            )
+                                            AppTextInput (
+                                                value = prenom.value,
+                                                onValueChange = { prenom.value = it },
+                                                label = stringResource(id = R.string.prenom),
+                                                ttsManager=ttsManager,
+                                                sttManager=sttManager,
+                                                onSubmit=onSubmit.value
+                                            )
+                                            Row (
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceAround
+                                            ) {
 
-                                    Box (modifier= Modifier.fillMaxWidth().weight(0.5f).padding(end = 2.dp)){
-                                        AppSelection(
-                                            value = genre.value,
-                                            onValueChange = { genre.value = it },
-                                            label = "Genre",
-                                            options = genres,
-                                            onReadClick = { ttsManager.speak(genre.value) }
-                                        )
-                                    }
-                                    Box (modifier= Modifier.fillMaxWidth().weight(0.45f).padding(start = 2.dp)){
-                                        AppAgeInput(
-                                            value = age.value,
-                                            onValueChange = { age.value = it },
-                                            label = "Age",
-                                            ttsManager = ttsManager,
-                                            sttManager = sttManager
-                                        )
-                                    }
+                                                Box (modifier= Modifier.fillMaxWidth().weight(0.5f).padding(end = 2.dp)){
+                                                    AppSelection(
+                                                        value = genre.value,
+                                                        onValueChange = { genre.value = it },
+                                                        label = stringResource(id = R.string.genre),
+                                                        options = genres,
+                                                        onReadClick = { ttsManager.speak(genre.value) },
+                                                        onSubmit=onSubmit.value
+                                                    )
+                                                }
+                                                Box (modifier= Modifier.fillMaxWidth().weight(0.45f).padding(start = 2.dp)){
+                                                    AppAgeInput(
+                                                        value = age.value,
+                                                        onValueChange = { age.value = it },
+                                                        label = stringResource(id = R.string.age),
+                                                        ttsManager = ttsManager,
+                                                        sttManager = sttManager,
+                                                        onSubmit=onSubmit.value
+                                                    )
+                                                }
 
-                                }
-                                AppPhoneInput(
-                                    value = numTel.value,
-                                    onValueChange = { numTel.value = it },
-                                    label = "N° de téléphone",
-                                    ttsManager = ttsManager,
-                                    sttManager = sttManager
-                                )
+                                            }
+                                            AppPhoneInput(
+                                                value = numTel.value,
+                                                onValueChange = { numTel.value = it },
+                                                label = stringResource(id = R.string.num_tel),
+                                                ttsManager = ttsManager,
+                                                sttManager = sttManager,
+                                                onSubmit=onSubmit.value
+                                            )
 
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Bottom,
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                            Column(
+                                                modifier = Modifier.fillMaxSize(),
+                                                verticalArrangement = Arrangement.Bottom,
+                                                horizontalAlignment = Alignment.CenterHorizontally
 
-                                ) {
-                                    ProfileAvatar (imageUri)
+                                            ) {
+                                                Spacer(modifier = Modifier.height(5.dp))
 
-                                    Spacer(modifier = Modifier.height(5.dp))
+                                                ProfileAvatar (imageUri)
 
-                                    AppButton( text = stringResource(id=R.string.register_btn_title),
-                                        onClick = {
-                                            //onEvent(RegisterEvent.SaveAppEntry)
-                                            onNavigate(Route.SplashScreen.route)
+                                                Spacer(modifier = Modifier.height(5.dp))
+
+                                                AppButton( text = stringResource(id=R.string.register_btn_title),
+                                                    onClick = {
+                                                        //onEvent(RegisterEvent.SaveAppEntry)
+                                                        //onNavigate(Route.SplashScreen.route)
+                                                        onSubmit.value=true
+                                                    }
+                                                )
+                                                Spacer(modifier = Modifier.height(25.dp))
+
+                                            }
+
                                         }
-                                    )
-                                    Spacer(modifier = Modifier.height(25.dp))
+                                    }
 
                                 }
 
@@ -234,4 +245,6 @@ fun RegisterScreen (
     }
 
 }
+
+
 
