@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.presentation.common.AppAgeInput
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppPhoneInput
 import org.ticanalyse.projetdevie.presentation.common.AppSelection
@@ -162,7 +163,7 @@ fun RegisterScreen (
                                         )
                                     }
                                     Box (modifier= Modifier.fillMaxWidth().weight(0.45f).padding(start = 2.dp)){
-                                        AppTextInput(
+                                        AppAgeInput(
                                             value = age.value,
                                             onValueChange = { age.value = it },
                                             label = "Age",

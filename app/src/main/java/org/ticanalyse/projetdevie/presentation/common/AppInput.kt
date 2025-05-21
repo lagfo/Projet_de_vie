@@ -29,9 +29,11 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
+import timber.log.Timber
 
 
 @Composable
@@ -72,7 +74,10 @@ fun AppInputField(
             .padding(vertical = 2.dp),
         shape = RoundedCornerShape(15),
         leadingIcon = {
-            IconButton(onClick = { ttsManager.speak(value) }) {
+            IconButton(onClick = {
+                if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
+                else ttsManager.speak(value)
+            }) {
                 Icon(
                     painter = painterResource(R.drawable.outline_ear_sound_24),
                     contentDescription = "Lire le texte"
@@ -156,6 +161,8 @@ fun AppPhoneInput(
             }
         }
     }
+
+    Timber.tag("phone").d(value)
 
     AppInputField(
         value = value,
