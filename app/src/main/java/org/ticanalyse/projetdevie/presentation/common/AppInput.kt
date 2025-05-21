@@ -3,6 +3,7 @@ package org.ticanalyse.projetdevie.presentation.common
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -46,7 +48,8 @@ fun AppInputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     filterInput: ((String) -> String)? = null,
-    onSpeechResult: ((String) -> String)? = null
+    onSpeechResult: ((String) -> String)? = null,
+    onSubmit: Boolean= false
 ) {
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -59,40 +62,61 @@ fun AppInputField(
         }
     }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = { newValue ->
-            val filtered = filterInput?.invoke(newValue) ?: newValue
-            onValueChange(filtered)
-        },
-        label = { Text(label) },
-        singleLine = true,
-        keyboardOptions = keyboardOptions,
-        visualTransformation = visualTransformation,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        shape = RoundedCornerShape(15),
-        leadingIcon = {
-            IconButton(onClick = {
-                if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
-                else ttsManager.speak(value)
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_ear_sound_24),
-                    contentDescription = "Lire le texte"
-                )
+    Column {
+        OutlinedTextField(
+            value = value,
+            onValueChange = { newValue ->
+                val filtered = filterInput?.invoke(newValue) ?: newValue
+                onValueChange(filtered)
+            },
+            label = { Text(label) },
+            singleLine = true,
+            keyboardOptions = keyboardOptions,
+            visualTransformation = visualTransformation,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp),
+            shape = RoundedCornerShape(15),
+            leadingIcon = {
+                IconButton(onClick = {
+                    if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
+                    else ttsManager.speak(value)
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_ear_sound_24),
+                        contentDescription = "Lire le texte"
+                    )
+                }
+            },
+            trailingIcon = {
+                IconButton(onClick = { sttManager.startSpeechToText(speechLauncher) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_mic_24),
+                        contentDescription = "Saisie vocale"
+                    )
+                }
             }
-        },
-        trailingIcon = {
-            IconButton(onClick = { sttManager.startSpeechToText(speechLauncher) }) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_mic_24),
-                    contentDescription = "Saisie vocale"
-                )
-            }
+        )
+        if(onSubmit and value.isBlank()){
+            Text(
+                text = "Champs requis",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+            )
+
+        }else if(value.isDigitsOnly() && value.length<=1){
+            Text(
+                text = "Champs requis",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+            )
         }
-    )
+
+    }
+
+
 }
 
 
@@ -102,7 +126,8 @@ fun AppTextInput(
     onValueChange: (String) -> Unit,
     label: String,
     ttsManager: TextToSpeechManager,
-    sttManager: SpeechToTextManager
+    sttManager: SpeechToTextManager,
+    onSubmit: Boolean= false
    ) {
     AppInputField(
         value = value,
@@ -110,7 +135,8 @@ fun AppTextInput(
         label = label,
         ttsManager = ttsManager,
         sttManager = sttManager,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onSubmit=onSubmit
     )
 }
 
@@ -120,7 +146,8 @@ fun AppAgeInput(
     onValueChange: (String) -> Unit,
     label: String,
     ttsManager: TextToSpeechManager,
-    sttManager: SpeechToTextManager
+    sttManager: SpeechToTextManager,
+    onSubmit: Boolean= false
 ) {
     AppInputField(
         value = value,
@@ -130,7 +157,8 @@ fun AppAgeInput(
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         filterInput = { it.filter { c -> c.isDigit() }.take(2) },
-        onSpeechResult = { it.filter { c -> c.isDigit() }.take(2) }
+        onSpeechResult = { it.filter { c -> c.isDigit() }.take(2) },
+        onSubmit = onSubmit
     )
 }
 
@@ -140,7 +168,8 @@ fun AppPhoneInput(
     onValueChange: (String) -> Unit,
     label: String,
     ttsManager: TextToSpeechManager,
-    sttManager: SpeechToTextManager
+    sttManager: SpeechToTextManager,
+    onSubmit: Boolean= false
 ) {
     val phoneTransformation = remember {
         object : VisualTransformation {
@@ -171,7 +200,8 @@ fun AppPhoneInput(
         ttsManager = ttsManager,
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        visualTransformation = phoneTransformation
+        visualTransformation = phoneTransformation,
+        onSubmit = onSubmit
     )
 }
 
@@ -184,7 +214,8 @@ fun AppSelection(
     onValueChange: (String) -> Unit,
     onReadClick: () -> Unit,
     label: String,
-    options: List<String>
+    options: List<String>,
+    onSubmit: Boolean= false
 ){
     var expanded by remember { mutableStateOf(false) }
 
@@ -192,41 +223,56 @@ fun AppSelection(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            leadingIcon = {
-                IconButton(onClick = onReadClick) {
-                    Icon(
-                        painter = painterResource(R.drawable.outline_ear_sound_24),
-                        contentDescription = "Lire le texte"
+        Column {
+
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(label) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                leadingIcon = {
+                    IconButton(onClick = onReadClick) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_ear_sound_24),
+                            contentDescription = "Lire le texte"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
+                    .padding(vertical = 4.dp),
+
+                shape = RoundedCornerShape(15)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            onValueChange(option)
+                            expanded = false
+                        }
                     )
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
-                .padding(vertical = 4.dp),
-
-            shape = RoundedCornerShape(15)
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        onValueChange(option)
-                        expanded = false
-                    }
-                )
             }
+
+            if(onSubmit and value.isBlank()){
+                Text(
+                    text = "Champs requis",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+                )
+
+            }
+
         }
+
     }
 
 }
