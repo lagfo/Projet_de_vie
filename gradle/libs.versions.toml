@@ -28,6 +28,7 @@ foundation = "1.8.1"
 hiltNavigationCompose = "1.2.0"
 storage = "1.5.0"
 constraintlayout = "1.1.1"
+constraintlayoutVersion = "2.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayoutVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -7,8 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import org.ticanalyse.projetdevie.presentation.nvgraph.Route.HomeScreen
 import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
 import org.ticanalyse.projetdevie.presentation.register.RegisterViewModel
+import org.ticanalyse.projetdevie.presentation.screens.HomeScreen
 import org.ticanalyse.projetdevie.presentation.splash.SplashScreen
 
 @Composable
@@ -18,7 +20,7 @@ fun NavGraph( startDestination: String) {
     NavHost(navController = navController, startDestination = startDestination){
         navigation(
             route = Route.AppStartNavigation.route,
-            startDestination = Route.SplashScreen.route
+            startDestination = HomeScreen.route
         ){
             composable(
                 route = Route.SplashScreen.route
@@ -49,6 +51,12 @@ fun NavGraph( startDestination: String) {
                     }
 
                 )
+            }
+
+            composable(
+                route=Route.HomeScreen.route
+            ){
+                HomeScreen()
             }
         }
 

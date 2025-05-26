@@ -40,6 +40,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 import java.io.File
 
+
 @Composable
 fun ProfileAvatar (
     imageUri: MutableState<String>

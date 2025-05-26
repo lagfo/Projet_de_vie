@@ -7,4 +7,5 @@
     <color name="placeholder">#A0A3BD</color>
     <color name="shimmer">#C3C3C3</color>
     <color name="bg">#fff</color>
+    <color name="ellipsis_separator">#AC0300</color>
 </resources>
