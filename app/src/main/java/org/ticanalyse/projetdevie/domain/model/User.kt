@@ -11,9 +11,8 @@ data class User(
     @PrimaryKey val id: Int = 0,
     val nom: String,
     val prenom: String,
-    val dateNaissance: String,
-    val telephone: String,
-    val pays: String,
-    val password: String,
+    val age: String,
+    val numTel: String,
+    val genre: String,
     val avatarUri: String
 ): Parcelable
