@@ -85,6 +85,7 @@ fun HomeScreen() {
     ){innerPadding ->
         Box(
             modifier = Modifier.fillMaxSize()){
+
             Column(
                 modifier= Modifier
                     .fillMaxSize()
@@ -146,8 +147,9 @@ fun HomeScreen() {
             }
 
             Image(
-                painter = painterResource(id = R.drawable.transparent_bg),
+                painter = painterResource(id = R.drawable.bg_img),
                 contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
                 alpha = 0.07f
 
