@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- configuration pour le splash en mode sombre -->
+    <style name="App.Starting.Theme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1C1E21</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/projet_de_vie</item>
+        <item name="postSplashScreenTheme">@style/Theme.ProjetDeVie</item>
+    </style>
+</resources>
