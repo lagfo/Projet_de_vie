@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.nvgraph.Route
@@ -43,19 +42,15 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-
 @Composable
-fun SplashScreen(
-    viewModel: SplashViewModel = hiltViewModel(),
-    onNavigate: (String) -> Unit
-) {
-    val userEntry by viewModel.userEntry.collectAsState()
+fun SplashScreen(navController: NavController) {
+
     LaunchedEffect(Unit) {
         delay(2000)
-        when (userEntry) {
-            true -> onNavigate(Route.LoginScreen.route)
-            false -> onNavigate(Route.RegisterScreen.route)
-            null -> {}
+        navController.navigate(Route.RegisterScreen.route) {
+            popUpTo(Route.AppStartNavigation.route) {
+                inclusive = true
+            }
         }
     }
 

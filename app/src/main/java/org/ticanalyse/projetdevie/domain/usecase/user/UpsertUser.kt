@@ -8,6 +8,6 @@ class UpsertUser (
 ){
     suspend operator fun invoke(user: User
     ){
-        userRepository.upsertArticle(user)
+        userRepository.upsertUser(user)
     }
 }

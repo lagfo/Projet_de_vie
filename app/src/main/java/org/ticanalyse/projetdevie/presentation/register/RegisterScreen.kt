@@ -33,11 +33,11 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.Route
 import org.ticanalyse.projetdevie.utils.Global.validateAge
 import org.ticanalyse.projetdevie.utils.Global.validateNumer
 import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
+import timber.log.Timber
 
 
 @Composable
 fun RegisterScreen (
-    onNavigate: (String) -> Unit,
     onEvent: (RegisterEvent) -> Unit
 ){
 
@@ -119,7 +119,7 @@ fun RegisterScreen (
                     onClick = {
                         onSubmit.value = true
                         if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumer(numTel.value)){
-                            onEvent(RegisterEvent.SaveAppEntry)
+
                             val user = User(
                                 nom = nom.value,
                                 prenom = prenom.value,
@@ -128,8 +128,11 @@ fun RegisterScreen (
                                 numTel = numTel.value,
                                 avatarUri = imageUri.value
                             )
+                            Timber.tag("tag").d("$user")
                             onEvent(RegisterEvent.UpsertUser(user))
-                            onNavigate(Route.SplashScreen.route)
+                            onEvent(RegisterEvent.SaveAppEntry)
+
+                            //onNavigate(Route.HomeScreen.route)
                         }
                     }
                 )
