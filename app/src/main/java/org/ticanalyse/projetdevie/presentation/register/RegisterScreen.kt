@@ -131,8 +131,6 @@ fun RegisterScreen (
                             Timber.tag("tag").d("$user")
                             onEvent(RegisterEvent.UpsertUser(user))
                             onEvent(RegisterEvent.SaveAppEntry)
-
-                            //onNavigate(Route.HomeScreen.route)
                         }
                     }
                 )

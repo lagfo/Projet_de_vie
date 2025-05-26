@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         }
         // Configuration edge-to-edge
         //WindowCompat.setDecorFitsSystemWindows(window, false)
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
 
         setContent {
             ProjetDeVieTheme {
