@@ -66,6 +66,25 @@ fun SplashScreen(
     ) {
         Box(
             modifier = Modifier
+                .weight(.1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.logo_helvetas),
+                    contentDescription = "Logo Helvetas",
+                    modifier = Modifier.fillMaxWidth(1f)
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
                 .weight(0.8f)
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -97,7 +116,7 @@ fun SplashScreen(
         }
         Box(
             modifier = Modifier
-                .weight(0.2f)
+                .weight(.1f)
                 .fillMaxWidth(),
             contentAlignment = Alignment.BottomCenter
         ) {
@@ -105,17 +124,13 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_helvetas),
-                    contentDescription = "Logo Helvetas",
-                    modifier = Modifier.fillMaxWidth(1f)
-                )
+
                 Image(
                     painter = painterResource(id = R.drawable.logo_tica),
                     contentDescription = "Logo Tica",
                     modifier = Modifier.fillMaxWidth(1f)
                 )
-                Spacer(modifier = Modifier.height(5.dp)) // Exemple de padding
+                Spacer(modifier = Modifier.height(5.dp))
             }
         }
     }

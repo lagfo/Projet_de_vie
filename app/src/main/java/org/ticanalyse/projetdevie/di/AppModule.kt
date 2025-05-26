@@ -67,9 +67,7 @@ object AppModule {
             context = application,
             klass = AppDatabase::class.java,
             name = APP_DATABASE_NAME
-        ).addTypeConverter(GsonConverterFactory.create())
-            .fallbackToDestructiveMigration()
-            .build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

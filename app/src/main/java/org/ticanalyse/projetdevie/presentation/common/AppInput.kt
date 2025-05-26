@@ -105,9 +105,9 @@ fun AppInputField(
                 modifier = Modifier.padding(start = 16.dp, top = 2.dp)
             )
 
-        }else if(value.isDigitsOnly() && value.length<=1){
+        }else if(value.isNotBlank() && value.isDigitsOnly() && value.length<=1){
             Text(
-                text = "Champs requis",
+                text = "Valeur invalide",
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 16.dp, top = 2.dp)

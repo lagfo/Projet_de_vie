@@ -46,7 +46,7 @@ fun ProfileAvatar (
     imageUri: MutableState<String>
 ){
 
-    val painter = rememberAsyncImagePainter (imageUri.value.ifEmpty {R.drawable.mini_logo})
+    val painter = rememberAsyncImagePainter (imageUri.value.ifEmpty {R.drawable.logo})
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -81,11 +81,11 @@ fun ProfileAvatar (
                         .clip(CircleShape)
                         .fillMaxWidth(.35f)
                         .aspectRatio(1f)
-                        .background(color = colorResource(id=R.color.primary_color))
+                        .background(color = colorResource(id=R.color.third_color))
                         .border(
                             BorderStroke(
                                 width=3.dp,
-                                color = colorResource(R.color.primary_color)),
+                                color = colorResource(R.color.third_color)),
                             shape = CircleShape
                         )
                         .clickable{ launcher.launch("image/*") },
@@ -98,7 +98,7 @@ fun ProfileAvatar (
                     bottom.linkTo(avatar.bottom)
                 }){
                 Image(
-                    painter = painterResource (id = R.drawable.baseline_photo_camera_24),
+                    painter = painterResource (id = R.drawable.outline_photo_24),
                     contentDescription = null,
                     modifier = Modifier
                         .clip(CircleShape)
@@ -113,7 +113,7 @@ fun ProfileAvatar (
                         .size(40.dp)
                         .padding(10.dp)
                         .aspectRatio(1f)
-                        .clickable { cameraLaucher.launch(null) }
+                        .clickable { launcher.launch("image/*") }
                 )
             }
 
