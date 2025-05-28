@@ -2,7 +2,6 @@
 <resources>
     <style name="App.Starting.Theme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#1C1E21</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/transparent_bg</item>
         <item name="postSplashScreenTheme">@style/Theme.ProjetDeVie</item>
     </style>
 </resources>

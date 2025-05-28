@@ -128,7 +128,6 @@ fun RegisterScreen (
                                 numTel = numTel.value,
                                 avatarUri = imageUri.value
                             )
-                            Timber.tag("tag").d("$user")
                             onEvent(RegisterEvent.UpsertUser(user))
                             onEvent(RegisterEvent.SaveAppEntry)
                         }
