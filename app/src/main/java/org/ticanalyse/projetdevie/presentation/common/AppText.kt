@@ -15,10 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
 import java.util.Locale
@@ -26,6 +29,9 @@ import java.util.Locale
 @Composable
 fun AppText(
     text: String,
+    fontFamily: FontFamily = BelfastGrotesk,
+    fontWeight: FontWeight = FontWeight.Black,
+    fontStyle: FontStyle = FontStyle.Normal,
     color: Color = colorResource(id = R.color.primary_color),
     fontSize: TextUnit = 25.sp,
     style: TextStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
@@ -38,6 +44,8 @@ fun AppText(
         text = text,
         color = color,
         style = style,
-        fontSize = fontSize
-    )
+        fontFamily = fontFamily,
+        fontWeight = fontWeight,
+        fontStyle = fontStyle,
+        fontSize = fontSize)
 }

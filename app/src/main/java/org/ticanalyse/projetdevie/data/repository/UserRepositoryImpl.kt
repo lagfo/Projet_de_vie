@@ -8,8 +8,8 @@ class UserRepositoryImpl(
     private val appDao: AppDao
 ) : UserRepository{
 
-    override suspend fun upsertUser(article: User) {
-        appDao.upsert(article)
+    override suspend fun upsertUser(user: User) {
+        appDao.upsert(user)
     }
 
     override suspend fun getUser(): User {

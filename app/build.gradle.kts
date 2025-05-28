@@ -103,4 +103,9 @@ dependencies {
 
     implementation(libs.timber)
     implementation(libs.androidx.storage)
+
+    //Exo Player
+    implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer.hls)
 }

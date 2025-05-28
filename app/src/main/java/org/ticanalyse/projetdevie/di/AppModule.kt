@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.ticanalyse.projetdevie.data.local.AppDao
 import org.ticanalyse.projetdevie.data.local.AppDatabase
+import org.ticanalyse.projetdevie.data.local.MonReseauDao
 import org.ticanalyse.projetdevie.data.manger.LocalUserMangerImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.domain.manger.LocalUserManger
@@ -75,5 +76,13 @@ object AppModule {
     fun provideAppDao(
         appDatabase: AppDatabase
     ): AppDao = appDatabase.appDao
+
+    @Provides
+    @Singleton
+    fun provideMonReseauDao(
+        appDatabase: AppDatabase
+    ): MonReseauDao = appDatabase.monReseauDao
+
+
 
 }
