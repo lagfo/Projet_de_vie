@@ -2,6 +2,8 @@
 <resources>
     <color name="primary_color">#005380</color>
     <color name="secondary_color">#A31d23</color>
+    <color name="thirty_color">#C86516</color>
+    <color name="fourty_color">#E3CE9C</color>
     <color name="third_color">#C1c6cA</color>
     <color name="text">#FF000000</color>
     <color name="input_background">#fff</color>
