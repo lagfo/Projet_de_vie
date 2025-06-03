@@ -19,6 +19,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.utils.Global
+import org.ticanalyse.projetdevie.utils.Global.validateAge
+import org.ticanalyse.projetdevie.utils.Global.validateNumber
+import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
@@ -43,6 +48,7 @@ fun AppInputField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    inputType: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -62,14 +68,35 @@ fun AppInputField(
         }
     }
 
+    var isErrorExist by remember { mutableStateOf(false) }
+    Timber.d("AppInputField: $value et si erreur = $isErrorExist")
     Column {
         OutlinedTextField(
             value = value,
             onValueChange = { newValue ->
                 val filtered = filterInput?.invoke(newValue) ?: newValue
                 onValueChange(filtered)
+                isErrorExist = when (inputType) {
+                    "number" -> !validateNumber(newValue)
+                    "age" -> !validateAge(newValue)
+                    "text" -> !validateTextEntries(newValue)
+                    else -> false
+                }
             },
             label = { Text(label) },
+            supportingText = {
+                if (isErrorExist && value.isEmpty()) {
+                    Text(text = "Champs requis")
+                } else if (isErrorExist) {
+                    Text(text = "invalide")
+                }
+            },
+            prefix = {
+                if (inputType == "number") {
+                    Text(text = "+226 ")
+                }
+            },
+            isError = isErrorExist,
             singleLine = true,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
@@ -97,22 +124,22 @@ fun AppInputField(
                 }
             }
         )
-        if(onSubmit and value.isBlank()){
-            Text(
-                text = "Champs requis",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
-            )
-
-        }else if(value.isNotBlank() && value.isDigitsOnly() && value.length<=1){
-            Text(
-                text = "Valeur invalide",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
-            )
-        }
+//        if(onSubmit and value.isBlank()){
+//            Text(
+//                text = "Champs requis",
+//                color = MaterialTheme.colorScheme.error,
+//                style = MaterialTheme.typography.labelSmall,
+//                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+//            )
+//
+//        }else if(value.isNotBlank() && value.isDigitsOnly() && value.length<=1){
+//            Text(
+//                text = "Valeur invalide",
+//                color = MaterialTheme.colorScheme.error,
+//                style = MaterialTheme.typography.labelSmall,
+//                modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+//            )
+//        }
 
     }
 
@@ -129,10 +156,12 @@ fun AppTextInput(
     sttManager: SpeechToTextManager,
     onSubmit: Boolean= false
    ) {
+
     AppInputField(
         value = value,
         onValueChange = onValueChange,
         label = label,
+        inputType = "text",
         ttsManager = ttsManager,
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -149,10 +178,21 @@ fun AppAgeInput(
     sttManager: SpeechToTextManager,
     onSubmit: Boolean= false
 ) {
+
+    val isErrorExist by remember { derivedStateOf {
+        if (value.isEmpty()) {
+            false
+        } else {
+            validateAge(value)
+        }
+    } }
+
+
     AppInputField(
         value = value,
         onValueChange = onValueChange,
         label = label,
+        inputType = "age",
         ttsManager = ttsManager,
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -191,12 +231,22 @@ fun AppPhoneInput(
         }
     }
 
+    val isErrorExist by remember { derivedStateOf {
+        if (value.isEmpty()) {
+            false
+        } else {
+            validateNumber(value)
+        }
+    } }
+
+
     Timber.tag("phone").d(value)
 
     AppInputField(
         value = value,
         onValueChange = { onValueChange(it.filter { c -> c.isDigit() }) },
         label = label,
+        inputType = "number",
         ttsManager = ttsManager,
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -215,9 +265,16 @@ fun AppSelection(
     onReadClick: () -> Unit,
     label: String,
     options: List<String>,
-    onSubmit: Boolean= false
+    onSubmit: Boolean = false
 ){
     var expanded by remember { mutableStateOf(false) }
+    val isErrorExist by remember { derivedStateOf {
+        if (value.isBlank()) {
+            false
+        } else {
+            options.contains(value)
+        }
+    } }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -227,7 +284,15 @@ fun AppSelection(
 
             OutlinedTextField(
                 value = value,
-                onValueChange = {},
+                onValueChange = {
+                    onValueChange(it)
+                },
+                isError = isErrorExist,
+                supportingText = {
+                    if (isErrorExist) {
+                        Text(text = "Champs requis")
+                    }
+                },
                 readOnly = true,
                 label = { Text(label) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -261,15 +326,15 @@ fun AppSelection(
                 }
             }
 
-            if(onSubmit and value.isBlank()){
-                Text(
-                    text = "Champs requis",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
-                )
-
-            }
+//            if(onSubmit and value.isBlank()){
+//                Text(
+//                    text = "Champs requis",
+//                    color = MaterialTheme.colorScheme.error,
+//                    style = MaterialTheme.typography.labelSmall,
+//                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+//                )
+//
+//            }
 
         }
 

@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.safeArgs) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.daggerHilt) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
 }

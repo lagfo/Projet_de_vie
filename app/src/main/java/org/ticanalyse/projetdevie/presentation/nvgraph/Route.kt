@@ -1,14 +1,38 @@
 package org.ticanalyse.projetdevie.presentation.nvgraph
 
-sealed class Route (
-    val route:String
-){
+import kotlinx.serialization.Serializable
 
-    object AppStartNavigation: Route("appStartNavigation")
-    object AppNavigation: Route("appNavigation")
-    object AppNavigationScreen: Route("appNavigationScreen")
-    object SplashScreen: Route("SplashScreen")
-    object RegisterScreen: Route("RegisterScreen")
-    object HomeScreen: Route("homeScreen")
+@Serializable
+object AppStartNavigation
 
-}
+@Serializable
+object SplashRoute
+
+@Serializable
+object LoginRoute
+
+@Serializable
+object RegisterRoute
+
+@Serializable
+object HomeRoute
+
+@Serializable
+object IntroductionRoute
+
+@Serializable
+object IntroductionCharacterRoute
+
+@Serializable
+object DiscoverMyNetworkRoute
+
+//@Serializable
+//data class HomeRoute (
+//    val id: Int? = null,
+//    val nom: String,
+//    val prenom: String,
+//    val age: String,
+//    val numTel: String,
+//    val genre: String,
+//    val avatarUri: String
+//)
