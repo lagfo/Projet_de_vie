@@ -48,14 +48,16 @@ fun ProfileAvatar (
 
     val painter = rememberAsyncImagePainter (imageUri.value.ifEmpty {R.drawable.logo})
     val context = LocalContext.current
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri? ->
         uri?.let { imageUri.value = it.toString() }
     }
+
     val cameraLaucher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
-    ) {bitmap: Bitmap? ->
+    ) {bitmap ->
         bitmap?.let {
             val file = File.createTempFile("avatar_", ".jpg", context.cacheDir).apply {
                 outputStream().use { out -> bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out) }

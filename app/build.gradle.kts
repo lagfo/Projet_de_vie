@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.safeArgs)
     alias(libs.plugins.ksp)
     alias(libs.plugins.daggerHilt)
+    alias(libs.plugins.kotlin.serialization)
     kotlin("kapt")
     kotlin("plugin.parcelize")
 }
@@ -103,6 +104,12 @@ dependencies {
 
     implementation(libs.timber)
     implementation(libs.androidx.storage)
+
+    //media 3
+    implementation(libs.media3.ui.compose)
+
+    //kotlin serialization
+    implementation(libs.kotlin.serialization.json)
 
     //Exo Player
     implementation (libs.androidx.media3.exoplayer)

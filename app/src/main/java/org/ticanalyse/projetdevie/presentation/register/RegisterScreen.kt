@@ -29,16 +29,15 @@ import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppForm
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
-import org.ticanalyse.projetdevie.presentation.nvgraph.Route
 import org.ticanalyse.projetdevie.utils.Global.validateAge
-import org.ticanalyse.projetdevie.utils.Global.validateNumer
+import org.ticanalyse.projetdevie.utils.Global.validateNumber
 import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import timber.log.Timber
 
 
 @Composable
 fun RegisterScreen (
-    onEvent: (RegisterEvent) -> Unit
+    onSubmitClick: (User) -> Unit ,
 ){
 
     val imageUri = rememberSaveable { mutableStateOf ("") }
@@ -117,9 +116,7 @@ fun RegisterScreen (
                 AppButton(
                     text = stringResource(id = R.string.register_btn_title),
                     onClick = {
-                        onSubmit.value = true
-                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumer(numTel.value)){
-
+                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumber(numTel.value)){
                             val user = User(
                                 nom = nom.value,
                                 prenom = prenom.value,
@@ -128,10 +125,27 @@ fun RegisterScreen (
                                 numTel = numTel.value,
                                 avatarUri = imageUri.value
                             )
-                            onEvent(RegisterEvent.UpsertUser(user))
-                            onEvent(RegisterEvent.SaveAppEntry)
+
+                            onSubmitClick(user)
                         }
                     }
+//                        {
+//                        onSubmit.value = true
+//                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumer(numTel.value)){
+//
+//                            val user = User(
+//                                nom = nom.value,
+//                                prenom = prenom.value,
+//                                genre = genre.value,
+//                                age = age.value,
+//                                numTel = numTel.value,
+//                                avatarUri = imageUri.value
+//                            )
+//                            Timber.tag("tag").d("$user")
+//                            onEvent(RegisterEvent.UpsertUser(user))
+//                            onEvent(RegisterEvent.SaveAppEntry)
+//                        }
+//                    }
                 )
                 Spacer(modifier = Modifier.height(5.dp))
             }
