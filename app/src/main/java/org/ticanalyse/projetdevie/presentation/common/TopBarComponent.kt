@@ -47,10 +47,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
+import timber.log.Timber
 import java.io.File
+import kotlin.text.ifEmpty
 
 @Composable
 fun TopBarComponent(
@@ -58,19 +62,9 @@ fun TopBarComponent(
     prenom:String,
     profileImagePath:String
 ){
-    val painter= rememberAsyncImagePainter(
-        model=File(profileImagePath),
-        onSuccess = {
-            Log.d("TAG", "ProjetVieScreen:La photo de profile a été chargé avec succès ")
-        },
-        onError = {
-            Log.d("TAG", "ProjetVieScreen:La photo de profile n'a pas pu être chargée chargé  ")
-
-        },
-        placeholder = painterResource(R.drawable.avatar)
-    )
-
+    Timber.d("TopBarComponent: $profileImagePath")
  //   var isDropdownMenuExpanded by remember { mutableStateOf(false) }
+    val painter = rememberAsyncImagePainter (profileImagePath.ifEmpty {R.drawable.avatar})
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -108,7 +102,7 @@ fun TopBarComponent(
             Spacer(modifier = Modifier.width(105.dp))
             Text(
                 modifier = Modifier.width(200.dp),
-                text="$nom $prenom uojojugygguuuuiyiuyiuiiu",
+                text="$nom $prenom",
                 fontFamily = BelfastGrotesk,
                 fontWeight= FontWeight.Bold,
                 maxLines = 1,
@@ -122,6 +116,7 @@ fun TopBarComponent(
             contentAlignment= Alignment.Center,
 
         ) {
+//            if (profileImagePath.isEmpty()) {
             Image(
                 modifier = Modifier
                     .size(70.dp)
@@ -131,16 +126,31 @@ fun TopBarComponent(
                         color =colorResource(R.color.secondary_color),
                         shape = CircleShape
                     ),
-                painter =painter,
+                painter = painter,
                 contentDescription = "Profil image"
             )
-            Image(
-                modifier = Modifier
-                    .size(20.dp)
-                    .offset(x=30.dp,y=20.dp),
-                painter = painterResource(R.drawable.badge_icon),
-                contentDescription = "Profil image"
-            )
+//            } else {
+//                AsyncImage(
+//                    model = profileImagePath.toUri(),
+//                    contentDescription = "Profil image",
+//                    onSuccess = {
+//                        Timber.d("ProjetVieScreen:La photo de profile a été chargé avec succès ")
+//                    },
+//                    onError = {
+//                        Timber.d("ProjetVieScreen:La photo de profile n'a pas pu être chargée chargé  ")
+//
+//                    },
+//                    placeholder = painterResource(R.drawable.avatar)
+//                )
+//
+//            }
+//            Image(
+//                modifier = Modifier
+//                    .size(20.dp)
+//                    .offset(x=30.dp,y=20.dp),
+//                painter = painterResource(R.drawable.badge_icon),
+//                contentDescription = "Profil image"
+//            )
 
 
 

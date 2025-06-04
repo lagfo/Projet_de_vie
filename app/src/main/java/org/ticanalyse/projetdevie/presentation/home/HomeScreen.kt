@@ -47,13 +47,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 
 
 data class Topic(val id:Int,val topicImage:Painter,val topicTitle:String)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    currentUser: User,
+    onNavigate: (String) -> Unit = {}
+) {
 
     val items= listOf(
         Topic(1,painterResource(R.drawable.introduction),"Introduction"),
@@ -64,8 +68,6 @@ fun HomeScreen() {
         Topic(6,painterResource(R.drawable.planification_du_projet),"Planification\ndu projet")
     )
 
-    val navHostController= rememberNavController()
-
     Scaffold(
         topBar = {
             Box(
@@ -74,7 +76,7 @@ fun HomeScreen() {
                     .background(Color.Transparent)
                     .padding(WindowInsets.statusBars.asPaddingValues())
             ) {
-                TopBarComponent("RAYAISSE","Patrick","")
+                TopBarComponent(currentUser.nom,currentUser.prenom,currentUser.avatarUri)
             }
         }
     ){innerPadding ->
@@ -106,26 +108,26 @@ fun HomeScreen() {
                         CustomItemLayout(item=item, onClick = {
                             when(item.id){
                                 1->{
-                                    // navHostController.navigate()
+                                    onNavigate("Introduction")
                                 }
                                 2->{
-                                    // navHostController.navigate()
+                                    onNavigate("Mon Reseau")
 
                                 }
                                 3->{
-                                    // navHostController.navigate()
+                                    onNavigate("Ligne de vie")
 
                                 }
                                 4->{
-                                    // navHostController.navigate()
+                                    onNavigate("Bilan")
 
                                 }
                                 5->{
-                                    // navHostController.navigate()
+                                    onNavigate("Lien vie reel")
 
                                 }
                                 6->{
-                                    // navHostController.navigate()
+                                    onNavigate("Plannification")
 
                                 }
                             }
@@ -196,21 +198,20 @@ fun CustomItemLayout(item: Topic,onClick:()->Unit) {
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
-
-    HomeScreen()
+//    HomeScreen()
 }
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview1() {
 
-    HomeScreen()
+//    HomeScreen()
 }
 
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview2() {
 
-    HomeScreen()
+//    HomeScreen()
 }
 
 @Composable

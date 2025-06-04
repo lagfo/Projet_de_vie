@@ -1,12 +1,12 @@
 package org.ticanalyse.projetdevie.domain.usecase.app_entry
 
-import org.ticanalyse.projetdevie.domain.manger.LocalUserManger
+import org.ticanalyse.projetdevie.data.manager.LocalUserManager
 
 
 class SaveAppEntry(
-    private val localUserManger: LocalUserManger
+    private val localUserManager: LocalUserManager
 ){
     suspend operator fun invoke(){
-        localUserManger.saveAppEntry()
+        localUserManager.saveAppEntry()
     }
 }
