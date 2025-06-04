@@ -10,4 +10,8 @@
     <string name="genre">Genre</string>
     <string name="age">Age</string>
     <string name="num_tel">N° de téléphone</string>
+    <string name="acteur_familiaux_sociaux">Acteurs familiaux\net sociaux</string>
+    <string name="acteur_educatif">Acteurs éducatifs</string>
+    <string name="acteur_professionnel">Acteurs professionnels</string>
+    <string name="acteur_institutionnel"> Acteurs institutionnels&#10;et de soutien</string>
 </resources>

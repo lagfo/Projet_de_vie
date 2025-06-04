@@ -1,14 +1,19 @@
 package org.ticanalyse.projetdevie.presentation.common
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
+import org.ticanalyse.projetdevie.utils.Dimens.ArcHeight
+import org.ticanalyse.projetdevie.utils.Dimens.RectangleBorder
 
 @Composable
 fun AppShape(
@@ -40,5 +45,19 @@ fun AppShape(
         }
 
         drawPath(path, color)
+    }
+}
+
+
+@Composable
+@Preview(showBackground = true)
+fun AppShapePreview(){
+    ProjetDeVieTheme {
+        AppShape(
+            modifier = Modifier.fillMaxHeight(.2f),
+            color = colorResource(id = R.color.primary_color),
+            cornerRadius=RectangleBorder,
+            arcHeight = ArcHeight
+        )
     }
 }

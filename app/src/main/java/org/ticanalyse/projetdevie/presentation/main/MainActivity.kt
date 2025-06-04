@@ -3,7 +3,6 @@ package org.ticanalyse.projetdevie.presentation.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -16,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import org.ticanalyse.projetdevie.presentation.common.AppPermission
 import org.ticanalyse.projetdevie.presentation.nvgraph.NavGraph
 import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 
@@ -47,6 +47,8 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 Box(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize()) {
+                    AppPermission(this@MainActivity)
+                    //PermissionRequestScreen(this@MainActivity)
                     val startDestination = viewModel.startDestination
                     NavGraph(startDestination = startDestination)
                 }
