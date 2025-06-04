@@ -37,23 +37,14 @@ import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.presentation.nvgraph.Route
+import org.ticanalyse.projetdevie.presentation.nvgraph.AppStartNavigation
+import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @Composable
-fun SplashScreen(navController: NavController) {
-
-    LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate(Route.RegisterScreen.route) {
-            popUpTo(Route.AppStartNavigation.route) {
-                inclusive = true
-            }
-        }
-    }
-
+fun SplashScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
