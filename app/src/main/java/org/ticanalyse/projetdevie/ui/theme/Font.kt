@@ -12,7 +12,7 @@ val BelfastGrotesk=FontFamily(
     Font(R.font.belfast_grotesk_medium, FontWeight.Medium)
 )
 
-val roboto=FontFamily(
+val Roboto=FontFamily(
     Font(R.font.roboto_blackitalic, FontWeight.Black,FontStyle.Italic),
     Font(R.font.roboto_mediumitalic, FontWeight.Medium, FontStyle.Italic),
     Font(R.font.roboto_regular, FontWeight.Normal)

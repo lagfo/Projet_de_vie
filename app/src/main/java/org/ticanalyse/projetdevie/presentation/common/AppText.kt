@@ -18,10 +18,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
 import java.util.Locale
@@ -48,4 +50,27 @@ fun AppText(
         fontWeight = fontWeight,
         fontStyle = fontStyle,
         fontSize = fontSize)
+}
+
+@Composable
+fun AppIconText(
+    modifier: Modifier=Modifier,
+    text: String,
+    fontFamily: FontFamily = Roboto,
+    fontWeight: FontWeight = FontWeight.Black,
+    fontStyle: FontStyle = FontStyle.Normal,
+    color: Color = colorResource(id = R.color.primary_color),
+    fontSize: TextUnit = 25.sp,
+    style: TextStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+) {
+    Text(
+        modifier=modifier,
+        text = text,
+        color = color,
+        style = style,
+        fontFamily = fontFamily,
+        fontWeight = fontWeight,
+        fontStyle = fontStyle,
+        fontSize = fontSize,
+        textAlign = TextAlign.Center)
 }
