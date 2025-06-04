@@ -1,7 +1,9 @@
 package org.ticanalyse.projetdevie.presentation.common
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,9 +35,9 @@ fun AppShape(
 
         val path = Path().apply {
             moveTo(0f, corner)
-            quadraticBezierTo(0f, 0f, corner, 0f)
+            quadraticTo(0f, 0f, corner, 0f)
             lineTo(width - corner, 0f)
-            quadraticBezierTo(width, 0f, width, corner)
+            quadraticTo(width, 0f, width, corner)
             lineTo(width, height - arc)
             quadraticTo(
                 width / 2, height + arc,
@@ -53,11 +55,14 @@ fun AppShape(
 @Preview(showBackground = true)
 fun AppShapePreview(){
     ProjetDeVieTheme {
-        AppShape(
-            modifier = Modifier.fillMaxHeight(.2f),
-            color = colorResource(id = R.color.primary_color),
-            cornerRadius=RectangleBorder,
-            arcHeight = ArcHeight
-        )
+        Column (Modifier.fillMaxSize()) {
+            AppShape(
+                modifier = Modifier.fillMaxHeight(.2f),
+                color = colorResource(id = R.color.primary_color),
+                cornerRadius=RectangleBorder,
+                arcHeight = ArcHeight
+            )
+        }
+
     }
 }

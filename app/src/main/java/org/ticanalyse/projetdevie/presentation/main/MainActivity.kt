@@ -1,5 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.main
 
+//import org.ticanalyse.projetdevie.presentation.nvgraph.NavGraph
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,7 +35,6 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.DiscoverMyNetworkRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
-//import org.ticanalyse.projetdevie.presentation.nvgraph.NavGraph
 import org.ticanalyse.projetdevie.presentation.nvgraph.RegisterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.SplashRoute
 import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
@@ -45,6 +44,7 @@ import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val mainViewModel by viewModels<MainViewModel>()
 
     private val viewModel by viewModels<RegisterViewModel>()
 
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         // Configuration du Splash Screen
         installSplashScreen().apply {
             setKeepOnScreenCondition{
-                viewModel.splashCondition
+                mainViewModel.splashCondition
             }
         }
         // Configuration edge-to-edge
@@ -155,9 +155,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable<IntroductionRoute> {
-                            IntroductionHomeScreen({
-                                navController.navigate(IntroductionCharacterRoute)
-                            })
+                            IntroductionHomeScreen {
+                                navController.navigate(
+                                    IntroductionCharacterRoute
+                                )
+                            }
                         }
                         composable<IntroductionCharacterRoute> {
                             IntroductionCharactersScreen()

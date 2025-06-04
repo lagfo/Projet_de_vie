@@ -1,14 +1,13 @@
 package org.ticanalyse.projetdevie.presentation.common
 
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,8 +29,13 @@ import org.ticanalyse.projetdevie.utils.Dimens.ExtraSmallPadding2
 import org.ticanalyse.projetdevie.utils.Dimens.IconSize
 
 @Composable
-fun AppCategoryIconCard(icon: Icon){
+fun AppCategoryIconCard(
+    icon: AppIcon,
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit
+){
     Column (
+        modifier = modifier.clickable { onNavigate  },
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
         Surface(
@@ -42,7 +46,7 @@ fun AppCategoryIconCard(icon: Icon){
         ) {
             Image(
                 painter = painterResource(id=icon.paint),
-                contentDescription =null,
+                contentDescription =stringResource(id=icon.txt),
                 contentScale = ContentScale.Crop,
             )
         }
@@ -58,13 +62,17 @@ fun AppCategoryIconCard(icon: Icon){
 }
 
 @Composable
-fun AppSubCategoryIconCard(icon: Icon){
+fun AppSubCategoryIconCard(
+    icon: AppIcon,
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit)
+{
 
     Surface(
-        modifier = Modifier.size(IconSize),
+        modifier = modifier.size(IconSize),
         shape = MaterialTheme.shapes.medium,
-        color = Color.White,                                      // ← solid background
-        border = BorderStroke(2.dp, colorResource(icon.strokeColor))
+        border = BorderStroke(2.dp, colorResource(icon.strokeColor)),
+        onClick = onNavigate
     ) {
         Box(contentAlignment = Alignment.BottomCenter) {
             Image(
@@ -74,6 +82,7 @@ fun AppSubCategoryIconCard(icon: Icon){
             )
             Box(modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight(.3f)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -86,9 +95,8 @@ fun AppSubCategoryIconCard(icon: Icon){
                     )
                 )
                 .padding(top = 5.dp,bottom = 1.dp),
-                contentAlignment = Alignment.BottomCenter
+                contentAlignment = Alignment.Center
             ) {
-
                 AppIconText(
                     text = stringResource(id=icon.txt),
                     fontSize = 12.sp,
@@ -96,15 +104,10 @@ fun AppSubCategoryIconCard(icon: Icon){
                 )
 
             }
-            
+
         }
 
     }
 
 }
 
-data class Icon (
-    @StringRes val txt: Int,
-    @ColorRes val strokeColor: Int,
-    @DrawableRes val paint: Int,
-)
