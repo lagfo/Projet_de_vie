@@ -14,4 +14,9 @@
     <string name="acteur_educatif"> Acteurs éducatifs </string>
     <string name="acteur_professionnel"> Acteurs professionnels </string>
     <string name="acteur_institutionnel"> Acteurs institutionnels \n et de soutien </string>
+    <string name="introduction_title"> Introduction </string>
+    <string name="mon_reseau_title"> Découvrir mon réseau </string>
+    <string name="video_title"> Commençons par une vidéo de présentation </string>
+
+
 </resources>

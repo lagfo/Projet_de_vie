@@ -23,18 +23,14 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.ticanalyse.projetdevie.presentation.home.HomeScreen
-import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
-import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
-import org.ticanalyse.projetdevie.presentation.nvgraph.DiscoverMyNetworkRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
+import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigator
+import org.ticanalyse.projetdevie.presentation.nvgraph.AppNavigation
 import org.ticanalyse.projetdevie.presentation.nvgraph.RegisterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.SplashRoute
 import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
@@ -67,6 +63,7 @@ class MainActivity : ComponentActivity() {
             val currentUser = viewModel.currentUser.collectAsStateWithLifecycle()
             val scope = rememberCoroutineScope()
 
+
             ProjetDeVieTheme {
                 val isSystemInDarkMode = isSystemInDarkTheme()
                 val systemUiController = rememberSystemUiController()
@@ -89,7 +86,7 @@ class MainActivity : ComponentActivity() {
                             LaunchedEffect(isLoading.value) {
                                 delay(1500)
                                 if (currentUser.value != null) {
-                                    navController.navigate(HomeRoute) {
+                                    navController.navigate(AppNavigation) {
                                         popUpTo<SplashRoute> {
                                             inclusive = true
                                         }
@@ -110,7 +107,7 @@ class MainActivity : ComponentActivity() {
                                     viewModel.onSubmit(user)
                                     scope.launch {
                                         delay(1500)
-                                        navController.navigate(HomeRoute) {
+                                        navController.navigate(AppNavigation) {
                                             popUpTo<RegisterRoute> {
                                                 inclusive = true
                                             }
@@ -118,55 +115,22 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+
                         }
-                        composable<HomeRoute> {
+
+                        composable<AppNavigation> {
                             LaunchedEffect(currentUser.value) {
                                 if (currentUser.value == null) {
                                     navController.navigate(RegisterRoute) {
-                                        popUpTo<HomeRoute>{inclusive = true}
+                                        popUpTo<AppNavigation>{inclusive = true}
                                     }
                                 }
                             }
-                            viewModel.getCurrentUser()
-                            HomeScreen(
-                                currentUser = currentUser.value!!,
-                                onNavigate = { route ->
-                                    when (route) {
-                                        "Introduction" -> {
-                                            navController.navigate(IntroductionRoute)
-                                        }
-                                        "Mon Reseau" -> {
-//                                            navController.navigate("Mon Reseau")
-                                        }
-                                        "Ligne de vie" -> {
-//                                            navController.navigate("Ligne de vie")
-                                        }
-                                        "Bilan" -> {
-//                                            navController.navigate("Bilan")
-                                        }
-                                        "Lien vie reel" -> {
-//                                            navController.navigate("Lien vie reel")
-                                        }
-                                        "Plannification" -> {
-//                                            navController.navigate("Plannification")
-                                        }
-                                    }
-                                }
-                            )
+                            AppNavigator(currentUser = currentUser.value!!)
                         }
-                        composable<IntroductionRoute> {
-                            IntroductionHomeScreen {
-                                navController.navigate(
-                                    IntroductionCharacterRoute
-                                )
-                            }
-                        }
-                        composable<IntroductionCharacterRoute> {
-                            IntroductionCharactersScreen()
-                        }
-                        composable<DiscoverMyNetworkRoute> {
 
-                        }
+
+
                     }
 //                    val startDestination = viewModel.startDestination
 //                    NavGraph(startDestination = startDestination)

@@ -55,7 +55,6 @@ import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 data class Topic(val id:Int,val topicImage:Painter,val topicTitle:String)
 @Composable
 fun HomeScreen(
-    currentUser: User,
     onNavigate: (String) -> Unit = {}
 ) {
 
@@ -68,92 +67,77 @@ fun HomeScreen(
         Topic(6,painterResource(R.drawable.planification_du_projet),"Planification\ndu projet")
     )
 
-    Scaffold(
-        topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent)
-                    .padding(WindowInsets.statusBars.asPaddingValues())
+    Box(){
+
+        Column(
+            modifier= Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+
+            Spacer(modifier= Modifier.height(40.dp))
+            Text(
+                modifier= Modifier.fillMaxWidth(),
+                text = "Mon projet de vie !",
+                fontFamily = BelfastGrotesk,
+                textAlign = TextAlign.Center,
+                style = TextStyle(fontSize =33.sp),
+                color =colorResource(R.color.primary_color),
+            )
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
             ) {
-                TopBarComponent(currentUser.nom,currentUser.prenom,currentUser.avatarUri)
-            }
-        }
-    ){innerPadding ->
-        Box(
-            modifier = Modifier.fillMaxSize()){
 
-            Column(
-                modifier= Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(Color.White)
-            ) {
+                itemsIndexed(items){ index, item ->
 
-                Spacer(modifier= Modifier.height(40.dp))
-                Text(
-                    modifier= Modifier.fillMaxWidth(),
-                    text = "Mon projet de vie !",
-                    fontFamily = BelfastGrotesk,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(fontSize =33.sp),
-                    color =colorResource(R.color.primary_color),
-                )
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                ) {
-
-                    itemsIndexed(items){ index, item ->
-
-                        CustomItemLayout(item=item, onClick = {
-                            when(item.id){
-                                1->{
-                                    onNavigate("Introduction")
-                                }
-                                2->{
-                                    onNavigate("Mon Reseau")
-
-                                }
-                                3->{
-                                    onNavigate("Ligne de vie")
-
-                                }
-                                4->{
-                                    onNavigate("Bilan")
-
-                                }
-                                5->{
-                                    onNavigate("Lien vie reel")
-
-                                }
-                                6->{
-                                    onNavigate("Plannification")
-
-                                }
+                    CustomItemLayout(item=item, onClick = {
+                        when(item.id){
+                            1->{
+                                onNavigate("Introduction")
                             }
+                            2->{
+                                onNavigate("Mon Reseau")
 
-                        })
+                            }
+                            3->{
+                                onNavigate("Ligne de vie")
 
-                        if(index<items.lastIndex){
-                            SharpEllipse(modifier = Modifier.size(10.dp,15.dp).offset(x=50.dp), color = colorResource(R.color.ellipsis_separator))
+                            }
+                            4->{
+                                onNavigate("Bilan")
+
+                            }
+                            5->{
+                                onNavigate("Lien vie reel")
+
+                            }
+                            6->{
+                                onNavigate("Plannification")
+
+                            }
                         }
 
-                    }
-                }
+                    })
 
+                    if(index<items.lastIndex){
+                        SharpEllipse(modifier = Modifier.size(10.dp,15.dp).offset(x=50.dp), color = colorResource(R.color.ellipsis_separator))
+                    }
+
+                }
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.bg_img),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds,
-                alpha = 0.07f
-
-            )
-
-
         }
+
+        Image(
+            painter = painterResource(id = R.drawable.bg_img),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+            alpha = 0.07f
+
+        )
+
+
     }
 }
 
@@ -198,7 +182,7 @@ fun CustomItemLayout(item: Topic,onClick:()->Unit) {
 @Composable
 @Preview(showBackground = true)
 fun HomeScreenPreview() {
-//    HomeScreen()
+    HomeScreen()
 }
 @Composable
 @Preview(showBackground = true)

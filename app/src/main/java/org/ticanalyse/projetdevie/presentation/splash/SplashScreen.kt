@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +33,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.presentation.nvgraph.AppStartNavigation
-import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
