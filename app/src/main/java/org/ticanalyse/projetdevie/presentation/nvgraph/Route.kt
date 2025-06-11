@@ -3,10 +3,13 @@ package org.ticanalyse.projetdevie.presentation.nvgraph
 import kotlinx.serialization.Serializable
 
 @Serializable
-object AppStartNavigation
+sealed interface AppRoute
 
 @Serializable
-object SplashRoute
+object AppNavigation
+
+@Serializable
+object SplashRoute:AppRoute
 
 @Serializable
 object LoginRoute
@@ -15,16 +18,22 @@ object LoginRoute
 object RegisterRoute
 
 @Serializable
-object HomeRoute
+object HomeRoute:AppRoute
 
 @Serializable
-object IntroductionRoute
+object ProfileRoute:AppRoute
 
 @Serializable
-object IntroductionCharacterRoute
+object IntroductionRoute:AppRoute
 
 @Serializable
-object DiscoverMyNetworkRoute
+object IntroductionCharacterRoute:AppRoute
+
+@Serializable
+object DiscoverMyNetworkRoute:AppRoute
+
+@Serializable
+object MonReseauIntroductionRoute:AppRoute
 
 //@Serializable
 //data class HomeRoute (
