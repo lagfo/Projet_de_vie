@@ -35,6 +35,16 @@ object DiscoverMyNetworkRoute:AppRoute
 @Serializable
 object MonReseauIntroductionRoute:AppRoute
 
+@Serializable
+object MonReseauCategoriesRoute:AppRoute
+
+@Serializable
+data class MonReseauSubCategoriesRoute(val category: String,val column: Int):AppRoute
+
+
+@Serializable
+object LigneDeVieIntroductionRoute:AppRoute
+
 //@Serializable
 //data class HomeRoute (
 //    val id: Int? = null,

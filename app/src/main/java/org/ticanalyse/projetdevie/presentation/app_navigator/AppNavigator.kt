@@ -1,7 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.app_navigator
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,21 +19,32 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
+import org.ticanalyse.projetdevie.presentation.common.AppSubCategoryGrid
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
 import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
+import org.ticanalyse.projetdevie.presentation.common.acteurEducatifSubCategories
+import org.ticanalyse.projetdevie.presentation.common.acteurFamiliauxSociauxSubCategories
+import org.ticanalyse.projetdevie.presentation.common.acteurInstitutionnelSubCategories
+import org.ticanalyse.projetdevie.presentation.common.acteurProfessionnelSubCategories
 import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
+import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
+import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
 import timber.log.Timber
 
@@ -54,17 +64,21 @@ fun AppNavigator(currentUser: User) {
         mutableIntStateOf(0)
     }
 
-    selectedItem = when (backStackState?.destination?.route) {
-        HomeRoute::class.qualifiedName -> 0
-        ProfileRoute::class.qualifiedName -> 1
-        IntroductionRoute::class.qualifiedName -> -1
-        MonReseauIntroductionRoute::class.qualifiedName -> -1
+
+    selectedItem = when {
+        backStackState?.destination?.route == HomeRoute::class.qualifiedName -> 0
+        backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> 1
+        backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
         else -> 0
     }
 
     val isHomeTopBarVisible = remember(key1 = backStackState) {
         backStackState?.destination?.route == HomeRoute::class.qualifiedName
     }
+
 
     Scaffold(
         modifier = Modifier
@@ -78,6 +92,29 @@ fun AppNavigator(currentUser: User) {
                     IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    MonReseauSubCategoriesRoute::class.qualifiedName -> {
+
+                        AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    }
+                }
+
+                when {
+                    backStackState?.destination?.route == HomeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
+                        val category = backStackState.arguments?.getString("category")
+                        when(category){
+                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.introduction_title,R.color.thirty_color)
+                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.secondary_color)
+                            "acteurEducatif" -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.fourty_color)
+                        }
+                    }
+
                 }
                 !isHomeTopBarVisible
             }
@@ -157,8 +194,34 @@ fun AppNavigator(currentUser: User) {
 
             composable<MonReseauIntroductionRoute> {
                 MonReseauIntroductionScreen {
-                    navigateToScreen(navController=navController, route = IntroductionCharacterRoute)
+                    navigateToScreen(navController=navController, route = MonReseauCategoriesRoute)
                 }
+            }
+
+            composable<MonReseauCategoriesRoute> {
+                MonReseauCategoriesScreen (
+                    navController = navController,
+                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieIntroductionRoute)}
+                )
+
+
+            }
+
+            composable<MonReseauSubCategoriesRoute> { route->
+                val arg = route.toRoute<MonReseauSubCategoriesRoute>()
+
+                //val argg = backStackState?.destination?.route?.startsWith(
+                //    MonReseauSubCategoriesRoute::class.qualifiedName.toString()
+                //)
+
+                val argg = backStackState?.destination?.route
+
+
+                if (argg != null) {
+                    Timber.tag("tag").d("$argg   :   ${argg.javaClass}")
+                }
+
+                MonReseauSubCategoriesScreen(category = arg.category, column = arg.column)
             }
 
         }

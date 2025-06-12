@@ -14,9 +14,32 @@
     <string name="acteur_educatif"> Acteurs éducatifs </string>
     <string name="acteur_professionnel"> Acteurs professionnels </string>
     <string name="acteur_institutionnel"> Acteurs institutionnels \n et de soutien </string>
+    <string name="parent_tuteur"> Parents ou tuteurs </string>
+    <string name="frere_soeur"> Frères et sœurs </string>
+    <string name="voisins"> Voisins </string>
+    <string name="chef_coutumier_religieux"> Chefs coutumiers \n ou religieux </string>
+    <string name="grands_parents"> Grands-parents </string>
+    <string name="amis_proche"> Amis proches </string>
+    <string name="mentors"> Mentor ou modèle \n dans la communauté </string>
+    <string name="leaders"> Leaders communautaire ou d\'associations locales </string>
+    <string name="enseignants_professeurs"> Enseignants ou professeurs </string>
+    <string name="encadreurs_centre_formation"> Encadreurs de centres de formation professionnelle </string>
+    <string name="anciens_camarades"> Anciens camarades \n de classe </string>
+    <string name="conseiller_orientation"> Conseillers d’orientation \n scolaire ou professionnelle </string>
+    <string name="animateur_ong"> Animateurs d\'ONG \n éducatives </string>
+    <string name="anciens_emploiyeurs"> Anciens employeurs ou \n maîtres d’apprentissage </string>
+    <string name="employe_ong"> Employés d\'ONG ou de projets de développement </string>
+    <string name="artisant_entrepreneur_locaux"> Artisans ou entrepreneurs locaux </string>
+    <string name="personnes_ressources_cooperative"> Personnes ressources dans les coopératives, groupements ou mutuelles </string>
+    <string name="agents_services_sociaux">  Agents des services sociaux ou administratifs </string>
+    <string name="representant_strutures"> Représentants de structures comme une Agence Nationale pour l\'Emploi </string>
+    <string name="formateur_programmes_publics_prives"> Formateurs des programmes publics ou privés de formation et insertion </string>
+    <string name="personnel_sante"> Personnel de santé  </string>
     <string name="introduction_title"> Introduction </string>
     <string name="mon_reseau_title"> Découvrir mon réseau </string>
     <string name="video_title"> Commençons par une vidéo de présentation </string>
+    <string name="mon_reseau_categories_title"> Ton réseau personnel et communautaire ! </string>
+    <string name="ligne_vie"> Ligne de vie </string>
 
 
 </resources>
