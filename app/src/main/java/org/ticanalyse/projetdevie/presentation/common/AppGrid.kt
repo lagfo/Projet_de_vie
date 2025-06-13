@@ -79,7 +79,7 @@ fun AppSubCategoryGrid(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AppSubCategoryIconCard(icon = icon)
+                        AppSubCategoryIconCard(icon = icon,index=index)
                     }
                 }
             } else {
@@ -88,7 +88,7 @@ fun AppSubCategoryGrid(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AppSubCategoryIconCard(icon = icon)
+                        AppSubCategoryIconCard(icon = icon,index=index)
                     }
 
                 }
