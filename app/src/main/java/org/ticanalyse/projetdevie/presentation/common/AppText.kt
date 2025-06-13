@@ -53,6 +53,7 @@ fun AppIconText(
     color: Color = colorResource(id = R.color.primary_color),
     fontSize: TextUnit = 25.sp,
     style: TextStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+    textAlign: TextAlign = TextAlign.Center
 ) {
     Text(
         modifier=modifier,
@@ -63,5 +64,5 @@ fun AppIconText(
         fontWeight = fontWeight,
         fontStyle = fontStyle,
         fontSize = fontSize,
-        textAlign = TextAlign.Center)
+        textAlign = textAlign)
 }

@@ -5,8 +5,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,10 +17,12 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -27,11 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.utils.Global
@@ -168,6 +175,83 @@ fun AppTextInput(
         onSubmit=onSubmit
     )
 }
+
+@Composable
+fun AppInputFieldMultiLine(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    ttsManager: TextToSpeechManager,
+    sttManager: SpeechToTextManager,
+    onSubmit: Boolean = false,
+    minLines: Int = 3,
+    maxLines: Int = 5
+) {
+    val speechLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+        if (!matches.isNullOrEmpty()) {
+            // Directement utiliser le premier résultat sans transformation
+            onValueChange(matches[0])
+        }
+    }
+
+    var isErrorExist by remember { mutableStateOf(false) }
+
+    Column {
+        OutlinedTextField(
+            value = value,
+            onValueChange = { newValue ->
+                onValueChange(newValue)
+                isErrorExist = !validateTextEntries(newValue)
+            },
+            label = { Text(label) },
+            supportingText = {
+                if (isErrorExist && value.isEmpty()) {
+                    Text(text = "Champs requis", color = MaterialTheme.colorScheme.error)
+                } else if (isErrorExist) {
+                    Text(text = "Invalide", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            isError = isErrorExist,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp),
+            shape = RoundedCornerShape(15),
+            minLines = minLines,
+            maxLines = maxLines,
+            singleLine = false,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = if (onSubmit) ImeAction.Done else ImeAction.Default,
+                keyboardType = KeyboardType.Text
+            ),
+            visualTransformation = VisualTransformation.None,
+            leadingIcon = {
+                IconButton(onClick = {
+                    if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
+                    else ttsManager.speak(value)
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_ear_sound_24),
+                        contentDescription = "Lire le texte"
+                    )
+                }
+            },
+            trailingIcon = {
+                IconButton(onClick = { sttManager.startSpeechToText(speechLauncher) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_mic_24),
+                        contentDescription = "Saisie vocale"
+                    )
+                }
+            }
+        )
+    }
+}
+
+
 
 @Composable
 fun AppAgeInput(

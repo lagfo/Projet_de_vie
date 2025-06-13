@@ -1,5 +1,8 @@
 package org.ticanalyse.projetdevie.presentation.common
 
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -65,15 +72,40 @@ fun AppCategoryIconCard(
 }
 
 @Composable
+fun AppIconCard(
+    @DrawableRes  paintId:Int,
+    @ColorRes colorId: Int,
+    @StringRes txtId: Int
+){
+    Surface(
+        modifier = Modifier.size(100.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(2.dp, colorResource(id = colorId))
+    ) {
+        Image(
+            painter = painterResource(id=paintId),
+            contentDescription =stringResource(id=txtId),
+            contentScale = ContentScale.Crop,
+        )
+    }
+}
+
+@Composable
 fun AppSubCategoryIconCard(
-    icon: AppSubIcon
+    icon: AppSubIcon,
+    index: Int
 )
 {
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     Surface(
         modifier = Modifier.size(IconSize).padding(8.dp),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(2.dp, colorResource(icon.strokeColor)),
-        onClick = {  }
+        onClick = {
+            showBottomSheet = true
+        }
     ) {
         Box(contentAlignment = Alignment.BottomCenter) {
             Image(
@@ -109,6 +141,13 @@ fun AppSubCategoryIconCard(
         }
 
     }
+
+    AppModal(
+        showBottomSheet = showBottomSheet,
+        onDismiss = { showBottomSheet = false },
+        icon = icon,
+        index = index
+    )
 
 }
 
