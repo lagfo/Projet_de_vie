@@ -102,9 +102,11 @@ fun AppModal(
 
                 AppButton(
                     text = stringResource(id = R.string.valider),
-                    onClick = {}
+                    onClick = {
+
+                    }
                 )
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
             }
 
