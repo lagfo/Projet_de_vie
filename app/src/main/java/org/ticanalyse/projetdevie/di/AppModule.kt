@@ -20,6 +20,7 @@ import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
 import org.ticanalyse.projetdevie.data.manager.dataStore
 import org.ticanalyse.projetdevie.data.repository.LigneDeVieElementRepositoryImpl
+import org.ticanalyse.projetdevie.data.repository.MonReseauRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.ReponseLigneDeVieRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieElementRepository
@@ -82,6 +83,14 @@ object AppModule {
         )
     }
 
+
+
+    @Provides
+    @Singleton
+    fun provideMonReseauRepository(
+        monReseauDao: MonReseauDao,
+    ) : MonReseauRepository = MonReseauRepositoryImpl(monReseauDao = monReseauDao)
+
     @Provides
     @Singleton
     fun provideMonReseauUseCases(
@@ -92,6 +101,9 @@ object AppModule {
             upsertMonReseau = UpsertMonReseau(monReseauRepository)
         )
     }
+
+
+
 
     @Provides
     @Singleton

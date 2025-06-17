@@ -19,6 +19,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,8 +70,8 @@ fun AppInputField(
         }
     }
 
-    var isErrorExist by remember { mutableStateOf(false) }
-    Timber.d("AppInputField: $value et si erreur = $isErrorExist")
+    var isErrorExist by remember { mutableStateOf(onSubmit) }
+    Timber.tag("tag").d("AppInputField: $value et si erreur = $isErrorExist")
     Column {
         OutlinedTextField(
             value = value,
@@ -177,7 +178,7 @@ fun AppInputFieldMultiLine(
     label: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
-    onSubmit: Boolean = false,
+    onSubmit: MutableState<Boolean>,
     minLines: Int = 3,
     maxLines: Int = 5
 ) {
@@ -192,7 +193,9 @@ fun AppInputFieldMultiLine(
         }
     }
 
-    var isErrorExist by remember { mutableStateOf(false) }
+    var isErrorExist by remember { mutableStateOf(onSubmit.value) }
+
+    Timber.tag("tag").d("onsubmit: ${onSubmit.value}  et isErrorExist: $isErrorExist")
 
     Column {
         OutlinedTextField(
@@ -218,7 +221,7 @@ fun AppInputFieldMultiLine(
             maxLines = maxLines,
             singleLine = false,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = if (onSubmit) ImeAction.Done else ImeAction.Default,
+                imeAction = if (onSubmit.value) ImeAction.Done else ImeAction.Default,
                 keyboardType = KeyboardType.Text
             ),
             visualTransformation = VisualTransformation.None,
