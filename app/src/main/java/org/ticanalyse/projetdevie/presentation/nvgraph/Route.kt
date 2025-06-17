@@ -45,6 +45,11 @@ data class MonReseauSubCategoriesRoute(val category: String,val column: Int):App
 @Serializable
 object LigneDeVieIntroductionRoute:AppRoute
 
+@Serializable
+object LigneDeVieRoute: AppRoute
+
+
+
 //@Serializable
 //data class HomeRoute (
 //    val id: Int? = null,
