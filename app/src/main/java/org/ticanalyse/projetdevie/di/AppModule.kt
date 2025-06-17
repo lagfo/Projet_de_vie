@@ -12,15 +12,23 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.ticanalyse.projetdevie.data.local.AppDao
 import org.ticanalyse.projetdevie.data.local.AppDatabase
+import org.ticanalyse.projetdevie.data.local.LigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.MonReseauDao
+import org.ticanalyse.projetdevie.data.local.ReponseQuestionLigneDeVieDao
 import org.ticanalyse.projetdevie.data.manager.LocalUserManagerImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
 import org.ticanalyse.projetdevie.data.manager.dataStore
+import org.ticanalyse.projetdevie.data.repository.LigneDeVieElementRepositoryImpl
+import org.ticanalyse.projetdevie.data.repository.ReponseLigneDeVieRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepository
+import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieElementRepository
+import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.AppEntryUseCases
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.ReadAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.SaveAppEntry
+import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.AddLigneDeVieElement
+import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetLineDeVieElement
 import org.ticanalyse.projetdevie.domain.usecase.user.GetUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UpsertUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UserUseCases
@@ -94,6 +102,50 @@ object AppModule {
         appDatabase: AppDatabase
     ): MonReseauDao = appDatabase.monReseauDao
 
+    @Provides
+    @Singleton
+    fun provideReponseLigneDeVieDao(
+        appDatabase: AppDatabase
+    ):ReponseQuestionLigneDeVieDao{
+        return appDatabase.reponseQuestionLigneDeVieDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideReponseLigneDeVieRepository(
+        reponseQuestionLigneDeVieDao: ReponseQuestionLigneDeVieDao
+    ): ReponseQuestionLigneDeVieRepository{
+        return ReponseLigneDeVieRepositoryImpl(reponseQuestionLigneDeVieDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLigneDeVieDao(
+        appDatabase: AppDatabase
+    ): LigneDeVieDao=appDatabase.ligneDeVieDao
+
+    @Provides
+    @Singleton
+    fun provideLigneDeVieRepository(
+        ligneDeVieDao: LigneDeVieDao
+    ): LigneDeVieElementRepository{
+        return LigneDeVieElementRepositoryImpl(ligneDeVieDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddLigneDeVieUseCase(
+        ligneDeVieElementRepository: LigneDeVieElementRepository
+    ): AddLigneDeVieElement{
+        return AddLigneDeVieElement(ligneDeVieElementRepository)
+    }
+    @Provides
+    @Singleton
+    fun provideGetLineDeVieElementUseCase(
+        ligneDeVieElementRepository: LigneDeVieElementRepository
+    ): GetLineDeVieElement{
+        return GetLineDeVieElement(ligneDeVieElementRepository)
+    }
 
 
 }

@@ -34,6 +34,7 @@ import org.ticanalyse.projetdevie.presentation.common.acteurProfessionnelSubCate
 import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
+import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
@@ -42,6 +43,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
@@ -71,6 +73,7 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
         else -> 0
     }
@@ -93,6 +96,7 @@ fun AppNavigator(currentUser: User) {
                     IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
                     MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title =R.string.ligne_vie ,R.color.primary_color)
                     MonReseauSubCategoriesRoute::class.qualifiedName -> {
 
                         AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
@@ -105,6 +109,8 @@ fun AppNavigator(currentUser: User) {
                     backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.ligne_vie,R.color.primary_color)
+
                     backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
                         val category = backStackState.arguments?.getString("category")
                         when(category){
@@ -160,7 +166,7 @@ fun AppNavigator(currentUser: User) {
                             }
 
                             "Ligne de vie" -> {
-                                //                                            navController.navigate("Ligne de vie")
+                                navController.navigate(LigneDeVieRoute)
                             }
 
                             "Bilan" -> {
@@ -222,6 +228,10 @@ fun AppNavigator(currentUser: User) {
                 }
 
                 MonReseauSubCategoriesScreen(category = arg.category, column = arg.column)
+            }
+
+            composable<LigneDeVieRoute> {
+                LigneDeVieScreen()
             }
 
         }
