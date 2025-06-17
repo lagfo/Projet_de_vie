@@ -207,7 +207,7 @@ fun AppNavigator(currentUser: User) {
             composable<MonReseauCategoriesRoute> {
                 MonReseauCategoriesScreen (
                     navController = navController,
-                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieIntroductionRoute)}
+                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieRoute)}
                 )
 
 

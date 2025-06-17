@@ -70,7 +70,7 @@ fun MonReseauCategoriesScreen(navController:NavController,onNavigate: () -> Unit
 
             }
 
-            AppButton(text = "Ligne de Vie", onClick = {  })
+            AppButton(text = "Ligne de Vie", onClick = onNavigate )
         }
 
     }
