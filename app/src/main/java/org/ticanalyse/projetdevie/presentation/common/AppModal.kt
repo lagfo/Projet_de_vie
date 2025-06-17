@@ -34,7 +34,6 @@ fun AppModal(
     icon: AppSubIcon,
     index: Int
 ) {
-
     if (showBottomSheet){
         ModalBottomSheet(
             onDismissRequest = onDismiss,
@@ -44,7 +43,6 @@ fun AppModal(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Box{
 
                     Column(
@@ -96,7 +94,6 @@ fun AppModal(
                             onSubmit=onSubmit.value
                         )
 
-
                     }
 
                 }
@@ -110,10 +107,6 @@ fun AppModal(
                 Spacer(modifier = Modifier.height(15.dp))
 
             }
-
-
-
-
 
         }
     }

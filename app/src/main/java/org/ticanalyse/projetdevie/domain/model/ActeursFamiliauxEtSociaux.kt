@@ -12,5 +12,5 @@ data class ActeursFamiliauxEtSociaux(
     val leadersCommunautairesAssociationsLocales: String?,
     val mentorModeleCommunaute: String?,
     val parentsTuteurs: String?,
-    val voisins: String?
+    var voisins: String?
 ):Parcelable
