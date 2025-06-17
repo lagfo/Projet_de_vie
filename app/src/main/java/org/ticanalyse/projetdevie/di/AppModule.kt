@@ -18,9 +18,13 @@ import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
 import org.ticanalyse.projetdevie.data.manager.dataStore
 import org.ticanalyse.projetdevie.data.repository.UserRepository
+import org.ticanalyse.projetdevie.domain.repository.MonReseauRepository
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.AppEntryUseCases
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.ReadAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.SaveAppEntry
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.GetMonReseau
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.MonReseauUseCases
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.UpsertMonReseau
 import org.ticanalyse.projetdevie.domain.usecase.user.GetUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UpsertUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UserUseCases
@@ -72,6 +76,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideMonReseauUseCases(
+        monReseauRepository: MonReseauRepository
+    ) : MonReseauUseCases{
+        return MonReseauUseCases(
+            getMonReseau = GetMonReseau(monReseauRepository),
+            upsertMonReseau = UpsertMonReseau(monReseauRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideAppDatabase(
         application: Application
     ): AppDatabase {
@@ -93,7 +108,5 @@ object AppModule {
     fun provideMonReseauDao(
         appDatabase: AppDatabase
     ): MonReseauDao = appDatabase.monReseauDao
-
-
 
 }
