@@ -1,0 +1,274 @@
+package org.ticanalyse.projetdevie.presentation.ligne_de_vie
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppTextInput
+import org.ticanalyse.projetdevie.presentation.common.appSTTManager
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.ui.theme.Roboto
+import java.time.LocalDate
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModalDialog(
+    modifier: Modifier = Modifier,
+    item: ElementScolarite,
+   onDismiss:()->Unit,
+    viewModel: LigneDeVieViewModel,
+) {
+    val sheetState= rememberModalBottomSheetState()
+    val options=listOf("Passé","Présent")
+    var status =false
+    var selectedOption by remember{mutableStateOf(options[0])}
+    ModalBottomSheet(
+        sheetState =sheetState ,
+        onDismissRequest =onDismiss
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp, 0.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ){
+                var dateDebut by rememberSaveable { mutableStateOf("") }
+                var dateFin by rememberSaveable { mutableStateOf("") }
+                val ttsManager = appTTSManager()
+                val sttManager = appSTTManager()
+                var description by rememberSaveable { mutableStateOf("") }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Surface(
+                        modifier = Modifier.size(width = 30.dp, height = 30.dp),
+                        shape = CircleShape,
+                        color = Color.White                                      // ← solid background
+                    ) {
+                        Image(
+                            painter = item.topicImage,
+                            contentDescription = item.topicTitle,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.background(Color.White)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text=item.topicTitle,
+                        fontFamily = Roboto,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        color =Color.Black,
+                        style = TextStyle(fontSize =15.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Row(
+                    modifier=Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    OutlinedTextField(
+                        modifier= Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        value =dateDebut,
+                        onValueChange = { it ->
+                            if(it.length<=4){
+                                dateDebut=it
+                            }
+                        },
+//                        supportingText ={
+//                            if(Global.validateAnneeDeDebut(dateDebut.toInt(),dateFin.toInt(),"2025".toInt())){
+//                                Text(text = "Année invalide")
+//                            }
+//                        },
+                        label = {
+                            Text(
+                                text="Année de début",
+                                fontSize = 9.99.sp,
+                                maxLines = 1,
+                                fontWeight = FontWeight.Bold
+
+                            )
+                        },
+                        textStyle = TextStyle(color = Color.Black),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        shape =RoundedCornerShape(50),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor =Color.Black,
+                            focusedBorderColor = colorResource(R.color.secondary_color),
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = {  }) {
+                                Icon(
+                                    imageVector = Icons.Filled.DateRange,
+                                    contentDescription = "calendar"
+                                )
+                            }
+                        }
+                    )
+                    OutlinedTextField(
+                        modifier= Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        value =dateFin,
+                        onValueChange = { it ->
+                            if(it.length<=4){
+                                dateFin=it
+
+                            }
+                        },
+                        label = {
+                            Text(
+                                text="Année de fin",
+                                fontSize = 9.99.sp,
+                                maxLines = 1,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+//                        supportingText ={
+//                            if(Global.validateAnneeDeFin(dateFin.toInt())){
+//                                Text(text = "Année invalide")
+//                            }
+//                        },
+                        textStyle = TextStyle(color = Color.Black),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        shape =RoundedCornerShape(50),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedLabelColor = Color.Black,
+                            unfocusedLabelColor =Color.Black,
+                            focusedBorderColor = colorResource(R.color.secondary_color),
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = {  }) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "calendar"
+                                )
+                            }
+                        },
+                    )
+                }
+                AppTextInput(
+                    value =description,
+                    onValueChange = {
+                        description=it
+                    },
+                    label ="",
+                    ttsManager =ttsManager,
+                    sttManager =sttManager,
+                    false,
+//                    colors = OutlinedTextFieldDefaults.colors(
+//                        focusedContainerColor = Color.White,
+//                        unfocusedContainerColor = Color.White
+//                    ),
+//                    singleLine =false,
+//                    maxLines = 5
+
+                )
+                //RadioButton
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    options.forEach {
+                            option->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            RadioButton(
+                                selected = selectedOption==option,
+                                onClick = {
+                                    selectedOption=option
+                                    if(selectedOption == "Passé"){
+                                        status=false
+                                    }else{
+                                        status=true
+                                    }
+                                }
+                            )
+                            Text(text=option)
+                        }
+                    }
+
+                }
+                AppButton(text="Valider", onClick ={
+                    viewModel.addElement(
+                        label = item.topicTitle,
+                        startYear =dateDebut.toInt(),
+                        endYear = dateFin.toInt(),
+                        duration =dateFin.toInt()-dateDebut.toInt(),
+                        labelDescription = description,
+                        status =status, creationDate = LocalDate.now().toString())
+                    onDismiss()
+
+                })
+            }
+        }
+
+    }
+
+}
+

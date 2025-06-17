@@ -23,7 +23,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,8 +52,10 @@ class MainActivity : ComponentActivity() {
             }
         }
         // Configuration edge-to-edge
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
         //enableEdgeToEdge()
+
+//        val splashScreen = installSplashScreen()
 
         setContent {
             val navController = rememberNavController()
@@ -62,7 +63,6 @@ class MainActivity : ComponentActivity() {
             val isLoading = viewModel.isLoading.collectAsStateWithLifecycle()
             val currentUser = viewModel.currentUser.collectAsStateWithLifecycle()
             val scope = rememberCoroutineScope()
-
 
             ProjetDeVieTheme {
                 val isSystemInDarkMode = isSystemInDarkTheme()
@@ -115,7 +115,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
-
                         }
 
                         composable<AppNavigation> {
@@ -131,6 +130,7 @@ class MainActivity : ComponentActivity() {
 
 
 
+                        }
                     }
 //                    val startDestination = viewModel.startDestination
 //                    NavGraph(startDestination = startDestination)
@@ -138,4 +138,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
+
