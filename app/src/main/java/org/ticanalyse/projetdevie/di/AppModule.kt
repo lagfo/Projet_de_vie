@@ -29,6 +29,8 @@ import org.ticanalyse.projetdevie.domain.usecase.app_entry.ReadAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.SaveAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.AddLigneDeVieElement
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetLineDeVieElement
+import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPassedElement
+import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPresentElement
 import org.ticanalyse.projetdevie.domain.usecase.user.GetUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UpsertUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UserUseCases
@@ -145,6 +147,22 @@ object AppModule {
         ligneDeVieElementRepository: LigneDeVieElementRepository
     ): GetLineDeVieElement{
         return GetLineDeVieElement(ligneDeVieElementRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetPresentElement(
+        ligneDeVieElementRepository: LigneDeVieElementRepository
+    ): GetPresentElement{
+        return GetPresentElement(ligneDeVieElementRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetPassedElement(
+        ligneDeVieElementRepository: LigneDeVieElementRepository
+    ): GetPassedElement{
+        return GetPassedElement(ligneDeVieElementRepository)
     }
 
 

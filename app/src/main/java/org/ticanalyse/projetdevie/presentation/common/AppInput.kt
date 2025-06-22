@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -98,7 +100,6 @@ fun AppInputField(
                 }
             },
             isError = isErrorExist,
-            singleLine = true,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             modifier = Modifier
@@ -155,7 +156,9 @@ fun AppTextInput(
     label: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
-    onSubmit: Boolean= false
+    onSubmit: Boolean= false,
+    isSingleLine: Boolean=false,
+    minLine: Int=1
    ) {
 
     AppInputField(
@@ -166,7 +169,8 @@ fun AppTextInput(
         ttsManager = ttsManager,
         sttManager = sttManager,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onSubmit=onSubmit
+        onSubmit=onSubmit,
+
     )
 }
 
@@ -240,7 +244,12 @@ fun AppInputFieldMultiLine(
                         contentDescription = "Saisie vocale"
                     )
                 }
-            }
+            },
+            colors= OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor =Color.White,
+                focusedContainerColor = Color.White,
+                errorContainerColor = Color.White
+            )
         )
     }
 }

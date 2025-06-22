@@ -23,11 +23,12 @@ import kotlinx.parcelize.Parcelize
     indices = [Index(value = ["userId"])]
     )
 data class Element(
-    @PrimaryKey(autoGenerate = true)
-    val id:Int=1,
+    @PrimaryKey
+    val id:Int=0,
     var label:String="",
     var startYear:Int=0,
     var endYear:Int=0,
+    var inProgressYear:Int=0,
     var duration:Int=0,
     var labelDescription:String="",
     var userId:Int=1,
