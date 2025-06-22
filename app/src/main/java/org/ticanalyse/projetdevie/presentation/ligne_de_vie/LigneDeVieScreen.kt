@@ -40,6 +40,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults.indicatorLine
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,6 +75,7 @@ import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
@@ -123,14 +125,17 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
 
 
     val pagerState = rememberPagerState(
-        pageCount = { 2 }
+        pageCount = { 3 }
     )
     val scope = rememberCoroutineScope()
-
     var showDialog by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<ElementScolarite?>(null) }
     val viewModel= hiltViewModel<LigneDeVieViewModel>()
     val element= Element()
+    val ttsManager = appTTSManager()
+    val sttManager = appSTTManager()
+    var reponse1 by remember { mutableStateOf("") }
+    var reponse2 by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -170,8 +175,8 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp),
-                text = stringResource(R.string.instructionLigneDeVie),
-                maxLines = 4,
+                text = if(pagerState.currentPage==0)stringResource(R.string.instructionLigneDeVie) else if(pagerState.currentPage==1)stringResource(R.string.instructionLigneDeVie) else "" ,
+                maxLines = 5,
                 textAlign = TextAlign.Center,
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Normal,
@@ -180,7 +185,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else "Autres Événements Importants de la Vie",
+                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Bilan",
                 textAlign = TextAlign.Center,
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Bold,
@@ -382,6 +387,67 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                                     }
 
                                 }
+                                2->{
+                                    Column{
+                                        Spacer(modifier = Modifier.height(25.dp))
+                                        LazyColumn {
+                                            item {
+
+                                                Box(
+                                                    modifier= Modifier.weight(1f)
+                                                ) {
+                                                    Column(
+                                                        modifier = Modifier.padding(10.dp,0.dp),
+                                                        horizontalAlignment = Alignment.CenterHorizontally
+
+                                                    ) {
+                                                        Text(
+                                                            text ="Qu'ai-je déjà réalisé ?",
+                                                            color = Color.White
+                                                        )
+                                                        AppInputFieldMultiLine(
+                                                            value =reponse1,
+                                                            onValueChange = {
+                                                                reponse1=it
+                                                            },
+                                                            label ="",
+                                                            ttsManager =ttsManager,
+                                                            sttManager =sttManager
+                                                        )
+
+                                                    }
+
+                                                }
+                                                Box(
+                                                    modifier= Modifier.weight(1f)
+                                                ) {
+                                                    Column(
+                                                        modifier = Modifier.padding(10.dp,0.dp),
+                                                        horizontalAlignment = Alignment.CenterHorizontally
+
+                                                    ) {
+                                                        Text(
+                                                            text ="Qu'est-ce que je suis capable de faire ?",
+                                                            color = Color.White
+                                                        )
+                                                        AppInputFieldMultiLine(
+                                                            value =reponse2,
+                                                            onValueChange = {
+                                                                reponse2=it
+                                                            },
+                                                            label ="",
+                                                            ttsManager =ttsManager,
+                                                            sttManager =sttManager
+                                                        )
+
+                                                    }
+
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
                                 else->error("Page inexistente")
                             }
                             if(showDialog && selectedItem!=null){
@@ -438,7 +504,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
-            alpha = 0.07f
+            alpha =if(pagerState.currentPage==0) 0.07f else if(pagerState.currentPage==1) 0.07f else 0.01f
 
         )
 

@@ -18,4 +18,12 @@ data class LigneDeVieElementRepositoryImpl @Inject constructor(
         return ligneDeVieDao.getElement()
     }
 
+    override fun getPassedElements(): Flow<List<Element>> {
+        return ligneDeVieDao.getPassedElement()
+    }
+
+    override fun getPresentElements(): Flow<List<Element>> {
+        return  ligneDeVieDao.getPresentElement()
+    }
+
 }
