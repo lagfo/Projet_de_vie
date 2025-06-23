@@ -1,5 +1,9 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +24,6 @@ class LigneDeVieViewModel @Inject constructor(
     private val getPassedElement: GetPassedElement,
     private val getPresentElement: GetPresentElement
 ): ViewModel() {
-
     fun addElement(
         id:Int,
         label:String,
@@ -55,16 +58,29 @@ class LigneDeVieViewModel @Inject constructor(
     val elements: StateFlow<List<Element>> = _elements
 
     private val _passedelements = MutableStateFlow<List<Element>>(emptyList())
-    val passedelements: StateFlow<List<Element>> = _passedelements
+    val passedelEments: StateFlow<List<Element>> = _passedelements
+
+    private val _presentElements=MutableStateFlow<List<Element>>(emptyList())
+    val elementEncours: StateFlow<List<Element>> =_presentElements
 
     init {
+
         viewModelScope.launch {
-            getLineDeVieElement().collect { list ->
-                _elements.value = list
+            getLineDeVieElement().collect { listElement ->
+                _elements.value = listElement
             }
+        }
 
+        viewModelScope.launch {
+            getPassedElement().collect{passedelEment->
+                _passedelements.value=passedelEment
+            }
+        }
 
-
+        viewModelScope.launch {
+            getPresentElement().collect{presentElement->
+                _presentElements.value=presentElement
+            }
         }
     }
 }

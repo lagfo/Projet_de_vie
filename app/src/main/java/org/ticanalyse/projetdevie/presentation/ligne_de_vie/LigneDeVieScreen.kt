@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
@@ -94,7 +95,10 @@ import kotlin.collections.lastIndex
 data class ElementScolarite(val id:Int,val topicImage:Painter,val topicTitle:String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LigneDeVieScreen(modifier: Modifier = Modifier) {
+fun LigneDeVieScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit
+) {
 
     val items= listOf(
         ElementScolarite(1,painterResource(R.drawable.ecole_primaire),"École primaire"),
@@ -136,6 +140,9 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
     val sttManager = appSTTManager()
     var reponse1 by remember { mutableStateOf("") }
     var reponse2 by remember { mutableStateOf("") }
+    var isButtonVisible by remember { mutableStateOf(false) }
+
+    isButtonVisible=if(pagerState.currentPage==0) false else if(pagerState.currentPage==1) false else if(pagerState.currentPage==2) true else false
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -148,7 +155,6 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            var title by remember { mutableStateOf("") }
 
 //            Box(
 //                modifier= Modifier.fillMaxWidth(),
@@ -185,7 +191,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Bilan",
+                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Questions",
                 textAlign = TextAlign.Center,
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Bold,
@@ -446,6 +452,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
 
                                             }
                                         }
+
                                     }
                                 }
                                 else->error("Page inexistente")
@@ -496,8 +503,11 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                 currentPage = pagerState.currentPage,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            AppButton (text = "Voir bilan", onClick = {
-            })
+            if(isButtonVisible){
+                AppButton (text = "Voir récapitulatif", onClick = {
+                    onNavigate()
+                })
+            }
         }
         Image(
             painter = painterResource(id = R.drawable.bg_img),
@@ -571,5 +581,5 @@ fun PageIndicator(pageCount: Int, currentPage: Int, modifier: Modifier = Modifie
 @Composable
 @Preview(showBackground = true)
 fun LigneDeViePreview(modifier: Modifier = Modifier) {
-    LigneDeVieScreen()
+    LigneDeVieScreen(onNavigate = {})
 }
