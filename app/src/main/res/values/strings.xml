@@ -48,6 +48,7 @@ Pour chaque image, ajoute une petite description ou une date. </string>
     <string name="video_title"> Commençons par une vidéo de présentation </string>
     <string name="mon_reseau_categories_title"> Ton réseau personnel et communautaire ! </string>
     <string name="ligne_vie"> Ligne de vie </string>
+    <string name="lien_vie_reelle">Lien avec la vie réelle</string>
 
 
 </resources>

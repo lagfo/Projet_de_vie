@@ -1,6 +1,7 @@
 package org.ticanalyse.projetdevie.presentation.nvgraph
 
 import kotlinx.serialization.Serializable
+import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 
 @Serializable
 sealed interface AppRoute
@@ -47,6 +48,12 @@ object LigneDeVieIntroductionRoute:AppRoute
 
 @Serializable
 object LigneDeVieRoute: AppRoute
+
+@Serializable
+object RecapitulatifRoute: AppRoute
+
+@Serializable
+object LienVieReelRoute: AppRoute
 
 
 

@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -76,6 +77,13 @@ fun ModalDialog(
     var status =false
     var selectedOption by remember{mutableStateOf(options[0])}
     val elements by viewModel.elements.collectAsState()
+    var insertionStatus by remember { mutableStateOf(false) }
+
+    if(insertionStatus){
+        Toast.makeText(LocalContext.current, "Toutes les permissions accordées!", Toast.LENGTH_SHORT).show()
+        insertionStatus=false
+    }
+
     ModalBottomSheet(
         sheetState =sheetState ,
         onDismissRequest =onDismiss
@@ -103,6 +111,7 @@ fun ModalDialog(
                 val ttsManager = appTTSManager()
                 val sttManager = appSTTManager()
                 var description by rememberSaveable { mutableStateOf("") }
+                var currentYear= LocalDate.now().year
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -197,7 +206,7 @@ fun ModalDialog(
                             supportingText = {
                                 Text(
                                     text = if(dateDebut.isNotEmpty()&&dateDebut.isNotBlank()){
-                                        if(dateDebut.length==4&&dateDebut.first()=='1'||dateDebut.length==4&&dateDebut.first()=='2'){
+                                        if(dateDebut.length==4&&dateDebut.first()=='1'&&dateDebut.toInt()<=currentYear||dateDebut.length==4&&dateDebut.first()=='2'&&dateDebut.toInt()<=currentYear){
                                             isdateDebutValide=true
                                             ""
                                         } else {
@@ -223,7 +232,7 @@ fun ModalDialog(
                             supportingText = {
                                 Text(
                                     text = if(dateFin.isNotEmpty()&&dateFin.isNotBlank()){
-                                        if(dateFin.length==4&&dateFin.first()=='1'||dateFin.length==4&&dateFin.first()=='2'){
+                                        if(dateFin.length==4&&dateFin.first()=='1'&&dateFin.toInt()<=currentYear||dateFin.length==4&&dateFin.first()=='2'&&dateFin.toInt()<=currentYear){
                                             if(dateFin.toInt()<dateDebut.toInt()){
                                                 "L'année de fin est toujours supérieure à l'année de début"
                                             }else{
@@ -316,7 +325,7 @@ fun ModalDialog(
                             supportingText = {
                                 Text(
                                     text = if(dateEncours.isNotEmpty()&&dateEncours.isNotBlank()){
-                                        if(dateEncours.length==4 && dateEncours.first()=='1'|| dateEncours.length==4 && dateEncours.first()=='2'){
+                                        if(dateEncours.length==4 && dateEncours.first()=='1'&&dateEncours.toInt()<=currentYear|| dateEncours.length==4 && dateEncours.first()=='2'&&dateEncours.toInt()<=currentYear){
                                             isdateEncoursValide=true
                                             ""
                                         } else {
@@ -369,7 +378,6 @@ fun ModalDialog(
                             status =true,
                             creationDate = LocalDate.now().toString()
                         )
-
                     }
                     onDismiss()
 
