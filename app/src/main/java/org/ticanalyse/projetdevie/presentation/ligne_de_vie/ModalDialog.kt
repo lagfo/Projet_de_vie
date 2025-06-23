@@ -76,6 +76,7 @@ fun ModalDialog(
     var status =false
     var selectedOption by remember{mutableStateOf(options[0])}
     val elements by viewModel.elements.collectAsState()
+    val onSubmit = rememberSaveable { mutableStateOf (false) }
     ModalBottomSheet(
         sheetState =sheetState ,
         onDismissRequest =onDismiss
@@ -342,6 +343,7 @@ fun ModalDialog(
                     label ="Commentaire",
                     ttsManager =ttsManager,
                     sttManager =sttManager,
+                    onSubmit=onSubmit
                 )
                 //Validate button
                 AppButton(text="Valider", onClick ={
