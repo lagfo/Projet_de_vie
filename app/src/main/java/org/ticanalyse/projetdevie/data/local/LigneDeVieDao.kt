@@ -15,4 +15,10 @@ interface LigneDeVieDao {
 
     @Query("SELECT * FROM  Element")
     fun getElement(): Flow<List<Element>>
+
+    @Query("SELECT * FROM  Element where status=0")
+    fun getPassedElement(): Flow<List<Element>>
+
+    @Query("SELECT * FROM  Element where status=1")
+    fun getPresentElement(): Flow<List<Element>>
 }

@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.utils
 
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.time.Duration.Companion.milliseconds
 
 object Global {
 
@@ -47,4 +48,25 @@ object Global {
         }
         return true
     }
+
+    fun checkPassedAndPresent(startYear:Int,endYear:Int,inProgressYear: Int):Boolean{
+        if(startYear.toString().isNotBlank()&&endYear.toString().isNotBlank()&&inProgressYear.toString().isNotBlank()){
+           return false
+        }else{
+            return  true
+        }
+    }
+
+//    fun checkYearLength(startYear:Int,endYear:Int,inProgressYear: Int): Boolean{
+//        if(startYear.toString().length==4 && startYear.toString().startsWith('1') || startYear.toString().length==4 && startYear.toString().startsWith('2')){
+//            return true;
+//        }else if(endYear.toString().length==4 && endYear.toString().startsWith('1') || endYear.toString().length==4 && endYear.toString().startsWith('2')){
+//            return true
+//        }else if(){
+//
+//            return true
+//        }else{
+//            return false;
+//        }
+//    }
 }
