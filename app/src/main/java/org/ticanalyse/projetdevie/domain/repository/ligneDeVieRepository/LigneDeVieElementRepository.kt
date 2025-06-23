@@ -7,4 +7,6 @@ interface LigneDeVieElementRepository {
     suspend fun insertLigneDeVieElement(element: Element)
 
       fun getElements(): Flow<List<Element>>
+      fun getPassedElements(): Flow<List<Element>>
+      fun getPresentElements(): Flow<List<Element>>
 }
