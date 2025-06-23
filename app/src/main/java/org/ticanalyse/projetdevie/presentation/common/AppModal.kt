@@ -50,13 +50,17 @@ fun AppModal(
     val sttManager = appSTTManager()
     val nom = rememberSaveable { mutableStateOf ("") }
     val description = rememberSaveable { mutableStateOf ("") }
+    val nom2 = rememberSaveable { mutableStateOf ("") }
+    val description2 = rememberSaveable { mutableStateOf ("") }
     val onSubmit = rememberSaveable { mutableStateOf (false) }
 
     viewModel.getReseauInfo(index=index, category = icon.category){ info ->
         val data = info?.split("|")
-        if (data != null) {
-            nom.value = data.first()
-            description.value=data.last()
+        if (data != null && data.size==4) {
+            nom.value = data[0]
+            description.value= data[1]
+            nom2.value = data[2]
+            description2.value= data[3]
         }
     }
 
@@ -128,6 +132,22 @@ fun AppModal(
                             sttManager=sttManager,
                             onSubmit=onSubmit
                         )
+                        AppTextInput (
+                            value = nom2.value,
+                            onValueChange = { nom2.value = it },
+                            label = stringResource(id = R.string.nom_prenom),
+                            ttsManager=ttsManager,
+                            sttManager=sttManager,
+                            onSubmit=onSubmit.value
+                        )
+                        AppInputFieldMultiLine (
+                            value = description2.value,
+                            onValueChange = { description2.value = it },
+                            label = stringResource(id = R.string.commentaire),
+                            ttsManager=ttsManager,
+                            sttManager=sttManager,
+                            onSubmit=onSubmit
+                        )
 
                     }
 
@@ -138,8 +158,8 @@ fun AppModal(
                 AppButton(
                     text = stringResource(id = R.string.valider),
                     onClick = {
-                        if(nom.value.isNotBlank() && description.value.isNotBlank() )
-                            viewModel.upsertData(index=index, category = icon.category, nom = nom.value, description = description.value)
+                        if(nom.value.isNotBlank() && description.value.isNotBlank() && nom2.value.isNotBlank() && description2.value.isNotBlank())
+                            viewModel.upsertData(index=index, category = icon.category, nom = nom.value, description = description.value, nom2 = nom2.value, description2 = description2.value)
                         else onSubmit.value=true
                         Timber.tag("tag").d("onsubmit: $onSubmit ")
 
