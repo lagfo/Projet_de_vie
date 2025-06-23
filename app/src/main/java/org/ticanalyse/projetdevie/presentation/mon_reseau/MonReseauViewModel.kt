@@ -97,7 +97,7 @@ class MonReseauViewModel @Inject constructor(
         }
     }
 
-   fun upsertData(index:Int, category: String, nom:String, description:String){
+   fun upsertData(index:Int, category: String, nom:String, description:String, nom2:String, description2:String){
        viewModelScope.launch {
 
            try {
@@ -113,45 +113,45 @@ class MonReseauViewModel @Inject constructor(
                    "acteurFamiliauxSociaux" -> {
                        val old = monReseau.acteursFamiliauxSociaux ?: ActeursFamiliauxEtSociaux()
                        val newActeurs = old.copy(
-                           parentsTuteurs = if (index == 0) "$nom|$description" else old.parentsTuteurs,
-                           freresSoeursCousinsCousines = if (index == 1) "$nom|$description" else old.freresSoeursCousinsCousines,
-                           voisins = if (index == 2) "$nom|$description" else old.voisins,
-                           chefsCoutumiersReligieux = if (index == 3) "$nom|$description" else old.chefsCoutumiersReligieux,
-                           grandsParents = if (index == 4) "$nom|$description" else old.grandsParents,
-                           amisProches = if (index == 5) "$nom|$description" else old.amisProches,
-                           mentorModeleCommunaute = if (index == 6) "$nom|$description" else old.mentorModeleCommunaute,
-                           leadersCommunautairesAssociationsLocales = if (index == 7) "$nom|$description" else old.leadersCommunautairesAssociationsLocales,
+                           parentsTuteurs = if (index == 0) "$nom|$description|$nom2|$description2" else old.parentsTuteurs,
+                           freresSoeursCousinsCousines = if (index == 1) "$nom|$description|$nom2|$description2" else old.freresSoeursCousinsCousines,
+                           voisins = if (index == 2) "$nom|$description|$nom2|$description2" else old.voisins,
+                           chefsCoutumiersReligieux = if (index == 3) "$nom|$description|$nom2|$description2" else old.chefsCoutumiersReligieux,
+                           grandsParents = if (index == 4) "$nom|$description|$nom2|$description2" else old.grandsParents,
+                           amisProches = if (index == 5) "$nom|$description|$nom2|$description2" else old.amisProches,
+                           mentorModeleCommunaute = if (index == 6) "$nom|$description|$nom2|$description2" else old.mentorModeleCommunaute,
+                           leadersCommunautairesAssociationsLocales = if (index == 7) "$nom|$description|$nom2|$description2" else old.leadersCommunautairesAssociationsLocales,
                        )
                        monReseau.copy(acteursFamiliauxSociaux = newActeurs)
                    }
                    "acteurProfessionnel" -> {
                        val old = monReseau.acteursProfessionnels ?: ActeursProfessionnels()
                        val newActeurs = old.copy(
-                           anciensEmployeursMaitresApprentissage = if (index == 0) "$nom|$description" else old.anciensEmployeursMaitresApprentissage,
-                           employesONGProjetsDeveloppement = if (index == 1) "$nom|$description" else old.employesONGProjetsDeveloppement,
-                           artisansEntrepreneursLocaux = if (index == 2) "$nom|$description" else old.artisansEntrepreneursLocaux,
-                           personnesRessourcesCooperativesGroupementsMutuelles = if (index == 3) "$nom|$description" else old.personnesRessourcesCooperativesGroupementsMutuelles,
+                           anciensEmployeursMaitresApprentissage = if (index == 0) "$nom|$description|$nom2|$description2" else old.anciensEmployeursMaitresApprentissage,
+                           employesONGProjetsDeveloppement = if (index == 1) "$nom|$description|$nom2|$description2" else old.employesONGProjetsDeveloppement,
+                           artisansEntrepreneursLocaux = if (index == 2) "$nom|$description|$nom2|$description2" else old.artisansEntrepreneursLocaux,
+                           personnesRessourcesCooperativesGroupementsMutuelles = if (index == 3) "$nom|$description|$nom2|$description2" else old.personnesRessourcesCooperativesGroupementsMutuelles,
                        )
                        monReseau.copy(acteursProfessionnels = newActeurs)
                    }
                    "acteurEducatif" -> {
                        val old = monReseau.acteursEducatifs ?: ActeursEducatifs()
                        val newActeurs = old.copy(
-                           EnseignantsProfesseurs = if (index == 0) "$nom|$description" else old.EnseignantsProfesseurs,
-                           EncadreursCentresFormationProfessionnelle = if (index == 1) "$nom|$description" else old.EncadreursCentresFormationProfessionnelle,
-                           anciensCamaradesClasse = if (index == 2) "$nom|$description" else old.anciensCamaradesClasse,
-                           ConseillersOrientationScolaireProfessionnelle = if (index == 3) "$nom|$description" else old.ConseillersOrientationScolaireProfessionnelle,
-                           animateursONGEducatives = if (index == 4) "$nom|$description" else old.animateursONGEducatives,
+                           EnseignantsProfesseurs = if (index == 0) "$nom|$description|$nom2|$description2" else old.EnseignantsProfesseurs,
+                           EncadreursCentresFormationProfessionnelle = if (index == 1) "$nom|$description|$nom2|$description2" else old.EncadreursCentresFormationProfessionnelle,
+                           anciensCamaradesClasse = if (index == 2) "$nom|$description|$nom2|$description2" else old.anciensCamaradesClasse,
+                           ConseillersOrientationScolaireProfessionnelle = if (index == 3) "$nom|$description|$nom2|$description2" else old.ConseillersOrientationScolaireProfessionnelle,
+                           animateursONGEducatives = if (index == 4) "$nom|$description|$nom2|$description2" else old.animateursONGEducatives,
                        )
                        monReseau.copy(acteursEducatifs = newActeurs)
                    }
                    "acteurInstitutionnel" -> {
                        val old = monReseau.acteursInstitutionnelsSoutien ?: ActeursInstitutionnelsEtDeSoutien()
                        val newActeurs = old.copy(
-                           agentsServicesSociauxAdministratifs = if (index == 0) "$nom|$description" else old.agentsServicesSociauxAdministratifs,
-                           representantsStructuresCommeAgenceNationaleEmploi = if (index == 1) "$nom|$description" else old.representantsStructuresCommeAgenceNationaleEmploi,
-                           formateursProgrammesPublicsPrivesFormationInsertion = if (index == 2) "$nom|$description" else old.formateursProgrammesPublicsPrivesFormationInsertion,
-                           personnelSante = if (index == 3) "$nom|$description" else old.personnelSante,
+                           agentsServicesSociauxAdministratifs = if (index == 0) "$nom|$description|$nom2|$description2" else old.agentsServicesSociauxAdministratifs,
+                           representantsStructuresCommeAgenceNationaleEmploi = if (index == 1) "$nom|$description|$nom2|$description2" else old.representantsStructuresCommeAgenceNationaleEmploi,
+                           formateursProgrammesPublicsPrivesFormationInsertion = if (index == 2) "$nom|$description|$nom2|$description2" else old.formateursProgrammesPublicsPrivesFormationInsertion,
+                           personnelSante = if (index == 3) "$nom|$description|$nom2|$description2" else old.personnelSante,
                        )
 
 
