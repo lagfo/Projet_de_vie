@@ -394,7 +394,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                                                             label ="",
                                                             ttsManager =ttsManager,
                                                             sttManager =sttManager,
-                                                            onSubmit=onSubmit
+                                                            onSubmit=onSubmit.value
                                                         )
 
                                                     }
@@ -420,7 +420,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                                                             label ="",
                                                             ttsManager =ttsManager,
                                                             sttManager =sttManager,
-                                                            onSubmit=onSubmit
+                                                            onSubmit=onSubmit.value
                                                         )
 
                                                     }
