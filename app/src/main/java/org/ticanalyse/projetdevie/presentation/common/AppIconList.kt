@@ -3,7 +3,6 @@ package org.ticanalyse.projetdevie.presentation.common
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import kotlinx.serialization.Serializable
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
@@ -55,9 +54,6 @@ val monReseauCategories = listOf(
     ),
 
 )
-
-@Serializable
-sealed interface AppRoute
 
 val acteurFamiliauxSociauxSubCategories = listOf(
     AppSubIcon(
@@ -201,7 +197,7 @@ val acteurInstitutionnelSubCategories = listOf(
 
 )
 
-
+/*
 val skills = listOf(
     AppSkillCardIcon(txt = R.string.skill_agriculture, strokeColor = R.color.primary_color, paint = R.drawable.agriculture),
     AppSkillCardIcon(txt = R.string.skill_apiculture, strokeColor = R.color.primary_color, paint = R.drawable.apiculture),
@@ -246,3 +242,5 @@ val skills = listOf(
     AppSkillCardIcon(txt = R.string.skill_transformation_produits_agricoles, strokeColor = R.color.primary_color, paint = R.drawable.transformation_produits_agricoles),
     AppSkillCardIcon(txt = R.string.skill_vente_commerce, strokeColor = R.color.primary_color, paint = R.drawable.vente_commerce)
 )
+
+ */
