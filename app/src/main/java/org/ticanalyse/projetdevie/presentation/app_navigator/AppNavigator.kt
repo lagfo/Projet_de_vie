@@ -24,13 +24,8 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
-import org.ticanalyse.projetdevie.presentation.common.AppSubCategoryGrid
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
 import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
-import org.ticanalyse.projetdevie.presentation.common.acteurEducatifSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurFamiliauxSociauxSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurInstitutionnelSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurProfessionnelSubCategories
 import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
@@ -39,10 +34,11 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScr
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
@@ -75,6 +71,8 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
+        backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
         else -> 0
     }
 
@@ -91,7 +89,7 @@ fun AppNavigator(currentUser: User) {
                 TopBarComponent(currentUser.nom,currentUser.prenom,currentUser.avatarUri)
             }
             else{
-                when (backStackState?.destination?.route) {
+                /*when (backStackState?.destination?.route) {
                     IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
@@ -103,23 +101,27 @@ fun AppNavigator(currentUser: User) {
                     }
                 }
 
+                 */
+
                 when {
                     backStackState?.destination?.route == HomeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
                     backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.ligne_vie,R.color.primary_color)
-
                     backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
                         val category = backStackState.arguments?.getString("category")
                         when(category){
-                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.introduction_title,R.color.thirty_color)
-                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.secondary_color)
-                            "acteurEducatif" -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.fourty_color)
+                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.thirty_color)
+                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.secondary_color)
+                            "acteurEducatif" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title ,R.color.fourty_color)
                         }
                     }
+                    backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
+                    backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
 
                 }
                 !isHomeTopBarVisible

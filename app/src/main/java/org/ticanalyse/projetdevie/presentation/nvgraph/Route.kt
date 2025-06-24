@@ -48,6 +48,11 @@ object LigneDeVieIntroductionRoute:AppRoute
 @Serializable
 object LigneDeVieRoute: AppRoute
 
+@Serializable
+object BilanCompetanceIntroductionRoute:AppRoute
+
+@Serializable
+object BilanCompetanceRoute:AppRoute
 
 
 //@Serializable
