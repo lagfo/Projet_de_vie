@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import org.ticanalyse.projetdevie.data.local.AppDao
+import org.ticanalyse.projetdevie.data.local.dao.AppDao
 import org.ticanalyse.projetdevie.data.manager.PreferenceKeys
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.utils.Result
@@ -21,10 +21,11 @@ class UserRepositoryImpl @Inject constructor(
             dataStore.edit { preferences ->
                 preferences[PreferenceKeys.nom] = user?.nom ?: ""
                 preferences[PreferenceKeys.prenom] = user?.prenom ?: ""
-                preferences[PreferenceKeys.age] = user?.age ?: ""
+                preferences[PreferenceKeys.dateNaissance] = user?.dateNaissance ?: ""
                 preferences[PreferenceKeys.numTel] = user?.numTel ?: ""
                 preferences[PreferenceKeys.genre] = user?.genre ?: ""
                 preferences[PreferenceKeys.avatarUri] = user?.avatarUri ?: ""
+                preferences[PreferenceKeys.email] = user?.email ?: ""
             }
             if (user != null) {
                 appDao.upsert(user)
@@ -41,10 +42,11 @@ class UserRepositoryImpl @Inject constructor(
                 User(
                     nom = preferences[PreferenceKeys.nom] ?: "",
                     prenom = preferences[PreferenceKeys.prenom] ?: "",
-                    age = preferences[PreferenceKeys.age] ?: "",
+                    dateNaissance = preferences[PreferenceKeys.dateNaissance] ?: "",
                     numTel = preferences[PreferenceKeys.numTel] ?: "",
                     genre = preferences[PreferenceKeys.genre] ?: "",
                     avatarUri = preferences[PreferenceKeys.avatarUri] ?: "",
+                    email = preferences[PreferenceKeys.email] ?: "",
                 )
             }.first()
             Result.Success(if (currentUser.nom.isNotEmpty() && currentUser.prenom.isNotEmpty()) currentUser else null)

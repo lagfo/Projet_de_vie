@@ -1,5 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.introduction
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,7 +42,10 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
 
 @Composable
-fun IntroductionCharactersScreen(onNavigate: () -> Unit) {
+fun IntroductionCharactersScreen(
+    onNavigate: () -> Unit,
+    onBackPressed: () -> Unit
+) {
     val characters = listOf(
         Characters("Ali", R.drawable.ali, R.raw.intro_ali/*, R.raw.intro_ali*/),
         Characters("Safy", R.drawable.saly, R.raw.intro_safi/*, R.raw.intro_safi*/),
@@ -52,15 +57,23 @@ fun IntroductionCharactersScreen(onNavigate: () -> Unit) {
         initialPage = 0
     )
 
+    BackHandler {
+        onBackPressed()
+    }
 
     val scope = rememberCoroutineScope()
-    val soundPlayState = remember { mutableStateOf(false) }
+//    val soundPlayState = remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    val nextPage = remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(nextPage) {
+        pagerState.animateScrollToPage(nextPage.intValue)
+    }
+
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         while (true) {
-            delay(5000)
-            val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
-            pagerState.animateScrollToPage(nextPage)
+            delay(15000)
+            nextPage.intValue = (pagerState.currentPage + 1) % pagerState.pageCount
         }
     }
 
