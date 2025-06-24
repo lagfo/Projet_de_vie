@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -24,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
@@ -39,8 +42,9 @@ fun AppForm(
     prenom : MutableState<String>,
     genre : MutableState<String>,
     genres : List<String>,
-    age : MutableState<String>,
+    dateNaissance : MutableState<String>,
     numTel : MutableState<String>,
+    email: MutableState<String>,
     onSubmit: MutableState<Boolean>,
     formTitle: String = stringResource(R.string.register_title)
 ) {
@@ -70,7 +74,7 @@ fun AppForm(
             ){
                 Spacer(modifier = Modifier.height(15.dp))
                 AppText(text = formTitle,ttsManager=ttsManager, fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 LazyColumn {
                     item {
                         Column {
@@ -95,7 +99,10 @@ fun AppForm(
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
 
-                                Box (modifier= Modifier.fillMaxWidth().weight(0.5f).padding(end = 2.dp)){
+                                Box (modifier= Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.5f)
+                                    .padding(end = 2.dp)){
                                     AppSelection(
                                         value = genre.value,
                                         onValueChange = { genre.value = it },
@@ -105,14 +112,17 @@ fun AppForm(
                                         onSubmit=onSubmit.value
                                     )
                                 }
-                                Box (modifier= Modifier.fillMaxWidth().weight(0.45f).padding(start = 2.dp)){
-                                    AppAgeInput(
-                                        value = age.value,
-                                        onValueChange = { age.value = it },
-                                        label = stringResource(id = R.string.age),
-                                        ttsManager = ttsManager,
-                                        sttManager = sttManager,
-                                        onSubmit=onSubmit.value
+                                Box (modifier= Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.45f)
+                                    .padding(start = 2.dp)){
+                                    AppBirthDateInput(
+                                        value = dateNaissance.value,
+                                        onValueChange = { dateNaissance.value = it },
+                                        label = "Date",
+//                                        ttsManager = ttsManager,
+//                                        sttManager = sttManager,
+                                        onSubmit = onSubmit.value
                                     )
                                 }
 
@@ -125,7 +135,16 @@ fun AppForm(
                                 sttManager = sttManager,
                                 onSubmit=onSubmit.value
                             )
-
+                            AppInputField(
+                                value = email.value,
+                                onValueChange = { email.value = it },
+                                label = "email",
+                                inputType = "email",
+                                ttsManager = ttsManager,
+                                sttManager = sttManager,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                                onSubmit = onSubmit.value
+                            )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.Bottom,
@@ -150,4 +169,10 @@ fun AppForm(
 
         }
     }
+}
+
+@Preview
+@Composable
+fun AppFormPreview(modifier: Modifier = Modifier) {
+
 }

@@ -10,11 +10,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.ticanalyse.projetdevie.data.local.AppDao
+import org.ticanalyse.projetdevie.data.local.dao.AppDao
 import org.ticanalyse.projetdevie.data.local.AppDatabase
-import org.ticanalyse.projetdevie.data.local.LigneDeVieDao
-import org.ticanalyse.projetdevie.data.local.MonReseauDao
-import org.ticanalyse.projetdevie.data.local.ReponseQuestionLigneDeVieDao
+import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
+import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
+import org.ticanalyse.projetdevie.data.local.dao.ReponseQuestionLigneDeVieDao
 import org.ticanalyse.projetdevie.data.manager.LocalUserManagerImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
