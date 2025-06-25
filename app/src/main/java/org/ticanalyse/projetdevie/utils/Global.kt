@@ -3,17 +3,12 @@ package org.ticanalyse.projetdevie.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Patterns
-import androidx.compose.ui.autofill.ContentDataType
 import androidx.core.content.FileProvider
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.Date
 import java.util.Locale
-import kotlin.io.path.exists
-import kotlin.text.format
-import kotlin.time.Duration.Companion.milliseconds
 
 object Global {
 
@@ -26,7 +21,7 @@ object Global {
         return true
     }
 
-    fun validateAge(value: String):Boolean{
+    fun validateAge(value: String): Boolean{
         if(value.isBlank())
             return false
         else if(value.toInt() <= 13)
@@ -34,7 +29,7 @@ object Global {
         return true
     }
 
-    fun validateNumber(value: String):Boolean{
+    fun validateNumber(value: String): Boolean{
         if(value.isBlank())
             return false
         else if(value.length <= 7)
@@ -94,12 +89,8 @@ object Global {
         )
     }
 
-    fun checkPassedAndPresent(startYear:Int,endYear:Int,inProgressYear: Int):Boolean{
-        if(startYear.toString().isNotBlank()&&endYear.toString().isNotBlank()&&inProgressYear.toString().isNotBlank()){
-           return false
-        }else{
-            return  true
-        }
+    fun checkPassedAndPresent(startYear:Int,endYear:Int,inProgressYear: Int): Boolean{
+        return !(startYear.toString().isNotBlank() && endYear.toString().isNotBlank() && inProgressYear.toString().isNotBlank())
     }
 
 //    fun checkYearLength(startYear:Int,endYear:Int,inProgressYear: Int): Boolean{
