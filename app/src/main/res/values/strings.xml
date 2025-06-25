@@ -49,6 +49,50 @@ Pour chaque image, ajoute une petite description ou une date. </string>
     <string name="video_title"> Commençons par une vidéo de présentation </string>
     <string name="mon_reseau_categories_title"> Ton réseau personnel et communautaire ! </string>
     <string name="ligne_vie"> Ligne de vie </string>
+    <string name="bilan_competance_title"> Bilan De Compétences </string>
+
+    <string name="skill_agriculture">Agriculture</string>
+    <string name="skill_apiculture">Apiculture</string>
+    <string name="skill_arts">Arts</string>
+    <string name="skill_aviculture">Aviculture</string>
+    <string name="skill_calcul_mathematique">Calcul, mathématique</string>
+    <string name="skill_chauffeur">Chauffeur</string>
+    <string name="skill_coiffure">Coiffure</string>
+    <string name="skill_communication">Communication</string>
+    <string name="skill_comptabilite">Comptabilité</string>
+    <string name="skill_cordonnerie">Cordonnerie</string>
+    <string name="skill_couture">Couture</string>
+    <string name="skill_cuisine">Cuisine</string>
+    <string name="skill_ecriture">Écriture</string>
+    <string name="skill_electricite">Électricité</string>
+    <string name="skill_elevage">Élevage</string>
+    <string name="skill_enseignement">Enseignement</string>
+    <string name="skill_fabrication_savon">Fabrication de savon</string>
+    <string name="skill_force_ordre">Force de l\'ordre</string>
+    <string name="skill_froid">Froid (frigoriste)</string>
+    <string name="skill_infirmerie_aidesoignant">Infirmerie/aide-soignant</string>
+    <string name="skill_infographie">Infographie</string>
+    <string name="skill_informatique">Informatique</string>
+    <string name="skill_langues_etrangeres">Langues étrangères</string>
+    <string name="skill_litterature_histoire">Littérature, histoire</string>
+    <string name="skill_menage">Ménage</string>
+    <string name="skill_maconnerie">Maçonnerie</string>
+    <string name="skill_maraichage">Maraîchage</string>
+    <string name="skill_marketing">Marketing</string>
+    <string name="skill_mecanique">Mécanique</string>
+    <string name="skill_menuiserie_ebenisterie_charpenterie">Menuiserie/ébénisterie/charpenterie</string>
+    <string name="skill_musique_dance">Musique, dance</string>
+    <string name="skill_peche">Pêche</string>
+    <string name="skill_pisciculture">Pisciculture</string>
+    <string name="skill_plomberie">Plomberie</string>
+    <string name="skill_restauration">Restauration</string>
+    <string name="skill_secretariat">Secrétariat</string>
+    <string name="skill_soudure_menuiserie_metallique">Soudure/menuiserie métallique</string>
+    <string name="skill_sport">Sport</string>
+    <string name="skill_travail_social">Travail social</string>
+    <string name="skill_tissage">Tissage (tissu)</string>
+    <string name="skill_transformation_produits_agricoles">Transformation de produits agricoles</string>
+    <string name="skill_vente_commerce">Vente, commerce</string>
 
 
 </resources>
