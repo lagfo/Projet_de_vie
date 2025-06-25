@@ -20,15 +20,20 @@ import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
 import org.ticanalyse.projetdevie.data.manager.dataStore
 import org.ticanalyse.projetdevie.data.repository.LigneDeVieElementRepositoryImpl
+import org.ticanalyse.projetdevie.data.repository.MonReseauRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.ReponseLigneDeVieRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieElementRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
+import org.ticanalyse.projetdevie.domain.repository.MonReseauRepository
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.AppEntryUseCases
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.ReadAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.SaveAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.AddLigneDeVieElement
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetLineDeVieElement
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.GetMonReseau
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.MonReseauUseCases
+import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.UpsertMonReseau
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPassedElement
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPresentElement
 import org.ticanalyse.projetdevie.domain.usecase.user.GetUser
@@ -79,6 +84,28 @@ object AppModule {
             upsertUser = UpsertUser(userRepository)
         )
     }
+
+
+
+    @Provides
+    @Singleton
+    fun provideMonReseauRepository(
+        monReseauDao: MonReseauDao,
+    ) : MonReseauRepository = MonReseauRepositoryImpl(monReseauDao = monReseauDao)
+
+    @Provides
+    @Singleton
+    fun provideMonReseauUseCases(
+        monReseauRepository: MonReseauRepository
+    ) : MonReseauUseCases{
+        return MonReseauUseCases(
+            getMonReseau = GetMonReseau(monReseauRepository),
+            upsertMonReseau = UpsertMonReseau(monReseauRepository)
+        )
+    }
+
+
+
 
     @Provides
     @Singleton

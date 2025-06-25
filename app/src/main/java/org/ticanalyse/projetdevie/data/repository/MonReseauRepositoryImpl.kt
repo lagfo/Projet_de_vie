@@ -10,8 +10,7 @@ class MonReseauRepositoryImpl(
     override suspend fun upsertMonReseau(monReseau: MonReseau) {
         monReseauDao.upsert(monReseau)
     }
-
-    override suspend fun getMonReseau(): MonReseau {
+    override suspend fun getMonReseau(): MonReseau? {
         return monReseauDao.getMonReseau()
     }
 }

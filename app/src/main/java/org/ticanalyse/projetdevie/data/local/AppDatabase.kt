@@ -8,7 +8,7 @@ import org.ticanalyse.projetdevie.domain.model.MonReseau
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
 import org.ticanalyse.projetdevie.domain.model.User
 
-@Database(entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class], version = 3)
+@Database(entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
