@@ -22,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +48,6 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.utils.Global.validateAge
 import org.ticanalyse.projetdevie.utils.Global.validateEmail
 import org.ticanalyse.projetdevie.utils.Global.validateNumber
-import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
@@ -83,8 +81,14 @@ fun AppInputField(
         }
     }
 
-    var isErrorExist by remember { mutableStateOf(onSubmit) }
-    Timber.tag("tag").d("AppInputField: $value et si erreur = $isErrorExist")
+    val isErrorExist by remember (value, onSubmit) {
+        derivedStateOf {
+            if (onSubmit && value.isBlank()) true
+            else if(value.isBlank()) true
+            else false
+        }
+    }
+
     Column {
         OutlinedTextField(
             enabled = isEnable,
@@ -104,7 +108,7 @@ fun AppInputField(
             supportingText = {
                 if (isErrorExist && value.isEmpty()) {
                     Text(text = "Champs requis")
-                } else if (isErrorExist) {
+                } else if (isErrorExist && (inputType=="age" || inputType=="number")) {
                     Text(text = "invalide")
                 }
             },
@@ -195,7 +199,7 @@ fun AppInputFieldMultiLine(
     label: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
-    onSubmit: MutableState<Boolean>,
+    onSubmit: Boolean= false,
     minLines: Int = 3,
     maxLines: Int = 5
 ) {
@@ -205,28 +209,34 @@ fun AppInputFieldMultiLine(
         val data = result.data
         val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
         if (!matches.isNullOrEmpty()) {
-            // Directement utiliser le premier résultat sans transformation
             onValueChange(matches[0])
         }
     }
 
-    var isErrorExist by remember { mutableStateOf(onSubmit.value) }
+    val isErrorExist by remember (value, onSubmit) {
+        derivedStateOf {
+            if (onSubmit && value.isBlank()) true
+            else if(value.isBlank()) true
+            else false
+        }
+    }
+    Timber.tag("tag").d("before value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
+    //LaunchedEffect(onSubmit) {
+    //    isErrorExist = if(value.isBlank()) onSubmit else !onSubmit
+    //}
 
-    Timber.tag("tag").d("onsubmit: ${onSubmit.value}  et isErrorExist: $isErrorExist")
+    Timber.tag("tag").d("after value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
 
     Column {
         OutlinedTextField(
             value = value,
             onValueChange = { newValue ->
                 onValueChange(newValue)
-                isErrorExist = !validateTextEntries(newValue)
             },
             label = { Text(label) },
             supportingText = {
-                if (isErrorExist && value.isEmpty()) {
+                if (isErrorExist) {
                     Text(text = "Champs requis", color = MaterialTheme.colorScheme.error)
-                } else if (isErrorExist) {
-                    Text(text = "Invalide", color = MaterialTheme.colorScheme.error)
                 }
             },
             isError = isErrorExist,
@@ -238,7 +248,7 @@ fun AppInputFieldMultiLine(
             maxLines = maxLines,
             singleLine = false,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = if (onSubmit.value) ImeAction.Done else ImeAction.Default,
+                imeAction = if (onSubmit) ImeAction.Done else ImeAction.Default,
                 keyboardType = KeyboardType.Text
             ),
             visualTransformation = VisualTransformation.None,
