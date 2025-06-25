@@ -41,6 +41,8 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScr
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
@@ -79,6 +81,8 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
+        backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
         else -> 0
     }
 
@@ -113,19 +117,22 @@ fun AppNavigator(currentUser: User) {
                     backStackState?.destination?.route == HomeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
                     backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.ligne_vie,R.color.primary_color)
 
                     backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
                         val category = backStackState.arguments?.getString("category")
                         when(category){
-                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.introduction_title,R.color.thirty_color)
-                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.secondary_color)
-                            "acteurEducatif" -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.fourty_color)
+                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.thirty_color)
+                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.secondary_color)
+                            "acteurEducatif" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title ,R.color.fourty_color)
                         }
                     }
+                    backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
+                    backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
 
                 }
                 !isHomeTopBarVisible
@@ -213,7 +220,7 @@ fun AppNavigator(currentUser: User) {
             composable<MonReseauCategoriesRoute> {
                 MonReseauCategoriesScreen (
                     navController = navController,
-                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieIntroductionRoute)}
+                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieRoute)}
                 )
 
 

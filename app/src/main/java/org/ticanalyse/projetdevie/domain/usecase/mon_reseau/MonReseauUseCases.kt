@@ -1,4 +1,6 @@
 package org.ticanalyse.projetdevie.domain.usecase.mon_reseau
 
-class MonReseauUseCases {
-}
+data class MonReseauUseCases (
+    val getMonReseau: GetMonReseau,
+    val upsertMonReseau: UpsertMonReseau
+)

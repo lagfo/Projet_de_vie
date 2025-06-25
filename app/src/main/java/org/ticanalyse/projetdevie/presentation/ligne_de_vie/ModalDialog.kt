@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -84,6 +83,7 @@ fun ModalDialog(
         insertionStatus=false
     }
 
+    val onSubmit = rememberSaveable { mutableStateOf (false) }
     ModalBottomSheet(
         sheetState =sheetState ,
         onDismissRequest =onDismiss
@@ -351,6 +351,7 @@ fun ModalDialog(
                     label ="Commentaire",
                     ttsManager =ttsManager,
                     sttManager =sttManager,
+                    onSubmit=onSubmit.value
                 )
                 //Validate button
                 AppButton(text="Valider", onClick ={
@@ -378,6 +379,7 @@ fun ModalDialog(
                             status =true,
                             creationDate = LocalDate.now().toString()
                         )
+
                     }
                     onDismiss()
 

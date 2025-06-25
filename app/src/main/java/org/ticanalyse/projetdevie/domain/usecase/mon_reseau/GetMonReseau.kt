@@ -6,7 +6,7 @@ import org.ticanalyse.projetdevie.domain.repository.MonReseauRepository
 class GetMonReseau(
     private val monReseauRepository: MonReseauRepository
 ) {
-    suspend operator fun invoke(): MonReseau {
+    suspend operator fun invoke(): MonReseau? {
         return monReseauRepository.getMonReseau()
     }
 }

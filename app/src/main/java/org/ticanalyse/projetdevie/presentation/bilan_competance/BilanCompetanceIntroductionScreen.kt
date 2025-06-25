@@ -1,4 +1,4 @@
-package org.ticanalyse.projetdevie.presentation.mon_reseau
+package org.ticanalyse.projetdevie.presentation.bilan_competance
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,20 +19,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
-import org.ticanalyse.projetdevie.presentation.common.AppCategoryGrid
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
-import org.ticanalyse.projetdevie.presentation.common.monReseauCategories
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
+import org.ticanalyse.projetdevie.utils.ExoPlayer
 
 @Composable
-fun MonReseauCategoriesScreen(navController:NavController,onNavigate: () -> Unit) {
+fun BilanCompetanceIntroductionScreen(onNavigate: () -> Unit) {
+
     val ttsManager = appTTSManager()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,14 +47,14 @@ fun MonReseauCategoriesScreen(navController:NavController,onNavigate: () -> Unit
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = MediumPadding3, bottom = MediumPadding1),
+                .padding(top= MediumPadding3, bottom = MediumPadding1),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Box {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AppText(
-                        text = stringResource(id = R.string.mon_reseau_categories_title),
+                        text = stringResource(id = R.string.video_title),
                         fontFamily = Roboto,
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Normal,
@@ -64,14 +64,14 @@ fun MonReseauCategoriesScreen(navController:NavController,onNavigate: () -> Unit
                         ttsManager = ttsManager
                     )
                     Spacer(modifier = Modifier.height(MediumPadding1))
-
-                    AppCategoryGrid(icons = monReseauCategories, column = 2, navController = navController)
+                    ExoPlayer(R.raw.intro_safi)
                 }
 
             }
 
-            AppButton(text = "Ligne de Vie", onClick = onNavigate )
-        }
 
+            AppButton(text = "Suivant", onClick = onNavigate)
+        }
     }
+
 }
