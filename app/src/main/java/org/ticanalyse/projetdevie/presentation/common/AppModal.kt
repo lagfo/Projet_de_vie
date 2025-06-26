@@ -14,8 +14,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,10 +29,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import timber.log.Timber
 
@@ -189,4 +197,109 @@ fun AppModal(
             }
         }
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppSkillModal(
+    showBottomSheet: Boolean,
+    onDismissRequest: () -> Unit,
+    onAddSkills: (List<String>) -> Unit,
+){
+    val context = LocalContext.current
+    var input1 by remember { mutableStateOf("") }
+    var input2 by remember { mutableStateOf("") }
+    val onSubmit = remember { mutableStateOf(false) }
+    val ttsManager = appTTSManager()
+    val sttManager = appSTTManager()
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            modifier = Modifier
+                .fillMaxSize(),
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = false
+            ),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppText(
+                    text = "Ajouter des compétences",
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Black,
+                    fontStyle = FontStyle.Normal,
+                    color = colorResource(id = R.color.text),
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    ttsManager = ttsManager
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                AppTextInput (
+                    value = input1,
+                    onValueChange = { input1 = it },
+                    label = "Compétence",
+                    ttsManager=ttsManager,
+                    sttManager=sttManager,
+                    onSubmit=onSubmit.value
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+
+                AppTextInput (
+                    value = input2,
+                    onValueChange = { input2 = it },
+                    label = "Compétence (optionnel)",
+                    ttsManager=ttsManager,
+                    sttManager=sttManager,
+                    onSubmit=onSubmit.value
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    AppTextButton(
+                        text = "Annuler",
+                        onClick = {
+                            onDismissRequest()
+                            input1 = ""
+                            input2 = ""
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AppButton(
+                        text = stringResource(id = R.string.valider),
+                        onClick = {
+                            val trimmed1 = input1.trim()
+                            val trimmed2 = input2.trim()
+
+                            if (trimmed1.isEmpty() && trimmed2.isEmpty()) {
+                                Toast.makeText(context, "Veuillez saisir au moins une compétence", Toast.LENGTH_SHORT).show()
+                                return@AppButton
+                            }
+
+                            val skillsToAdd = listOf(trimmed1, trimmed2).filter { it.isNotEmpty() }
+                            onAddSkills(skillsToAdd)
+
+                            input1 = ""
+                            input2 = ""
+                        }
+                    )
+
+                }
+            }
+        }
+    }
+
 }

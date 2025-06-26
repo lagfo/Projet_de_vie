@@ -1,5 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.bilan_competance
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import org.ticanalyse.projetdevie.domain.model.Skill
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
+import org.ticanalyse.projetdevie.presentation.common.AppSkillModal
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -52,52 +54,111 @@ import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
+
 @Composable
 fun BilanCompetanceScreen(onNavigate: () -> Unit) {
     val ttsManager = appTTSManager()
-    var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
-    val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
-    val viewModel= hiltViewModel<BilanCompetenceViewModel>()
     val context = LocalContext.current
+    val viewModel = hiltViewModel<BilanCompetenceViewModel>()
 
+    var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
+
+
+    val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+
+    fun syncBadges() {
+        defaultSkills.replaceAll { skill ->
+            val skillName = when (val txt = skill.txt) {
+                is Txt.Res -> context.getString(txt.id)
+                is Txt.Raw -> txt.text
+            }
+            skill.copy(badgeStatus = selectedSkills.any { it.equals(skillName, ignoreCase = true) })
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getSkill { stored ->
-            stored?.forEach { item ->
-                val index = defaultSkills.indexOfFirst {
-                    when (val txt = it.txt) {
-                        is Txt.Res -> context.getString(txt.id).equals(item, ignoreCase = true)
-                        is Txt.Raw -> txt.text.equals(item, ignoreCase = true)
+            stored?.let {
+                val storedLower = it.map(String::lowercase)
+                defaultSkills.replaceAll { skill ->
+                    val skillName = when (val txt = skill.txt) {
+                        is Txt.Res -> context.getString(txt.id)
+                        is Txt.Raw -> txt.text
                     }
+                    skill.copy(badgeStatus = storedLower.contains(skillName.lowercase()))
                 }
-
-                if (index >= 0) {
-                    defaultSkills[index] = defaultSkills[index].copy(badgeStatus = true)
-                } else {
+                it.filter { skillName ->
+                    defaultSkills.none { skill ->
+                        val name = when (val txt = skill.txt) {
+                            is Txt.Res -> context.getString(txt.id)
+                            is Txt.Raw -> txt.text
+                        }
+                        name.equals(skillName, ignoreCase = true)
+                    }
+                }.forEach { skillName ->
                     defaultSkills.add(
                         0,
                         AppSkillCardIcon(
-                            txt = Txt.Raw(item),
+                            txt = Txt.Raw(skillName),
                             strokeColor = R.color.primary_color,
                             paint = R.drawable.communication,
                             badgeStatus = true
                         )
                     )
                 }
+                selectedSkills = it
             }
-            selectedSkills = stored ?: emptyList()
         }
     }
 
     LaunchedEffect(selectedSkills) {
+        syncBadges()
         viewModel.saveSkill(Skill(skills = selectedSkills))
     }
 
+    fun onAddSkills(newSkills: List<String>) {
+        val skillsToAdd = newSkills.filter { newSkill ->
+            val exists = selectedSkills.any { it.equals(newSkill, ignoreCase = true) }
+            if (exists) {
+                Toast.makeText(context, "La compétence \"$newSkill\" existe déjà", Toast.LENGTH_SHORT).show()
+                false
+            } else true
+        }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+        if (skillsToAdd.isEmpty()) return
+
+        selectedSkills = selectedSkills + skillsToAdd
+
+        skillsToAdd.forEach { skillName ->
+            val index = defaultSkills.indexOfFirst { skill ->
+                val skillNameInList = when (val txt = skill.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+                skillNameInList.equals(skillName, ignoreCase = true)
+            }
+            if (index == -1) {
+                defaultSkills.add(
+                    0,
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.communication,
+                        badgeStatus = true
+                    )
+                )
+            } else {
+                defaultSkills[index] = defaultSkills[index].copy(badgeStatus = true)
+            }
+        }
+
+        showBottomSheet = false
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.bg_img),
             contentDescription = null,
@@ -112,9 +173,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(.9f)) {
+            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AppText(
                         text = stringResource(id = R.string.competance_title),
@@ -128,27 +187,23 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(MediumPadding1))
 
-                    AppSkillGrid(icons = defaultSkills, column = 2,
+                    AppSkillGrid(
+                        icons = defaultSkills,
+                        column = 2,
                         selectedIcons = selectedSkills,
-                        onSkillClick = {skill ->
+                        onSkillClick = { skill ->
                             val skillName = when (val txt = skill.txt) {
                                 is Txt.Res -> context.getString(txt.id)
                                 is Txt.Raw -> txt.text
                             }
-
-                            selectedSkills = if (selectedSkills.contains(skillName)) {
-                                skill.badgeStatus = false
-                                selectedSkills - skillName
+                            selectedSkills = if (selectedSkills.any { it.equals(skillName, ignoreCase = true) }) {
+                                selectedSkills.filterNot { it.equals(skillName, ignoreCase = true) }
                             } else {
-                                skill.badgeStatus = true
                                 selectedSkills + skillName
-                                selectedSkills + "Test"
                             }
-
                         }
                     )
                 }
-
             }
 
             Row(
@@ -164,10 +219,8 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 IconButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .size(48.dp)
-                        .padding(end = 5.dp)
+                    onClick = { showBottomSheet = true },
+                    modifier = Modifier.size(48.dp).padding(end = 5.dp)
                 ) {
                     Surface(
                         shape = CircleShape,
@@ -183,10 +236,13 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                     }
                 }
             }
-
-
-
         }
-
     }
+
+    AppSkillModal(
+        showBottomSheet = showBottomSheet,
+        onDismissRequest = { showBottomSheet = false },
+        onAddSkills = ::onAddSkills
+    )
 }
+
