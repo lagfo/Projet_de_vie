@@ -21,10 +21,31 @@ data class AppSubIcon(
     @DrawableRes val paint: Int,
 )
 
-data class AppSkillCardIcon(
+/*data class AppSkillCardIcon(
     @StringRes val txt: Int,
     @ColorRes val strokeColor: Int,
     @DrawableRes val paint: Int,
+    val badgeStatus: Boolean = false
+)
+data class AppSkillCardIcon(
+    val txt: String,
+    @ColorRes val strokeColor: Int,
+    @DrawableRes val paint: Int,
+    val badgeStatus: Boolean = false
+)
+
+ */
+
+sealed class Txt {
+    data class Res(@StringRes val id: Int) : Txt()
+    data class Raw(val text: String) : Txt()
+}
+
+data class AppSkillCardIcon(
+    val txt: Txt,
+    @ColorRes val strokeColor: Int,
+    @DrawableRes val paint: Int,
+    val badgeStatus: Boolean = false
 )
 
 val monReseauCategories = listOf(
@@ -203,7 +224,7 @@ val skills = listOf(
     AppSkillCardIcon(txt = R.string.skill_apiculture, strokeColor = R.color.primary_color, paint = R.drawable.apiculture),
     AppSkillCardIcon(txt = R.string.skill_arts, strokeColor = R.color.primary_color, paint = R.drawable.arts),
     AppSkillCardIcon(txt = R.string.skill_aviculture, strokeColor = R.color.primary_color, paint = R.drawable.aviculture),
-    AppSkillCardIcon(txt = R.string.skill_calcul_mathematique, strokeColor = R.color.primary_color, paint = R.drawable.calcul),
+    AppSkillCardIcon(txt = R.string.skill_calcul_mathematique, strokeColor = R.color.primary_color, paint = R.drawable.calcul_mathematique),
     AppSkillCardIcon(txt = R.string.skill_chauffeur, strokeColor = R.color.primary_color, paint = R.drawable.chauffeur),
     AppSkillCardIcon(txt = R.string.skill_coiffure, strokeColor = R.color.primary_color, paint = R.drawable.coiffure),
     AppSkillCardIcon(txt = R.string.skill_communication, strokeColor = R.color.primary_color, paint = R.drawable.communication),
@@ -244,3 +265,14 @@ val skills = listOf(
 )
 
  */
+
+val skills = listOf(
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.agriculture),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_apiculture), strokeColor = R.color.primary_color, paint = R.drawable.apiculture),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_arts), strokeColor = R.color.primary_color, paint = R.drawable.arts),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_aviculture), strokeColor = R.color.primary_color, paint = R.drawable.aviculture),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_calcul_mathematique), strokeColor = R.color.primary_color, paint = R.drawable.calcul_mathematique),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_chauffeur), strokeColor = R.color.primary_color, paint = R.drawable.chauffeur),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_coiffure), strokeColor = R.color.primary_color, paint = R.drawable.coiffure),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_communication), strokeColor = R.color.primary_color, paint = R.drawable.communication)
+)

@@ -96,3 +96,39 @@ fun AppSubCategoryGrid(
         }
     }
 }
+
+@Composable
+fun AppSkillGrid(
+    icons: List<AppSkillCardIcon>,
+    column:Int,
+) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(column),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val lastIndex = icons.lastIndex
+        icons.forEachIndexed { index, icon ->
+            if (index == lastIndex && icons.size % 2 != 0 && column > 1) {
+                item(span = { GridItemSpan(column) }) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppSkillIconCard(icon = icon)
+                    }
+                }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppSkillIconCard(icon = icon)
+                    }
+
+                }
+            }
+        }
+    }
+}
