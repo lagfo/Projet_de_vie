@@ -197,10 +197,14 @@ fun AppNavigator(currentUser: User) {
                 }
             }
             composable<IntroductionCharacterRoute> {
-                IntroductionCharactersScreen{
-                    navigateToScreen(navController=navController, route = MonReseauIntroductionRoute)
-
-                }
+                IntroductionCharactersScreen(
+                    onNavigate = {
+                        navigateToScreen(navController=navController, route = MonReseauIntroductionRoute)
+                    },
+                    onBackPressed = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable<MonReseauIntroductionRoute> {
