@@ -22,6 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceIntroductionScreen
+import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
@@ -173,6 +175,7 @@ fun AppNavigator(currentUser: User) {
 
                             "Bilan" -> {
                                 //                                            navController.navigate("Bilan")
+                                navController.navigate(BilanCompetanceIntroductionRoute)
                             }
 
                             "Lien vie reel" -> {
@@ -218,22 +221,23 @@ fun AppNavigator(currentUser: User) {
             composable<MonReseauSubCategoriesRoute> { route->
                 val arg = route.toRoute<MonReseauSubCategoriesRoute>()
 
-                //val argg = backStackState?.destination?.route?.startsWith(
-                //    MonReseauSubCategoriesRoute::class.qualifiedName.toString()
-                //)
-
-                val argg = backStackState?.destination?.route
-
-
-                if (argg != null) {
-                    Timber.tag("tag").d("$argg   :   ${argg.javaClass}")
-                }
-
                 MonReseauSubCategoriesScreen(category = arg.category, column = arg.column)
             }
 
             composable<LigneDeVieRoute> {
                 LigneDeVieScreen()
+            }
+
+            composable<BilanCompetanceIntroductionRoute> {
+                BilanCompetanceIntroductionScreen {
+                    navigateToScreen(navController=navController, route = BilanCompetanceRoute)
+                }
+            }
+
+            composable<BilanCompetanceRoute> {
+                BilanCompetanceScreen {
+                    navigateToScreen(navController=navController, route = BilanCompetanceRoute)
+                }
             }
 
         }

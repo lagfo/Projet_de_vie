@@ -49,6 +49,7 @@ Pour chaque image, ajoute une petite description ou une date. </string>
     <string name="mon_reseau_categories_title"> Ton réseau personnel et communautaire ! </string>
     <string name="ligne_vie"> Ligne de vie </string>
     <string name="bilan_competance_title"> Bilan De Compétences </string>
+    <string name="competance_title"> Choisis tes compétences </string>
 
     <string name="skill_agriculture">Agriculture</string>
     <string name="skill_apiculture">Apiculture</string>
