@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -58,18 +59,6 @@ fun AppSubCategoryGrid(
         modifier = Modifier.fillMaxSize()
         ) {
 
-        /*items(icons){
-                icon ->
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                AppSubCategoryIconCard(icon = icon)
-            }
-        }
-
-         */
-
 
         val lastIndex = icons.lastIndex
         icons.forEachIndexed { index, icon ->
@@ -101,6 +90,8 @@ fun AppSubCategoryGrid(
 fun AppSkillGrid(
     icons: List<AppSkillCardIcon>,
     column:Int,
+    selectedIcons: List<String>,
+    onSkillClick: (AppSkillCardIcon) -> Unit
 ) {
 
     LazyVerticalGrid(
@@ -115,7 +106,14 @@ fun AppSkillGrid(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AppSkillIconCard(icon = icon)
+                        AppSkillIconCard(icon = icon,
+                            selected = selectedIcons.contains(
+                                when (val txt = icon.txt) {
+                                    is Txt.Res -> stringResource(id = txt.id)
+                                    is Txt.Raw -> txt.text
+                                }
+                            ),
+                            onClick = { onSkillClick(icon) })
                     }
                 }
             } else {
@@ -124,11 +122,19 @@ fun AppSkillGrid(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AppSkillIconCard(icon = icon)
+                        AppSkillIconCard(icon = icon,
+                            selected = selectedIcons.contains(
+                                when (val txt = icon.txt) {
+                                    is Txt.Res -> stringResource(id = txt.id)
+                                    is Txt.Raw -> txt.text
+                                }
+                            ),
+                            onClick = { onSkillClick(icon) })
                     }
 
                 }
             }
         }
+
     }
 }

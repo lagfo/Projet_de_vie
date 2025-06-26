@@ -45,7 +45,7 @@ data class AppSkillCardIcon(
     val txt: Txt,
     @ColorRes val strokeColor: Int,
     @DrawableRes val paint: Int,
-    val badgeStatus: Boolean = false
+    var badgeStatus: Boolean = false
 )
 
 val monReseauCategories = listOf(
