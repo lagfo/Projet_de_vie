@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
@@ -46,8 +47,9 @@ fun RegisterScreen (
     val nom = rememberSaveable { mutableStateOf ("") }
     val prenom = rememberSaveable { mutableStateOf ("") }
     val genre = rememberSaveable { mutableStateOf ("") }
+    val email = rememberSaveable { mutableStateOf ("") }
     val genres = listOf("Homme", "Femme")
-    val age = rememberSaveable { mutableStateOf ("") }
+    val dateNaissance = rememberSaveable { mutableStateOf ("") }
     val numTel = rememberSaveable { mutableStateOf ("") }
     val onSubmit = rememberSaveable { mutableStateOf(false) }
 
@@ -87,7 +89,7 @@ fun RegisterScreen (
 
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, end = 10.dp, top = 25.dp)) {
+            .padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
 
             //Form
             Box(modifier = Modifier.weight(.9f)) {
@@ -100,8 +102,9 @@ fun RegisterScreen (
                     prenom = prenom,
                     genre = genre,
                     genres = genres,
-                    age = age,
+                    dateNaissance = dateNaissance,
                     numTel = numTel,
+                    email = email,
                     onSubmit = onSubmit
                 )
 
@@ -116,14 +119,16 @@ fun RegisterScreen (
                 AppButton(
                     text = stringResource(id = R.string.register_btn_title),
                     onClick = {
-                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumber(numTel.value)){
+                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateNumber(numTel.value)){
+//                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumber(numTel.value)){
                             val user = User(
                                 nom = nom.value,
                                 prenom = prenom.value,
                                 genre = genre.value,
-                                age = age.value,
+                                dateNaissance = dateNaissance.value,
                                 numTel = numTel.value,
-                                avatarUri = imageUri.value
+                                avatarUri = imageUri.value,
+                                email = email.value
                             )
 
                             onSubmitClick(user)
@@ -154,6 +159,12 @@ fun RegisterScreen (
 
     }
 
+}
+
+@Preview
+@Composable
+fun RegisterScreenPreview(){
+    RegisterScreen(onSubmitClick = { user -> Timber.tag("tag").d("$user")})
 }
 
 

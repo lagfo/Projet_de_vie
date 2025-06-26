@@ -2,7 +2,7 @@ package org.ticanalyse.projetdevie.data.repository
 
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import org.ticanalyse.projetdevie.data.local.LigneDeVieDao
+import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieElementRepository
 

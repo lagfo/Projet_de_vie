@@ -1,6 +1,6 @@
 package org.ticanalyse.projetdevie.data.repository
 
-import org.ticanalyse.projetdevie.data.local.MonReseauDao
+import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
 import org.ticanalyse.projetdevie.domain.model.MonReseau
 import org.ticanalyse.projetdevie.domain.repository.MonReseauRepository
 

@@ -52,7 +52,7 @@ fun IntroductionHomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top= MediumPadding3, bottom = MediumPadding1),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
            Box {
