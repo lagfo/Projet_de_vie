@@ -48,6 +48,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.utils.Global.validateAge
 import org.ticanalyse.projetdevie.utils.Global.validateEmail
 import org.ticanalyse.projetdevie.utils.Global.validateNumber
+import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
@@ -81,13 +82,18 @@ fun AppInputField(
         }
     }
 
-    val isErrorExist by remember (value, onSubmit) {
+    val isErrorExist by remember(value, onSubmit, inputType) {
         derivedStateOf {
-            if (onSubmit && value.isBlank()) true
-            else if(value.isBlank()) true
-            else false
+             onSubmit && when (inputType) {
+                "number" -> !validateNumber(value)
+                "age" -> !validateAge(value)
+                "text" -> !validateTextEntries(value)
+                "email" -> !validateEmail(value)
+                else -> false
+            }
         }
     }
+
 
     Column {
         OutlinedTextField(
@@ -96,13 +102,6 @@ fun AppInputField(
             onValueChange = { newValue ->
                 val filtered = filterInput?.invoke(newValue) ?: newValue
                 onValueChange(filtered)
-                isErrorExist = when (inputType) {
-                    "number" -> !validateNumber(newValue)
-                    "age" -> !validateAge(newValue)
-                    "text" -> !validateTextEntries(newValue)
-                    "email" -> !validateEmail(newValue)
-                    else -> false
-                }
             },
             label = { Text(label) },
             supportingText = {
@@ -216,16 +215,9 @@ fun AppInputFieldMultiLine(
     val isErrorExist by remember (value, onSubmit) {
         derivedStateOf {
             if (onSubmit && value.isBlank()) true
-            else if(value.isBlank()) true
             else false
         }
     }
-    Timber.tag("tag").d("before value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
-    //LaunchedEffect(onSubmit) {
-    //    isErrorExist = if(value.isBlank()) onSubmit else !onSubmit
-    //}
-
-    Timber.tag("tag").d("after value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
 
     Column {
         OutlinedTextField(

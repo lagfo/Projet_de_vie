@@ -15,6 +15,7 @@ import org.ticanalyse.projetdevie.data.local.AppDatabase
 import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
 import org.ticanalyse.projetdevie.data.local.dao.ReponseQuestionLigneDeVieDao
+import org.ticanalyse.projetdevie.data.local.dao.SkillsDao
 import org.ticanalyse.projetdevie.data.manager.LocalUserManagerImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepositoryImpl
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
@@ -22,10 +23,12 @@ import org.ticanalyse.projetdevie.data.manager.dataStore
 import org.ticanalyse.projetdevie.data.repository.LigneDeVieElementRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.MonReseauRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.ReponseLigneDeVieRepositoryImpl
+import org.ticanalyse.projetdevie.data.repository.SkillRepositoryImpl
 import org.ticanalyse.projetdevie.data.repository.UserRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieElementRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.MonReseauRepository
+import org.ticanalyse.projetdevie.domain.repository.SkillRepository
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.AppEntryUseCases
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.ReadAppEntry
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.SaveAppEntry
@@ -36,6 +39,9 @@ import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.MonReseauUseCases
 import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.UpsertMonReseau
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPassedElement
 import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPresentElement
+import org.ticanalyse.projetdevie.domain.usecase.skill.GetSkill
+import org.ticanalyse.projetdevie.domain.usecase.skill.SkillUseCases
+import org.ticanalyse.projetdevie.domain.usecase.skill.UpsertSkill
 import org.ticanalyse.projetdevie.domain.usecase.user.GetUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UpsertUser
 import org.ticanalyse.projetdevie.domain.usecase.user.UserUseCases
@@ -86,7 +92,6 @@ object AppModule {
     }
 
 
-
     @Provides
     @Singleton
     fun provideMonReseauRepository(
@@ -103,9 +108,6 @@ object AppModule {
             upsertMonReseau = UpsertMonReseau(monReseauRepository)
         )
     }
-
-
-
 
     @Provides
     @Singleton
@@ -191,6 +193,30 @@ object AppModule {
     ): GetPassedElement{
         return GetPassedElement(ligneDeVieElementRepository)
     }
+
+
+    @Provides
+    @Singleton
+    fun provideSkillRepository(
+        skillsDao: SkillsDao,
+    ) : SkillRepository = SkillRepositoryImpl(skillsDao = skillsDao)
+
+    @Provides
+    @Singleton
+    fun provideSkillUseCases(
+        skillRepository: SkillRepository
+    ) : SkillUseCases{
+        return SkillUseCases(
+            getSkill = GetSkill(skillRepository),
+            upsertSkill = UpsertSkill(skillRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSkillDao(
+        appDatabase: AppDatabase
+    ): SkillsDao = appDatabase.skillsDao
 
 
 }

@@ -7,14 +7,16 @@ import org.ticanalyse.projetdevie.data.local.dao.AppDao
 import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
 import org.ticanalyse.projetdevie.data.local.dao.ReponseQuestionLigneDeVieDao
+import org.ticanalyse.projetdevie.data.local.dao.SkillsDao
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.MonReseau
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
+import org.ticanalyse.projetdevie.domain.model.Skill
 import org.ticanalyse.projetdevie.domain.model.User
 
 @Database(
-    entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class],
-    version = 1
+    entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class, Skill::class],
+    version = 2
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
@@ -23,5 +25,6 @@ abstract class AppDatabase: RoomDatabase() {
     abstract val monReseauDao: MonReseauDao
     abstract val ligneDeVieDao: LigneDeVieDao
     abstract val reponseQuestionLigneDeVieDao: ReponseQuestionLigneDeVieDao
+    abstract val skillsDao: SkillsDao
 
 }

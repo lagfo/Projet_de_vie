@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,6 +46,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 import org.ticanalyse.projetdevie.utils.Dimens.ExtraSmallPadding2
 import org.ticanalyse.projetdevie.utils.Dimens.IconSize
+import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 
 @Composable
 fun AppCategoryIconCard(
@@ -159,69 +163,69 @@ fun AppSubCategoryIconCard(
 
 @Composable
 fun AppSkillIconCard(
-    icon: AppSkillCardIcon
+    icon: AppSkillCardIcon,
+    selected: Boolean,
+    onClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .size(20.dp)
-            .shadow(
-                elevation = 8.dp,
-                shape = CircleShape,
-                ambientColor = colorResource(icon.strokeColor),
-                spotColor = colorResource(icon.strokeColor))
-            .background(Color.Green, CircleShape)
-            .zIndex(1f),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "✓",
-            color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-    Surface(
-        modifier = Modifier.size(IconSize).padding(8.dp),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(2.dp, colorResource(icon.strokeColor)),
-        onClick = {}
-    ) {
+    Box{
 
-        Box {
-
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id=icon.paint),
-                contentDescription =null,
-                contentScale = ContentScale.Crop,
-            )
-
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            colorResource(id = icon.strokeColor).copy(alpha = 0.7f),
-                            colorResource(id = icon.strokeColor).copy(alpha = 0.8f),
-                            colorResource(id = icon.strokeColor).copy(alpha = 0.9f),
-                            colorResource(id = icon.strokeColor),
-                            colorResource(id = icon.strokeColor)
-                        )
-                    )
-                )
-                .padding(top = 5.dp, bottom = 1.dp, start = 1.dp, end = 1.dp),
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(MediumPadding1)
+                    .background(color = colorResource(R.color.selected), CircleShape)
+                    .zIndex(1f)
+                    .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
-                val displayText = when (val txt = icon.txt) {
-                    is Txt.Res -> stringResource(id = txt.id)
-                    is Txt.Raw -> txt.text
-                }
-                AppIconText(
-                    text = displayText,
-                    fontSize = 10.sp,
-                    color = Color.White
+                Icon(Icons.Default.Check, contentDescription = "Sélectionné", tint = Color.White)
+            }
+        }
+
+        Surface(
+            modifier = Modifier.size(IconSize).padding(8.dp).clickable { onClick() },
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(2.dp, colorResource(icon.strokeColor))
+
+        ) {
+            Box {
+
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(id=icon.paint),
+                    contentDescription =null,
+                    contentScale = ContentScale.Crop,
                 )
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.7f),
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.8f),
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.9f),
+                                colorResource(id = icon.strokeColor),
+                                colorResource(id = icon.strokeColor)
+                            )
+                        )
+                    )
+                    .padding(top = 5.dp, bottom = 1.dp, start = 1.dp, end = 1.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val displayText = when (val txt = icon.txt) {
+                        is Txt.Res -> stringResource(id = txt.id)
+                        is Txt.Raw -> txt.text
+                    }
+                    AppIconText(
+                        text = displayText,
+                        fontSize = 10.sp,
+                        color = Color.White
+                    )
+
+                }
 
             }
 
@@ -238,7 +242,7 @@ fun AppSkillIconCard(
 fun AppSkillIconCardPreview() {
     ProjetDeVieTheme(dynamicColor = false) {
         val item = AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.agriculture)
-        AppSkillIconCard(icon  =item)
+        AppSkillIconCard(icon  =item, onClick = {}, selected = true)
     }
 }
 
