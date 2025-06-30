@@ -95,5 +95,8 @@ Pour chaque image, ajoute une petite description ou une date. </string>
     <string name="skill_transformation_produits_agricoles">Transformation de produits agricoles</string>
     <string name="skill_vente_commerce">Vente, commerce</string>
 
+    <string name="add_btn_title">Ajouter</string>
+    <string name="bilan_title">Bilan</string>
+
 
 </resources>

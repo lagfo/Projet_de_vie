@@ -16,10 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,12 +55,13 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
 
 @Composable
-fun BilanCompetanceScreen(onNavigate: () -> Unit) {
+fun BilanCompetanceScreen(onNavigateToLienAvecLaVieReele : () -> Unit,onNavigateToBilan: () -> Unit) {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
 
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
+    var navigateToBilan by remember {  mutableStateOf(false) }
 
 
     val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
@@ -117,6 +117,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
     LaunchedEffect(selectedSkills) {
         syncBadges()
         viewModel.saveSkill(Skill(skills = selectedSkills))
+        navigateToBilan = selectedSkills.isNotEmpty()
     }
 
     fun onAddSkills(newSkills: List<String>) {
@@ -125,7 +126,10 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             if (exists) {
                 Toast.makeText(context, "La compétence \"$newSkill\" existe déjà", Toast.LENGTH_SHORT).show()
                 false
-            } else true
+            } else{
+                Toast.makeText(context, "Compétence(s) ajoutée(s)", Toast.LENGTH_SHORT).show()
+                true
+            }
         }
 
         if (skillsToAdd.isEmpty()) return
@@ -155,7 +159,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             }
         }
 
-        showBottomSheet = false
+        //showBottomSheet = false
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -214,26 +218,26 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             ) {
                 Spacer(modifier = Modifier.weight(1.5f))
 
-                AppButton(text = "Lien avec la vie réelle", onClick = onNavigate)
+
+                if(navigateToBilan){
+                    AppButton(text = "Voir mes compétances", onClick = onNavigateToBilan)
+                }else{
+                    AppButton(text = "Lien avec la vie réelle", onClick = onNavigateToLienAvecLaVieReele)
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                IconButton(
+                FloatingActionButton(
+                    modifier = Modifier.size(48.dp),
                     onClick = { showBottomSheet = true },
-                    modifier = Modifier.size(48.dp).padding(end = 5.dp)
+                    containerColor = Color.Black,
+                    contentColor = Color.White,
+                    shape = CircleShape
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.Black,
-                        shadowElevation = 4.dp
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Ajouter",
-                            tint = Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Ajouter",
+                    )
                 }
             }
         }
@@ -245,4 +249,3 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
         onAddSkills = ::onAddSkills
     )
 }
-
