@@ -225,7 +225,11 @@ fun AppNavigator(currentUser: User) {
             composable<MonReseauSubCategoriesRoute> { route->
                 val arg = route.toRoute<MonReseauSubCategoriesRoute>()
 
-                MonReseauSubCategoriesScreen(category = arg.category, column = arg.column)
+                MonReseauSubCategoriesScreen(
+                    navController=navController,
+                    category = arg.category,
+                    column = arg.column
+                )
             }
 
             composable<LigneDeVieRoute> {
@@ -239,9 +243,12 @@ fun AppNavigator(currentUser: User) {
             }
 
             composable<BilanCompetanceRoute> {
-                BilanCompetanceScreen {
-                    navigateToScreen(navController=navController, route = BilanCompetanceRoute)
-                }
+                BilanCompetanceScreen (
+                    onNavigateToLienAvecLaVieReele = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) },
+                    onNavigateToBilan = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) }
+                )
+
+
             }
 
         }
