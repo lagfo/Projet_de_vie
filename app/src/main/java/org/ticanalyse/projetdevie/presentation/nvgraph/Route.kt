@@ -54,6 +54,9 @@ object BilanCompetanceIntroductionRoute:AppRoute
 @Serializable
 object BilanCompetanceRoute:AppRoute
 
+@Serializable
+object BilanCompetenceResumeRoute:AppRoute
+
 
 //@Serializable
 //data class HomeRoute (
