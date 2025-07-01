@@ -41,10 +41,6 @@ object MonReseauCategoriesRoute:AppRoute
 @Serializable
 data class MonReseauSubCategoriesRoute(val category: String,val column: Int):AppRoute
 
-
-@Serializable
-object LigneDeVieIntroductionRoute:AppRoute
-
 @Serializable
 object LigneDeVieRoute: AppRoute
 
@@ -53,6 +49,16 @@ object BilanCompetanceIntroductionRoute:AppRoute
 
 @Serializable
 object BilanCompetanceRoute:AppRoute
+@Serializable
+object RecapitulatifRoute: AppRoute
+@Serializable
+object LigneDeVieElementRoute: AppRoute
+
+@Serializable
+object LienVieReelIntroductionScreenRoute: AppRoute
+@Serializable
+object FormulaireScreenRoute: AppRoute
+
 
 @Serializable
 object BilanCompetenceResumeRoute:AppRoute

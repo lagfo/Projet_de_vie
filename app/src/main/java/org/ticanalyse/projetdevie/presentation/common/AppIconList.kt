@@ -3,6 +3,7 @@ package org.ticanalyse.projetdevie.presentation.common
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import kotlinx.serialization.Serializable
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute

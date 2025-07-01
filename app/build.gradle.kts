@@ -116,6 +116,10 @@ dependencies {
     implementation (libs.androidx.media3.ui)
     implementation(libs.androidx.media3.exoplayer.hls)
 
+    //Library
+    implementation(libs.androidx.livedata)
+
+
     //Compose Dialog
     implementation(libs.compose.dialog.core)
 //    implementation(libs.compose.dialog.calendar)

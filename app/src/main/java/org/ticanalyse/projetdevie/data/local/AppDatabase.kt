@@ -20,7 +20,6 @@ import org.ticanalyse.projetdevie.domain.model.User
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
-
     abstract val appDao: AppDao
     abstract val monReseauDao: MonReseauDao
     abstract val ligneDeVieDao: LigneDeVieDao
