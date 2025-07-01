@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
@@ -44,7 +46,7 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
 @Composable
-fun BilanCompetenceResumeScreen(onNavigate: () -> Unit) {
+fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Unit) {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
@@ -135,11 +137,14 @@ fun BilanCompetenceResumeScreen(onNavigate: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                AppButton(text = "Retour", onClick = { navController.navigateUp() })
+                Spacer(modifier = Modifier.width(24.dp))
                 AppButton(text = "Lien avec la vie réelle", onClick = onNavigate)
-
             }
+
         }
     }
 

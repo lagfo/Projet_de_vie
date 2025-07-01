@@ -24,6 +24,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceScreen
+import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceResumeScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
@@ -38,6 +39,7 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategories
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetenceResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
@@ -75,6 +77,7 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
         backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
 
@@ -124,6 +127,7 @@ fun AppNavigator(currentUser: User) {
                     }
                     backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
                     backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
+                    backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
 
                 }
                 !isHomeTopBarVisible
@@ -219,7 +223,6 @@ fun AppNavigator(currentUser: User) {
                     onNavigate={navigateToScreen(navController=navController, route = LigneDeVieRoute)}
                 )
 
-
             }
 
             composable<MonReseauSubCategoriesRoute> { route->
@@ -244,10 +247,17 @@ fun AppNavigator(currentUser: User) {
 
             composable<BilanCompetanceRoute> {
                 BilanCompetanceScreen (
-                    onNavigateToLienAvecLaVieReele = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) },
-                    onNavigateToBilan = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) }
+                    navController=navController,
+                    onNavigateToLienAvecLaVieReele = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) }
                 )
 
+            }
+
+            composable<BilanCompetenceResumeRoute> {
+                BilanCompetenceResumeScreen (
+                    navController = navController,
+                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieRoute)}
+                )
 
             }
 

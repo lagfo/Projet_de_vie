@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Skill
 import org.ticanalyse.projetdevie.presentation.common.AppButton
@@ -49,13 +50,15 @@ import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetenceResumeRoute
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
 
 @Composable
-fun BilanCompetanceScreen(onNavigateToLienAvecLaVieReele : () -> Unit,onNavigateToBilan: () -> Unit) {
+fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVieReele : () -> Unit) {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
@@ -220,7 +223,9 @@ fun BilanCompetanceScreen(onNavigateToLienAvecLaVieReele : () -> Unit,onNavigate
 
 
                 if(navigateToBilan){
-                    AppButton(text = "Voir mes compétances", onClick = onNavigateToBilan)
+                    AppButton(text = "Voir mes compétances", onClick = {navController.navigate(
+                        BilanCompetenceResumeRoute
+                    )})
                 }else{
                     AppButton(text = "Lien avec la vie réelle", onClick = onNavigateToLienAvecLaVieReele)
                 }
