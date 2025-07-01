@@ -50,7 +50,6 @@ import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
-import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetenceResumeRoute
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1

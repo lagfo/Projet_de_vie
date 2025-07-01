@@ -83,6 +83,7 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName -> -1
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
         backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
@@ -298,7 +299,7 @@ fun AppNavigator(currentUser: User) {
             composable<BilanCompetanceRoute> {
                 BilanCompetanceScreen (
                     navController=navController,
-                    onNavigateToLienAvecLaVieReele = { navigateToScreen(navController=navController, route = BilanCompetanceRoute) }
+                    onNavigateToLienAvecLaVieReele = { navigateToScreen(navController=navController, route = LienVieReelIntroductionScreenRoute) }
                 )
 
             }
@@ -306,7 +307,7 @@ fun AppNavigator(currentUser: User) {
             composable<BilanCompetenceResumeRoute> {
                 BilanCompetenceResumeScreen (
                     navController = navController,
-                    onNavigate={navigateToScreen(navController=navController, route = LigneDeVieRoute)}
+                    onNavigate={navigateToScreen(navController=navController, route = LienVieReelIntroductionScreenRoute)}
                 )
 
             }
