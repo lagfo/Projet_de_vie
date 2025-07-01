@@ -26,17 +26,14 @@ import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceI
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
-import org.ticanalyse.projetdevie.presentation.common.AppSubCategoryGrid
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
 import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
-import org.ticanalyse.projetdevie.presentation.common.acteurEducatifSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurFamiliauxSociauxSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurInstitutionnelSubCategories
-import org.ticanalyse.projetdevie.presentation.common.acteurProfessionnelSubCategories
 import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
+import org.ticanalyse.projetdevie.presentation.lien_vie_relle.FormulaireScreen
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelScreen
+import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LienDeVieIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.RecapitulatifScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScreen
@@ -45,11 +42,12 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategories
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.FormulaireScreenRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.LienVieReelRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.LienVieReelIntroductionScreenRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieElementRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
@@ -82,6 +80,7 @@ fun AppNavigator(currentUser: User) {
         backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName -> -1
         backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> -1
         backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
@@ -107,8 +106,9 @@ fun AppNavigator(currentUser: User) {
                     MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
                     MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
                     LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title =R.string.ligne_vie ,R.color.primary_color)
-                    LienVieReelRoute::class.qualifiedName ->AppModuleTopBar(title = R.string.lien_vie_reelle,R.color.primary_color)
                     RecapitulatifRoute::class.qualifiedName->AppModuleTopBar(title =R.string.ligne_vie,R.color.primary_color )
+                    LienVieReelIntroductionScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
+                    FormulaireScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
                     MonReseauSubCategoriesRoute::class.qualifiedName -> {
 
                         AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
@@ -119,18 +119,20 @@ fun AppNavigator(currentUser: User) {
                     backStackState?.destination?.route == HomeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
-                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                    backStackState?.destination?.route == LigneDeVieElementRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.ligne_vie,R.color.primary_color)
                     backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.ligne_vie,R.color.primary_color)
-
+                    backStackState?.destination?.route == RecapitulatifRoute::class.qualifiedName->AppModuleTopBar(title =R.string.ligne_vie,R.color.primary_color )
+                    backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
+                    backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
                     backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
                         val category = backStackState.arguments?.getString("category")
                         when(category){
-                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.thirty_color)
-                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.secondary_color)
-                            "acteurEducatif" -> AppModuleTopBar(title = R.string.mon_reseau_title,R.color.primary_color)
-                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.mon_reseau_title ,R.color.fourty_color)
+                            "acteurFamiliauxSociaux" -> AppModuleTopBar(title = R.string.introduction_title,R.color.thirty_color)
+                            "acteurProfessionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.secondary_color)
+                            "acteurEducatif" -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
+                            "acteurInstitutionnel" -> AppModuleTopBar(title = R.string.introduction_title,R.color.fourty_color)
                         }
                     }
                     backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
@@ -190,7 +192,7 @@ fun AppNavigator(currentUser: User) {
                             }
 
                             "Lien vie reel" -> {
-                                //                                            navController.navigate("Lien vie reel")
+                                navController.navigate(LienVieReelIntroductionScreenRoute)
                             }
 
                             "Plannification" -> {
@@ -240,23 +242,44 @@ fun AppNavigator(currentUser: User) {
             }
 
             composable<LigneDeVieRoute> {
+//                LigneDeVieScreen(
+//                    onNavigate = {
+//                        navController.navigate(RecapitulatifRoute)
+//                    }
+//                )
+                LienDeVieIntroductionScreen(
+                    onNavigate = {
+                        navController.navigate(LigneDeVieElementRoute)
+                    }
+                )
+            }
+
+            composable<LigneDeVieElementRoute> {
                 LigneDeVieScreen(
                     onNavigate = {
                         navController.navigate(RecapitulatifRoute)
                     }
                 )
+
             }
 
             composable<RecapitulatifRoute>{
                 RecapitulatifScreen(
                     onNavigate ={
-                        navController.navigate(LienVieReelRoute)
+                        navController.navigate(LienVieReelIntroductionScreenRoute)
                     }
                 )
             }
 
-            composable<LienVieReelRoute>{
-                LienVieReelScreen()
+            composable<LienVieReelIntroductionScreenRoute>{
+                LienVieReelScreen(
+                    onNavigate = {
+                        navController.navigate(FormulaireScreenRoute)
+                    }
+                )
+            }
+            composable<FormulaireScreenRoute>{
+                FormulaireScreen()
             }
 
             composable<BilanCompetanceIntroductionRoute> {

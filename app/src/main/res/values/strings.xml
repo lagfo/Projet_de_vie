@@ -95,6 +95,11 @@ Pour chaque image, ajoute une petite description ou une date. </string>
     <string name="skill_transformation_produits_agricoles">Transformation de produits agricoles</string>
     <string name="skill_vente_commerce">Vente, commerce</string>
     <string name="lien_vie_reelle">Lien avec la vie réelle</string>
+    <string name="lien_avec_la_vie_reel">Commençons par une vidéo de présentation</string>
+    <string name="ligne_de_vie_introduction">👋 Bienvenue dans un moment-clé de ton parcours :
+la visualisation de ton projet de vie. Cet exercice s’appelle la "ligne de vie".
+Il te permet de revenir sur ton passé, de mieux comprendre ton présent,
+et de commencer à tracer ton futur.</string>
 
 
 </resources>

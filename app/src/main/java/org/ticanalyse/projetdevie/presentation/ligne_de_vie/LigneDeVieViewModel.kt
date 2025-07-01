@@ -1,29 +1,39 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
-import androidx.compose.runtime.getValue
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.Element
-import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.AddLigneDeVieElement
-import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetLineDeVieElement
-import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPassedElement
-import org.ticanalyse.projetdevie.domain.usecase.ligne_de_vie_usecase.GetPresentElement
+import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieRepository
 
+enum class  DISPLAY_TYPE{
+    ALL,
+    IN_PROGRESS,
+    PASSED,
+    ON_GOING
+}
+data  class ScreenState(
+    val  displayType: DISPLAY_TYPE=DISPLAY_TYPE.ALL,
+    val currentList: List<Element> = emptyList(),
+)
 @HiltViewModel
 class LigneDeVieViewModel @Inject constructor(
-    private val addLigneDeVie: AddLigneDeVieElement,
-    private val getLineDeVieElement: GetLineDeVieElement,
-    private val getPassedElement: GetPassedElement,
-    private val getPresentElement: GetPresentElement
+    private val repository: LigneDeVieRepository
 ): ViewModel() {
+
+    private val _upsertSuccess = MutableStateFlow(false)
+    val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
+    fun resetUpsertStatus(){
+        _upsertSuccess.value=false
+    }
     fun addElement(
         id:Int,
         label:String,
@@ -49,38 +59,129 @@ class LigneDeVieViewModel @Inject constructor(
             creationDate =creationDate
         )
         viewModelScope.launch {
-            addLigneDeVie(element)
+            try{
+                repository.insertLigneDeVieElement(element)
+                _upsertSuccess.value=true
+                Log.d("TAG", "addElement: insertion succeed and status is $upsertSuccess")
 
-        }
-    }
-
-    private val _elements = MutableStateFlow<List<Element>>(emptyList())
-    val elements: StateFlow<List<Element>> = _elements
-
-    private val _passedelements = MutableStateFlow<List<Element>>(emptyList())
-    val passedelEments: StateFlow<List<Element>> = _passedelements
-
-    private val _presentElements=MutableStateFlow<List<Element>>(emptyList())
-    val elementEncours: StateFlow<List<Element>> =_presentElements
-
-    init {
-
-        viewModelScope.launch {
-            getLineDeVieElement().collect { listElement ->
-                _elements.value = listElement
-            }
-        }
-
-        viewModelScope.launch {
-            getPassedElement().collect{passedelEment->
-                _passedelements.value=passedelEment
-            }
-        }
-
-        viewModelScope.launch {
-            getPresentElement().collect{presentElement->
-                _presentElements.value=presentElement
+            }catch (e: Exception){
+                _upsertSuccess.value=false
+                Log.d("TAG", "addElement: insertion failed . Error message : ${e.message}")
             }
         }
     }
+
+//    private val _elements = MutableLiveData<List<Element>>(emptyList())
+//    val elements: LiveData<List<Element>> = _elements
+//
+//    private val _passedelements = MutableLiveData<List<Element>>(emptyList())
+//    val passedelEments: LiveData<List<Element>> = _passedelements
+//
+//    private val _presentElements= MutableLiveData<List<Element>>(emptyList())
+//    val elementEncours: LiveData<List<Element>> =_presentElements
+
+//    init {
+//
+//        viewModelScope.launch {
+//            getLineDeVieElement().collect { listElement ->
+//                _elements.value = listElement
+//            }
+//        }
+//
+//        viewModelScope.launch {
+//            getPassedElement().collect{passedelEment->
+//                _passedelements.value=passedelEment
+//            }
+//        }
+//
+//        viewModelScope.launch {
+//            getPresentElement().collect{presentElement->
+//                _presentElements.postValue(presentElement)
+//            }
+//        }
+//    }
+
+//    val passedElements: LiveData<List<Element>> =getPassedElement()
+//    val presentElements: LiveData<List<Element>> =getPresentElement()
+
+//    private val _uiState=MutableStateFlow(ScreenState())
+//    val uiState: StateFlow<ScreenState> =_uiState.asStateFlow()
+//
+//    init{
+//        loadPassedElements()
+//        loadPresentElements()
+//    }
+
+//    private fun loadPassedElements(){
+//        viewModelScope.launch {
+//            _uiState.value=_uiState.value.copy(isLoadingPassedElement = true)
+//            try {
+//                getPassedElement().collect { passedElement ->
+//                    _uiState.value = _uiState.value.copy(
+//                        passedElements = passedElement,
+//                        isLoadingPassedElement = false
+//                    )
+//                }
+//            }catch (e: Exception){
+//                _uiState.value=_uiState.value.copy(error = e.message, isLoadingPassedElement = false)
+//
+//            }
+//        }
+//    }
+
+//    private fun loadPresentElements(){
+//        viewModelScope.launch {
+//            _uiState.value=_uiState.value.copy(isLoadingPresentElement = true)
+//            try {
+//                getPresentElement().collect {presentElement ->
+//                    _uiState.value = _uiState.value.copy(
+//                        presentElements = presentElement,
+//                        isLoadingPresentElement = false
+//                    )
+//                }
+//                Log.d("TAG", "loadPresentElements: ${_uiState.value.presentElements} ")
+//            }catch (e: Exception){
+//                _uiState.value=_uiState.value.copy(error = e.message, isLoadingPresentElement =false)
+//            }
+//        }
+//
+//    }
+
+    val uiState=mutableStateOf(ScreenState())
+init{
+    getAllElements()
+    getPassedElements()
+    getPresentElements()
+}
+    private val _allElement = MutableStateFlow<List<Element>>(emptyList())
+    val allElement: StateFlow<List<Element>> = _allElement.asStateFlow()
+    fun getAllElements(){
+        viewModelScope.launch {
+            repository.getElements().collect { listElement ->
+                _allElement.value=listElement
+            }
+        }
+        Log.d("TAG", "getAllElements: $allElement ")
+    }
+
+    private val _allPassedElement = MutableStateFlow<List<Element>>(emptyList())
+    val allPassedElement: StateFlow<List<Element>> = _allPassedElement.asStateFlow()
+    fun getPassedElements(){
+        viewModelScope.launch {
+            repository.getPassedElements().collect { listPassedElement->
+                _allPassedElement.value=listPassedElement
+            }
+        }
+    }
+
+    private val _allPresentElement = MutableStateFlow<List<Element>>(emptyList())
+    val allPresentElement: StateFlow<List<Element>> = _allPresentElement.asStateFlow()
+    fun getPresentElements(){
+        viewModelScope.launch {
+            repository.getPresentElements().collect { listPresentElement->
+                _allPresentElement.value=listPresentElement
+            }
+        }
+    }
+
 }
