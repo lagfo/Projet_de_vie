@@ -1,6 +1,8 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,16 +26,25 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults.indicatorLine
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,35 +56,54 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
+import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.presentation.home.CustomItemLayout
+import org.ticanalyse.projetdevie.presentation.home.SharpEllipse
+import org.ticanalyse.projetdevie.presentation.home.Topic
 import org.ticanalyse.projetdevie.presentation.introduction.IndicatorDots
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
+import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import org.ticanalyse.projetdevie.utils.ExoPlayer
 import timber.log.Timber
+import kotlin.collections.lastIndex
 
 
 data class ElementScolarite(val id:Int,val topicImage:Painter,val topicTitle:String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LigneDeVieScreen(modifier: Modifier = Modifier) {
+fun LigneDeVieScreen(
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit
+) {
 
     val onSubmit = rememberSaveable { mutableStateOf (false) }
 
@@ -116,6 +147,8 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
     val sttManager = appSTTManager()
     var reponse1 by remember { mutableStateOf("") }
     var reponse2 by remember { mutableStateOf("") }
+    var isButtonVisible by remember { mutableStateOf(false) }
+    isButtonVisible=if(pagerState.currentPage==0) false else if(pagerState.currentPage==1) false else if(pagerState.currentPage==2) true else false
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -128,7 +161,6 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            var title by remember { mutableStateOf("") }
 
 //            Box(
 //                modifier= Modifier.fillMaxWidth(),
@@ -165,7 +197,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Bilan",
+                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Questions",
                 textAlign = TextAlign.Center,
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Bold,
@@ -419,8 +451,7 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                                                             },
                                                             label ="",
                                                             ttsManager =ttsManager,
-                                                            sttManager =sttManager,
-                                                            onSubmit=onSubmit.value
+                                                            sttManager =sttManager
                                                         )
 
                                                     }
@@ -429,19 +460,10 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
 
                                             }
                                         }
+
                                     }
                                 }
                                 else->error("Page inexistente")
-                            }
-                            if(showDialog && selectedItem!=null){
-                                Timber.tag("TAG").d("LigneDeVieScreen:Modal dialog is openned")
-                                ModalDialog(item=selectedItem!!, onDismiss ={
-                                    showDialog=false
-                                    selectedItem=null
-                                },
-                                    viewModel = viewModel
-                                )
-
                             }
                             IconButton(
                                 modifier = Modifier.weight(0.2f),
@@ -479,8 +501,11 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
                 currentPage = pagerState.currentPage,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            AppButton (text = "Voir bilan", onClick = {
-            })
+            if(isButtonVisible){
+                AppButton (text = "Voir récapitulatif", onClick = {
+                    onNavigate()
+                })
+            }
         }
         Image(
             painter = painterResource(id = R.drawable.bg_img),
@@ -492,6 +517,18 @@ fun LigneDeVieScreen(modifier: Modifier = Modifier) {
         )
 
     }
+
+    if(showDialog && selectedItem!=null){
+        Log.d("TAG", "LigneDeVieScreen:Modal dialog is openned")
+        ModalDialog(item=selectedItem!!, onDismiss ={
+            showDialog=false
+            selectedItem=null
+        },
+            viewModel = viewModel
+        )
+
+    }
+
 
 
 }
@@ -554,5 +591,5 @@ fun PageIndicator(pageCount: Int, currentPage: Int, modifier: Modifier = Modifie
 @Composable
 @Preview(showBackground = true)
 fun LigneDeViePreview(modifier: Modifier = Modifier) {
-    LigneDeVieScreen()
+    LigneDeVieScreen(onNavigate = {})
 }
