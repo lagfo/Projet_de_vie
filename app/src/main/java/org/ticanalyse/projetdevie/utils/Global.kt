@@ -1,8 +1,14 @@
 package org.ticanalyse.projetdevie.utils
 
+import android.content.Context
+import android.net.Uri
+import android.util.Patterns
+import androidx.core.content.FileProvider
+import java.io.File
+import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalTime
-import kotlin.time.Duration.Companion.milliseconds
+import java.util.Date
+import java.util.Locale
 
 object Global {
 
@@ -15,7 +21,7 @@ object Global {
         return true
     }
 
-    fun validateAge(value: String):Boolean{
+    fun validateAge(value: String): Boolean{
         if(value.isBlank())
             return false
         else if(value.toInt() <= 13)
@@ -23,7 +29,7 @@ object Global {
         return true
     }
 
-    fun validateNumber(value: String):Boolean{
+    fun validateNumber(value: String): Boolean{
         if(value.isBlank())
             return false
         else if(value.length <= 7)
@@ -32,6 +38,15 @@ object Global {
             return false
         return true
     }
+
+    fun validateEmail(email: String): Boolean {
+        return if (email.isBlank() || email.isEmpty()) {
+            true
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+    }
+
 
     fun validateAnneeDeFin(year:Int): Boolean{
         val actualDate= LocalDate.now()
@@ -49,12 +64,33 @@ object Global {
         return true
     }
 
-    fun checkPassedAndPresent(startYear:Int,endYear:Int,inProgressYear: Int):Boolean{
-        if(startYear.toString().isNotBlank()&&endYear.toString().isNotBlank()&&inProgressYear.toString().isNotBlank()){
-           return false
-        }else{
-            return  true
+    fun createImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss",
+            Locale.getDefault()).format(Date())
+        val imageFileName = "JPEG_${timeStamp}_"
+        // Get the directory: context.filesDir/images/
+        val storageDir = File(context.cacheDir.path)
+        if (!storageDir.exists()) {
+            storageDir.mkdirs()
         }
+        return File.createTempFile(
+            imageFileName, /* prefix */
+            ".jpg",        /* suffix */
+            storageDir     /* directory */
+        )
+    }
+
+    fun getUriForFile(context: Context, file: File): Uri {
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider", // Authority matches AndroidManifest
+            file
+        )
+    }
+
+    fun checkPassedAndPresent(startYear:Int,endYear:Int,inProgressYear: Int): Boolean{
+        return !(startYear.toString().isNotBlank() && endYear.toString().isNotBlank() && inProgressYear.toString().isNotBlank())
     }
 
 //    fun checkYearLength(startYear:Int,endYear:Int,inProgressYear: Int): Boolean{

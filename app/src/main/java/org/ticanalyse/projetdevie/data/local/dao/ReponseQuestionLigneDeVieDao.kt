@@ -1,11 +1,10 @@
-package org.ticanalyse.projetdevie.data.local
+package org.ticanalyse.projetdevie.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
 
 @Dao

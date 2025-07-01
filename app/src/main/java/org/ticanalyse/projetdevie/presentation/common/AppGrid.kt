@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -58,18 +59,6 @@ fun AppSubCategoryGrid(
         modifier = Modifier.fillMaxSize()
         ) {
 
-        /*items(icons){
-                icon ->
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                AppSubCategoryIconCard(icon = icon)
-            }
-        }
-
-         */
-
 
         val lastIndex = icons.lastIndex
         icons.forEachIndexed { index, icon ->
@@ -94,5 +83,58 @@ fun AppSubCategoryGrid(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AppSkillGrid(
+    icons: List<AppSkillCardIcon>,
+    column:Int,
+    selectedIcons: List<String>,
+    onSkillClick: (AppSkillCardIcon) -> Unit
+) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(column),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val lastIndex = icons.lastIndex
+        icons.forEachIndexed { index, icon ->
+            if (index == lastIndex && icons.size % 2 != 0 && column > 1) {
+                item(span = { GridItemSpan(column) }) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppSkillIconCard(icon = icon,
+                            selected = selectedIcons.contains(
+                                when (val txt = icon.txt) {
+                                    is Txt.Res -> stringResource(id = txt.id)
+                                    is Txt.Raw -> txt.text
+                                }
+                            ),
+                            onClick = { onSkillClick(icon) })
+                    }
+                }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppSkillIconCard(icon = icon,
+                            selected = selectedIcons.contains(
+                                when (val txt = icon.txt) {
+                                    is Txt.Res -> stringResource(id = txt.id)
+                                    is Txt.Raw -> txt.text
+                                }
+                            ),
+                            onClick = { onSkillClick(icon) })
+                    }
+
+                }
+            }
+        }
+
     }
 }

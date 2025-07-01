@@ -1,5 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.common
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -10,15 +11,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,17 +30,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.compose.ui.zIndex
+import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 import org.ticanalyse.projetdevie.utils.Dimens.ExtraSmallPadding2
 import org.ticanalyse.projetdevie.utils.Dimens.IconSize
+import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 
 @Composable
 fun AppCategoryIconCard(
@@ -149,5 +159,90 @@ fun AppSubCategoryIconCard(
         index = index
     )
 
+}
+
+@Composable
+fun AppSkillIconCard(
+    icon: AppSkillCardIcon,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Box{
+
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .size(MediumPadding1)
+                    .background(color = colorResource(R.color.selected), CircleShape)
+                    .zIndex(1f)
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.Check, contentDescription = "Sélectionné", tint = Color.White)
+            }
+        }
+
+        Surface(
+            modifier = Modifier.size(IconSize).padding(8.dp).clickable { onClick() },
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(2.dp, colorResource(icon.strokeColor))
+
+        ) {
+            Box {
+
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(id=icon.paint),
+                    contentDescription =null,
+                    contentScale = ContentScale.Crop,
+                )
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.7f),
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.8f),
+                                colorResource(id = icon.strokeColor).copy(alpha = 0.9f),
+                                colorResource(id = icon.strokeColor),
+                                colorResource(id = icon.strokeColor)
+                            )
+                        )
+                    )
+                    .padding(top = 5.dp, bottom = 1.dp, start = 1.dp, end = 1.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val displayText = when (val txt = icon.txt) {
+                        is Txt.Res -> stringResource(id = txt.id)
+                        is Txt.Raw -> txt.text
+                    }
+                    AppIconText(
+                        text = displayText,
+                        fontSize = 10.sp,
+                        color = Color.White
+                    )
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun AppSkillIconCardPreview() {
+    ProjetDeVieTheme(dynamicColor = false) {
+        val item = AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.agriculture)
+        AppSkillIconCard(icon  =item, onClick = {}, selected = true)
+    }
 }
 
