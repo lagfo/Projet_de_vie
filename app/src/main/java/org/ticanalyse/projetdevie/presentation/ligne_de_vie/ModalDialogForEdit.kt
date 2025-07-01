@@ -1,16 +1,16 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -29,16 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,40 +55,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
-import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
-import timber.log.Timber
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalDialog(
+fun ModalDialogForEdit(
     modifier: Modifier = Modifier,
-    item: ElementScolarite,
-   onDismiss:()->Unit,
+    item: Element,
+    onDismiss:()->Unit,
     viewModel: LigneDeVieViewModel
 ) {
-    val onSubmit = rememberSaveable { mutableStateOf (false) }
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
     LaunchedEffect(status){
         Log.d("TAG", "ModalDialog: status value is $status ")
         if(status){
-            Toast.makeText(context, "Insertion réussie", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Modification réussie", Toast.LENGTH_SHORT).show()
             viewModel.resetUpsertStatus()
             onDismiss()
         }
     }
 
     ModalBottomSheet(
-        modifier = modifier.fillMaxSize(),
         sheetState =rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        onDismissRequest =onDismiss
+        onDismissRequest =onDismiss,
+        modifier =modifier.fillMaxSize(),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -126,15 +121,36 @@ fun ModalDialog(
                         color = Color.White                                      // ← solid background
                     ) {
                         Image(
-                            painter = item.topicImage,
-                            contentDescription = item.topicTitle,
+                            painter =when(item.id){
+                                1->painterResource(R.drawable.ecole_primaire)
+                                2->painterResource(R.drawable.ecole_secondaire)
+                                3->painterResource(R.drawable.universite_ecole_superieur)
+                                4->painterResource(R.drawable.alphabetisation_langue_locale)
+                                5->painterResource(R.drawable.ecole_coranique)
+                                6->painterResource(R.drawable.ecole_formation_prof)
+                                7->painterResource(R.drawable.abandon_scolarite)
+                                8->painterResource(R.drawable.reprise_interruption_etude)
+                                9->painterResource(R.drawable.premier_apprentissage)
+                                10->painterResource(R.drawable.naissance_enfant)
+                                11->painterResource(R.drawable.mariage)
+                                12->painterResource(R.drawable.depart_foyer_familial)
+                                13->painterResource(R.drawable.ecole_coranique)
+                                14->painterResource(R.drawable.premier_emploi)
+                                15->painterResource(R.drawable.projet)
+                                16->painterResource(R.drawable.deces)
+                                17->painterResource(R.drawable.depart_migration)
+                                18->painterResource(R.drawable.retrouvaille)
+                                19->painterResource(R.drawable.grande_decision_personnel)
+                                else -> {painterResource(R.drawable.ecole_primaire)}
+                            },
+                            contentDescription = item.label,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.background(Color.White)
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text=item.topicTitle,
+                        text=item.label,
                         fontFamily = Roboto,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
@@ -146,9 +162,7 @@ fun ModalDialog(
                 }
 
                 Row(
-                    modifier= Modifier
-                        .fillMaxWidth()
-                        .offset(0.dp, (15).dp),
+                    modifier= Modifier.fillMaxWidth().offset(0.dp, (15).dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
@@ -359,14 +373,13 @@ fun ModalDialog(
                     label ="Commentaire",
                     ttsManager =ttsManager,
                     sttManager =sttManager,
-                    onSubmit=onSubmit.value
                 )
                 //Validate button
                 AppButton(text="Valider", onClick ={
                     if(isdateDebutValide&&isdateFinValide){
                         viewModel.addElement(
                             id = item.id,
-                            label = item.topicTitle,
+                            label = item.label,
                             startYear =dateDebut.toInt(),
                             endYear = dateFin.toInt(),
                             inProgressYear =0,
@@ -378,7 +391,7 @@ fun ModalDialog(
                     }else if(isdateEncoursValide){
                         viewModel.addElement(
                             id = item.id,
-                            label = item.topicTitle,
+                            label = item.label,
                             startYear =0,
                             endYear = 0,
                             inProgressYear =dateEncours.toInt(),
@@ -388,6 +401,7 @@ fun ModalDialog(
                             creationDate = LocalDate.now().toString()
                         )
                     }
+
                 })
             }
         }
