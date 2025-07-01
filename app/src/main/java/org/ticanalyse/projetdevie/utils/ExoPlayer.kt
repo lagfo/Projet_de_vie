@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -79,8 +80,8 @@ fun ExoPlayer(
                 player = exoPlayer
             }
         },
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
-            .aspectRatio(16 / 9f)
+        modifier = Modifier.background(Color.Black)
+//            .aspectRatio(16 / 12f)
             .fillMaxWidth(),
         update = {
             when(lifecycle.value) {

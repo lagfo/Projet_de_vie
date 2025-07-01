@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -36,12 +38,22 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.maxkeppeker.sheets.core.models.base.Header
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.date_time.DateTimeDialog
+import com.maxkeppeler.sheets.date_time.models.DateTimeConfig
+import com.maxkeppeler.sheets.date_time.models.DateTimeSelection
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.utils.Global.validateAge
+import org.ticanalyse.projetdevie.utils.Global.validateEmail
 import org.ticanalyse.projetdevie.utils.Global.validateNumber
+import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 import org.ticanalyse.projetdevie.utils.SpeechToTextManager
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -56,7 +68,8 @@ fun AppInputField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     filterInput: ((String) -> String)? = null,
     onSpeechResult: ((String) -> String)? = null,
-    onSubmit: Boolean= false
+    onSubmit: Boolean= false,
+    isEnable: Boolean = true
 ) {
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -69,16 +82,22 @@ fun AppInputField(
         }
     }
 
-    val isErrorExist by remember (value, onSubmit) {
+    val isErrorExist by remember(value, onSubmit, inputType) {
         derivedStateOf {
-            if (onSubmit && value.isBlank()) true
-            else if(value.isBlank()) true
-            else false
+             onSubmit && when (inputType) {
+                "number" -> !validateNumber(value)
+                "age" -> !validateAge(value)
+                "text" -> !validateTextEntries(value)
+                "email" -> !validateEmail(value)
+                else -> false
+            }
         }
     }
 
+
     Column {
         OutlinedTextField(
+            enabled = isEnable,
             value = value,
             onValueChange = { newValue ->
                 val filtered = filterInput?.invoke(newValue) ?: newValue
@@ -196,16 +215,9 @@ fun AppInputFieldMultiLine(
     val isErrorExist by remember (value, onSubmit) {
         derivedStateOf {
             if (onSubmit && value.isBlank()) true
-            else if(value.isBlank()) true
             else false
         }
     }
-    Timber.tag("tag").d("before value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
-    //LaunchedEffect(onSubmit) {
-    //    isErrorExist = if(value.isBlank()) onSubmit else !onSubmit
-    //}
-
-    Timber.tag("tag").d("after value : $value onsubmit: ${onSubmit}  et isErrorExist: $isErrorExist")
 
     Column {
         OutlinedTextField(
@@ -263,13 +275,124 @@ fun AppInputFieldMultiLine(
 
 
 @Composable
+fun AppBirthDateInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+//    ttsManager: TextToSpeechManager,
+//    sttManager: SpeechToTextManager,
+    onSubmit: Boolean= false,
+    isEnable: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    filterInput: ((String) -> String)? = null,
+//    onSpeechResult: ((String) -> String)? = null,
+
+    ) {
+
+//    val speechLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.StartActivityForResult()
+//    ) { result ->
+//        val data = result.data
+//        val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+//        if (!matches.isNullOrEmpty()) {
+//            val processed = onSpeechResult?.invoke(matches[0]) ?: matches[0]
+//            onValueChange(processed)
+//        }
+//    }
+
+
+    val selectedDate = remember { mutableStateOf<LocalDate?>(LocalDate.now()) }
+    val dateTimeState = rememberUseCaseState()
+    DateTimeDialog(
+        state = dateTimeState,
+        selection = DateTimeSelection.Date { newDate ->
+            selectedDate.value = newDate
+            onValueChange(selectedDate.value?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString())
+        },
+        header = Header.Default(
+            "Date de naissance",
+            IconSource(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Date de naissance"
+            )
+        ),
+        config = DateTimeConfig(
+            maxYear = LocalDate.now().year
+        )
+    )
+
+
+    val isErrorExist by remember { derivedStateOf {
+        if (value.isEmpty()) {
+            false
+        } else {
+            validateAge(value)
+        }
+    } }
+
+
+    OutlinedTextField(
+        enabled = isEnable,
+        value = value,
+        onValueChange = { newValue ->
+            val filtered = filterInput?.invoke(newValue) ?: newValue
+            onValueChange(filtered)
+        },
+        label = { Text(label) },
+        supportingText = {
+            if (isErrorExist && value.isEmpty()) {
+                Text(text = "Champs requis")
+            } else if (isErrorExist) {
+                Text(text = "invalide")
+            }
+        },
+        placeholder = {
+            Text("jj/mm/yyyy")
+        },
+        isError = isErrorExist,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(15),
+//        leadingIcon = {
+//            IconButton(onClick = {
+////                if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
+////                else ttsManager.speak(value)
+//                dateTimeState.show()
+//            }) {
+//                Icon(
+//                    imageVector = Icons.Default.DateRange,
+//                    contentDescription = "Lire le texte"
+//                )
+//            }
+//        },
+        trailingIcon = {
+            IconButton(onClick = {
+//                if (value.isDigitsOnly()) ttsManager.speak(value.chunked(2).joinToString(" "))
+//                else ttsManager.speak(value)
+                dateTimeState.show()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Lire le texte"
+                )
+            }
+        }
+    )
+}
+
+@Composable
 fun AppAgeInput(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
     ttsManager: TextToSpeechManager,
     sttManager: SpeechToTextManager,
-    onSubmit: Boolean= false
+    onSubmit: Boolean= false,
 ) {
 
     val isErrorExist by remember { derivedStateOf {
