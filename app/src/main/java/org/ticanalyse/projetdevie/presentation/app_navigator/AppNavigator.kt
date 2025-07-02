@@ -266,7 +266,8 @@ fun AppNavigator(currentUser: User) {
             composable<RecapitulatifRoute>{
                 RecapitulatifScreen(
                     onNavigate ={
-                        navController.navigate(LienVieReelIntroductionScreenRoute)
+                       // navController.navigate(LienVieReelIntroductionScreenRoute)
+                        navController.navigate(BilanCompetanceIntroductionRoute)
                     }
                 )
             }
