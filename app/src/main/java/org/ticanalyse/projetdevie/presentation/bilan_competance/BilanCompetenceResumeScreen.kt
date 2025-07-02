@@ -84,7 +84,7 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
                         AppSkillCardIcon(
                             txt = Txt.Raw(skillName),
                             strokeColor = R.color.primary_color,
-                            paint = R.drawable.communication,
+                            paint = R.drawable.default_competence,
                             badgeStatus = true
                         )
                     )

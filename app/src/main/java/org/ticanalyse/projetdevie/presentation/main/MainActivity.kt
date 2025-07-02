@@ -125,7 +125,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
-                            AppNavigator(currentUser = currentUser.value!!)
+                            AppNavigator()
                         }
 
 

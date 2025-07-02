@@ -2,12 +2,16 @@ package org.ticanalyse.projetdevie.presentation.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -38,7 +42,6 @@ import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    onSubmitClick: (User) -> Unit
 ) {
     val viewModel = hiltViewModel<ProfileViewModel>()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
@@ -103,10 +106,11 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .padding(horizontal = 10.dp, vertical = 10.dp)
         ) {
-
-
+            Box(modifier = Modifier.weight(.9f)) {
                 if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center) // <-- La bonne méthode !
+                    )
                 } else {
                     AppProfileForm(
                         imageUri = imageUri,
@@ -122,14 +126,20 @@ fun ProfileScreen(
                         onSubmit = onSubmit,
                         formTitle = stringResource(id=R.string.profile_title)
                     )
+                }
+            }
 
-
-
-
-
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppButton(text = "Retour", onClick = { navController.navigateUp() })
+                Spacer(modifier = Modifier.width(24.dp))
                 AppButton(
-                    text = stringResource(id = R.string.register_btn_title),
+                    text = stringResource(id = R.string.edit_btn),
                     onClick = {
                         if (validateTextEntries(nom.value, prenom.value, genre.value) && validateNumber(numTel.value)) {
                             val user = User(
@@ -141,11 +151,11 @@ fun ProfileScreen(
                                 avatarUri = imageUri.value,
                                 email = email.value
                             )
-                            onSubmitClick(user)
+                            //onSubmitClick(user)
                         }
-                    }
-                )
+                    })
             }
+
         }
     }
 }

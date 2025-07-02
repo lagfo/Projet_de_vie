@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -205,7 +209,6 @@ fun AppProfileForm(
         ){
 
             Column (modifier = Modifier
-                .padding(start = 5.dp, end = 5.dp)
                 .padding(start = 5.dp, end = 5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
 
@@ -215,8 +218,13 @@ fun AppProfileForm(
                 Spacer(modifier = Modifier.height(5.dp))
                 ProfileAvatar (imageUri)
                 Spacer(modifier = Modifier.height(5.dp))
-                LazyColumn {
+                val listState = rememberLazyListState()
+                LazyColumn(
+                    modifier = Modifier.padding(10.dp),
+                    state = listState
+                ) {
                     item {
+
                         Column {
                             AppTextInput (
                                 value = nom.value,
@@ -260,8 +268,6 @@ fun AppProfileForm(
                                         value = dateNaissance.value,
                                         onValueChange = { dateNaissance.value = it },
                                         label = "Date",
-//                                        ttsManager = ttsManager,
-//                                        sttManager = sttManager,
                                         onSubmit = onSubmit.value
                                     )
                                 }
@@ -286,8 +292,8 @@ fun AppProfileForm(
                                 onSubmit = onSubmit.value
                             )
 
-
                         }
+
                     }
 
                 }
