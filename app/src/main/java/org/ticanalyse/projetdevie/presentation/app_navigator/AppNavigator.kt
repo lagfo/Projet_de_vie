@@ -21,8 +21,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceIntroductionScreen
@@ -43,7 +41,6 @@ import org.ticanalyse.projetdevie.presentation.ligne_de_vie.RecapitulatifScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
-import org.ticanalyse.projetdevie.presentation.nvgraph.AppNavigation
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceRoute
@@ -60,10 +57,8 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRout
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
-import org.ticanalyse.projetdevie.presentation.nvgraph.RegisterRoute
 import org.ticanalyse.projetdevie.presentation.profile.ProfileScreen
 import org.ticanalyse.projetdevie.presentation.profile.ProfileViewModel
-import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
 import timber.log.Timber
 
 @Composable
