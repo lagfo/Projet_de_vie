@@ -200,7 +200,8 @@ fun AppInputFieldMultiLine(
     sttManager: SpeechToTextManager,
     onSubmit: Boolean= false,
     minLines: Int = 3,
-    maxLines: Int = 5
+    maxLines: Int = 5,
+    isEnable: Boolean=true
 ) {
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -221,6 +222,7 @@ fun AppInputFieldMultiLine(
 
     Column {
         OutlinedTextField(
+            enabled = isEnable,
             value = value,
             onValueChange = { newValue ->
                 onValueChange(newValue)

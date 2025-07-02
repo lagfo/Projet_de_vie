@@ -1,6 +1,7 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,11 +40,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,9 +61,14 @@ import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
+import org.ticanalyse.projetdevie.presentation.common.appSTTManager
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import org.ticanalyse.projetdevie.utils.Global
+import java.time.LocalDate
 
 
 @Composable
@@ -80,12 +88,32 @@ fun RecapitulatifScreen(
     val listOfElement by viewModel.allElement.collectAsStateWithLifecycle()
     val listOfPassedElement by viewModel.allPassedElement.collectAsStateWithLifecycle()
     val listOfPresentElement by viewModel.allPresentElement.collectAsStateWithLifecycle()
+    val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
+    val ttsManager = appTTSManager()
+    val sttManager = appSTTManager()
+    var reponse1 by remember { mutableStateOf("") }
+    var reponse2 by remember { mutableStateOf("") }
+    val onSubmit = rememberSaveable { mutableStateOf (false) }
     isButtonVisible = pagerState.currentPage == 2
+    var isClicked by remember { mutableStateOf(false) }
+    var isResponseValide by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    LaunchedEffect(listOfElement,listOfPresentElement,listOfPassedElement) {
-        if(listOfElement.isNotEmpty()){
-            Log.d("TAG","Recap all Elements:$listOfElement\n Passed ELement: $listOfPassedElement\n Present Element :$listOfPresentElement")
+
+
+    LaunchedEffect(listOfElement,listOfPresentElement,listOfPassedElement,reponseQuestion,isClicked,isClicked) {
+//        if(listOfElement.isNotEmpty()){
+//            Log.d("TAG","Recap all Elements:$listOfElement\n Passed ELement: $listOfPassedElement\n Present Element :$listOfPresentElement\n and reponsequestion is $reponseQuestion")
+//            reponse1=reponseQuestion[0].firstResponse
+//            reponse2=reponseQuestion[0].secondResponse
+//        }
+        reponse1=reponseQuestion[0].firstResponse
+        reponse2=reponseQuestion[0].secondResponse
+        if(!isResponseValide && isClicked){
+            Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
+            isClicked=false
         }
+
     }
 
     Box(
@@ -125,7 +153,7 @@ fun RecapitulatifScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .offset(0.dp, 10.dp),
-                        text ="Passé",
+                        text =if(pagerState.currentPage==0)"Passé" else if(pagerState.currentPage==1)"Présent" else if(pagerState.currentPage==2) "Questions" else "",
                         textAlign = TextAlign.Center,
                         fontFamily = Roboto,
                         fontWeight = FontWeight.Bold,
@@ -185,59 +213,43 @@ fun RecapitulatifScreen(
                                                                 2->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 3->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 4->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
+
                                                                 }
                                                                 5->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 6->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 7->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 8->{
                                                                     selectedItem=item
                                                                     showDialog=true
                                                                 }
-                                                            }
 
-                                                        }
-                                                    )
-
-                                                    if(index <listOfPassedElement.lastIndex) {
-                                                        Spacer(modifier = Modifier.height(10.dp))
-                                                    }
-                                                }
-                                            }
-
-                                        }
-
-                                    }
-                                    1 -> {
-                                        if(listOfPresentElement.isNotEmpty()){
-                                            LazyColumn(
-                                                modifier = modifier,
-                                                contentPadding = PaddingValues(20.dp)
-                                            ) {
-                                                itemsIndexed(listOfPresentElement) { index, item ->
-                                                    CustomedElementLayout(
-                                                        item = item,
-                                                        onClick = {
-                                                            when(item.id){
                                                                 9->{
                                                                     selectedItem=item
                                                                     showDialog=true
+
                                                                 }
                                                                 10->{
                                                                     selectedItem=item
@@ -279,12 +291,126 @@ fun RecapitulatifScreen(
                                                                     selectedItem=item
                                                                     showDialog=true
                                                                 }
+
+
                                                             }
 
                                                         }
                                                     )
 
-                                                    if(index <listOfPresentElement.lastIndex) {
+                                                    if(index <listOfPassedElement.lastIndex) {
+                                                        Spacer(modifier = Modifier.height(10.dp))
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+                                    }
+                                    1 -> {
+                                        if(listOfPresentElement.isNotEmpty()){
+                                            LazyColumn(
+                                                modifier = modifier,
+                                                contentPadding = PaddingValues(20.dp)
+                                            ) {
+                                                itemsIndexed(listOfPresentElement) { index2, item2 ->
+                                                    CustomedElementLayout(
+                                                        item = item2,
+                                                        onClick = {
+                                                            when(item2.id){
+
+                                                                1->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                2->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                3->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                4->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+
+                                                                }
+                                                                5->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                6->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                7->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                8->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+
+                                                                9->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+
+                                                                }
+                                                                10->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                11->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                12->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                13->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                14->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                15->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                16->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                17->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                18->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+                                                                19->{
+                                                                    selectedItem=item2
+                                                                    showDialog=true
+                                                                }
+
+                                                            }
+
+                                                        }
+                                                    )
+
+                                                    if(index2 <listOfPresentElement.lastIndex) {
                                                         Spacer(modifier = Modifier.height(10.dp))
                                                     }
                                                 }
@@ -294,7 +420,69 @@ fun RecapitulatifScreen(
 
                                     }
                                     2 -> {
-                                        // Page 2 content
+
+                                        Column{
+                                            Spacer(modifier = Modifier.height(25.dp))
+                                            LazyColumn {
+                                                item {
+
+                                                    Box(
+                                                        modifier= Modifier.weight(1f)
+                                                    ) {
+                                                        Column(
+                                                            modifier = Modifier.padding(10.dp,0.dp),
+                                                            horizontalAlignment = Alignment.CenterHorizontally
+
+                                                        ) {
+                                                            Text(
+                                                                text ="Qu'ai-je déjà réalisé ?",
+                                                                color = Color.White
+                                                            )
+                                                            AppInputFieldMultiLine(
+                                                                value =reponse1,
+                                                                onValueChange = {
+                                                                    reponse1=it
+                                                                },
+                                                                label ="",
+                                                                ttsManager =ttsManager,
+                                                                sttManager =sttManager,
+                                                                onSubmit=onSubmit.value,
+                                                            )
+
+                                                        }
+
+                                                    }
+                                                    Box(
+                                                        modifier= Modifier.weight(1f)
+                                                    ) {
+                                                        Column(
+                                                            modifier = Modifier.padding(10.dp,0.dp),
+                                                            horizontalAlignment = Alignment.CenterHorizontally
+
+                                                        ) {
+                                                            Text(
+                                                                text ="Qu'est-ce que je suis capable de faire ?",
+                                                                color = Color.White
+                                                            )
+                                                            AppInputFieldMultiLine(
+                                                                value =reponse2,
+                                                                onValueChange = {
+                                                                    reponse2=it
+                                                                },
+                                                                label ="",
+                                                                ttsManager =ttsManager,
+                                                                sttManager =sttManager,
+                                                            )
+
+                                                        }
+
+                                                    }
+
+                                                }
+                                            }
+
+                                        }
+
                                     }
                                 }
                                 IconButton(
@@ -335,8 +523,20 @@ fun RecapitulatifScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             if(isButtonVisible){
-                AppButton (text = "Lien avec la vie réelle", onClick = {
-                    onNavigate()
+                AppButton (text = "Bilan des compétences", onClick = {
+                    if(Global.isValideResponse(reponse1,reponse2)){
+                        isResponseValide=true
+                        viewModel.addResponsesLigneDeVie(
+                            id=1,
+                            firstResponse = reponse1,
+                            secondResponse = reponse2,
+                            creationDate = LocalDate.now().toString()
+                        )
+                        onNavigate()
+                    }else{
+                        isResponseValide=false
+                    }
+                    isClicked=true
                 })
             }
         }
@@ -361,7 +561,9 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
     if(!item.status){
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(5.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth()
@@ -416,9 +618,10 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                             }
                         ) {
                             Image(
-                                modifier = Modifier.size(35.dp)
+                                modifier = Modifier
+                                    .size(35.dp)
                                     .clickable(
-                                        onClick=onClick
+                                        onClick = onClick
                                     ),
                                 painter = painterResource(R.drawable.edit),
                                 contentDescription = "edit",
@@ -467,7 +670,9 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                     ////
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(5.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -488,8 +693,140 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
             }
 
         }
+    }else{
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ){
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment =Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .size(width = 35.dp, height = 35.dp)
+                                .align(Alignment.Center),
+                            shape = CircleShape,
+                            color = Color.White                                      // ← solid background
+                        ) {
+                            Image(
+                                painter =when(item.id){
+                                    1->painterResource(R.drawable.ecole_primaire)
+                                    2->painterResource(R.drawable.ecole_secondaire)
+                                    3->painterResource(R.drawable.universite_ecole_superieur)
+                                    4->painterResource(R.drawable.alphabetisation_langue_locale)
+                                    5->painterResource(R.drawable.ecole_coranique)
+                                    6->painterResource(R.drawable.ecole_formation_prof)
+                                    7->painterResource(R.drawable.abandon_scolarite)
+                                    8->painterResource(R.drawable.reprise_interruption_etude)
+                                    9->painterResource(R.drawable.premier_apprentissage)
+                                    10->painterResource(R.drawable.naissance_enfant)
+                                    11->painterResource(R.drawable.mariage)
+                                    12->painterResource(R.drawable.depart_foyer_familial)
+                                    13->painterResource(R.drawable.ecole_coranique)
+                                    14->painterResource(R.drawable.premier_emploi)
+                                    15->painterResource(R.drawable.projet)
+                                    16->painterResource(R.drawable.deces)
+                                    17->painterResource(R.drawable.depart_migration)
+                                    18->painterResource(R.drawable.retrouvaille)
+                                    19->painterResource(R.drawable.grande_decision_personnel)
+                                    else -> {painterResource(R.drawable.ecole_primaire)}
+                                },
+                                contentDescription =item.label,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.background(Color.White)
+                            )
+                        }
+
+                        IconButton(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            onClick={
+                                onClick
+                            }
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .clickable(
+                                        onClick = onClick
+                                    ),
+                                painter = painterResource(R.drawable.edit),
+                                contentDescription = "edit",
+                                contentScale = ContentScale.Crop
+                            )
+                        }
 
 
+                    }
+
+                    ////
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text =item.label,
+                            textAlign = TextAlign.Center,
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.Black,
+                            maxLines =1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text ="Année de début:${item.startYear}",
+                            textAlign = TextAlign.Center,
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            color = Color.Black,
+                            maxLines =1
+                        )
+                        Text(
+                            text ="Année de fin:${item.endYear}",
+                            textAlign = TextAlign.Center,
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            color = Color.Black,
+                            maxLines = 1
+                        )
+                    }
+
+                    ////
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        OutlinedTextField(
+                            value =if(item.labelDescription.isNotEmpty()||item.labelDescription.isNotBlank()) item.labelDescription else "Pas de commentaire pour cet élément",
+                            onValueChange = {},
+                            enabled = false,
+                            readOnly = true,
+                            colors=OutlinedTextFieldDefaults.colors(
+                                disabledTextColor= Color.Black,
+                                disabledContainerColor = Color.White,
+                                disabledBorderColor = colorResource(R.color.primary_color)
+                            )
+                        )
+                    }
+
+                }
+            }
+
+        }
 
     }
 }
