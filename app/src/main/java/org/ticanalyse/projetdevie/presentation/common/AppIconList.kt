@@ -3,7 +3,6 @@ package org.ticanalyse.projetdevie.presentation.common
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import kotlinx.serialization.Serializable
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
@@ -21,21 +20,6 @@ data class AppSubIcon(
     @ColorRes val strokeColor: Int,
     @DrawableRes val paint: Int,
 )
-
-/*data class AppSkillCardIcon(
-    @StringRes val txt: Int,
-    @ColorRes val strokeColor: Int,
-    @DrawableRes val paint: Int,
-    val badgeStatus: Boolean = false
-)
-data class AppSkillCardIcon(
-    val txt: String,
-    @ColorRes val strokeColor: Int,
-    @DrawableRes val paint: Int,
-    val badgeStatus: Boolean = false
-)
-
- */
 
 sealed class Txt {
     data class Res(@StringRes val id: Int) : Txt()
@@ -259,7 +243,7 @@ val skills = listOf(
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_soudure_menuiserie_metallique), strokeColor = R.color.primary_color, paint = R.drawable.soudure_menuiserie_metallique),
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_sport), strokeColor = R.color.primary_color, paint = R.drawable.sport),
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_travail_social), strokeColor = R.color.primary_color, paint = R.drawable.travail_social),
-    //AppSkillCardIcon(txt = Txt.Res(R.string.skill_tissage), strokeColor = R.color.primary_color, paint = R.drawable.tissage),
-    //AppSkillCardIcon(txt = Txt.Res(R.string.skill_transformation_produits_agricoles), strokeColor = R.color.primary_color, paint = R.drawable.transformation_produits_agricoles),
-    //AppSkillCardIcon(txt = Txt.Res(R.string.skill_vente_commerce), strokeColor = R.color.primary_color, paint = R.drawable.vente_commerce)
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_tissage), strokeColor = R.color.primary_color, paint = R.drawable.tissage),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_transformation_produits_agricoles), strokeColor = R.color.primary_color, paint = R.drawable.transformation_produits_agricoles),
+    AppSkillCardIcon(txt = Txt.Res(R.string.skill_vente_commerce), strokeColor = R.color.primary_color, paint = R.drawable.vente_commerce)
 )
