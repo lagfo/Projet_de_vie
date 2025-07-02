@@ -60,6 +60,12 @@ object LienVieReelIntroductionScreenRoute: AppRoute
 object FormulaireScreenRoute: AppRoute
 
 
+@Serializable
+object PlanificationProjetRoute:AppRoute
+
+@Serializable
+object PlanificationProjetResumeRoute:AppRoute
+
 
 //@Serializable
 //data class HomeRoute (

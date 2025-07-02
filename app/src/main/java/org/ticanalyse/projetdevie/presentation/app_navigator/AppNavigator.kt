@@ -52,8 +52,12 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetResumeRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
 import timber.log.Timber
 
 @Composable
@@ -137,6 +141,8 @@ fun AppNavigator(currentUser: User) {
                     }
                     backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
                     backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.bilan_competance_title,R.color.primary_color)
+                    backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.planification_projet_title,R.color.primary_color)
+                    backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.planification_projet_title,R.color.primary_color)
 
                 }
                 !isHomeTopBarVisible
@@ -196,7 +202,7 @@ fun AppNavigator(currentUser: User) {
                             }
 
                             "Plannification" -> {
-                                //                                            navController.navigate("Plannification")
+                                navController.navigate(PlanificationProjetRoute)
                             }
                         }
                     }
@@ -205,17 +211,20 @@ fun AppNavigator(currentUser: User) {
 
             composable<IntroductionRoute> {
                 IntroductionHomeScreen {
-                    navigateToScreen(navController=navController, route = IntroductionCharacterRoute)
-
+                    navController.navigate(IntroductionCharacterRoute)
                 }
             }
             composable<IntroductionCharacterRoute> {
                 IntroductionCharactersScreen(
                     onNavigate = {
-                        navigateToScreen(navController=navController, route = MonReseauIntroductionRoute)
+                        navController.navigate(MonReseauIntroductionRoute) {
+                            popUpTo(IntroductionRoute) {
+                                inclusive = true
+                            }
+                        }
                     },
                     onBackPressed = {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }
                 )
             }
@@ -294,6 +303,16 @@ fun AppNavigator(currentUser: User) {
                 }
             }
 
+            composable<PlanificationProjetRoute> {
+                PlanificationProjetScreen {
+                    navController.navigate(PlanificationProjetResumeRoute)
+                }
+            }
+            composable<PlanificationProjetResumeRoute> {
+                ResumePlanificationProjetScreen(
+
+                )
+            }
         }
 
     }

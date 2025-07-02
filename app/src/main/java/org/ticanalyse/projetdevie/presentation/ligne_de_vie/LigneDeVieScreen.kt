@@ -141,7 +141,7 @@ fun LigneDeVieScreen(
     val scope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<ElementScolarite?>(null) }
-    val viewModel= hiltViewModel<LigneDeVieViewModel>()
+    val viewModel = hiltViewModel<LigneDeVieViewModel>()
     val element= Element()
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
