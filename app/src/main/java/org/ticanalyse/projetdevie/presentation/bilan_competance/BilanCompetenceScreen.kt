@@ -16,10 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Skill
 import org.ticanalyse.projetdevie.presentation.common.AppButton
@@ -50,23 +50,26 @@ import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
+import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetenceResumeRoute
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
 
 @Composable
-fun BilanCompetanceScreen(onNavigate: () -> Unit) {
+fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVieReele : () -> Unit) {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
 
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
+    var navigateToBilan by remember {  mutableStateOf(false) }
 
 
     val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
 
     var showBottomSheet by remember { mutableStateOf(false) }
+
 
 
     fun syncBadges() {
@@ -104,7 +107,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                         AppSkillCardIcon(
                             txt = Txt.Raw(skillName),
                             strokeColor = R.color.primary_color,
-                            paint = R.drawable.communication,
+                            paint = R.drawable.default_competence,
                             badgeStatus = true
                         )
                     )
@@ -117,6 +120,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
     LaunchedEffect(selectedSkills) {
         syncBadges()
         viewModel.saveSkill(Skill(skills = selectedSkills))
+        navigateToBilan = selectedSkills.isNotEmpty()
     }
 
     fun onAddSkills(newSkills: List<String>) {
@@ -125,7 +129,10 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             if (exists) {
                 Toast.makeText(context, "La compétence \"$newSkill\" existe déjà", Toast.LENGTH_SHORT).show()
                 false
-            } else true
+            } else{
+                Toast.makeText(context, "Compétence(s) ajoutée(s)", Toast.LENGTH_SHORT).show()
+                true
+            }
         }
 
         if (skillsToAdd.isEmpty()) return
@@ -146,7 +153,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                     AppSkillCardIcon(
                         txt = Txt.Raw(skillName),
                         strokeColor = R.color.primary_color,
-                        paint = R.drawable.communication,
+                        paint = R.drawable.default_competence,
                         badgeStatus = true
                     )
                 )
@@ -155,7 +162,6 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             }
         }
 
-        showBottomSheet = false
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -199,6 +205,7 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
                             selectedSkills = if (selectedSkills.any { it.equals(skillName, ignoreCase = true) }) {
                                 selectedSkills.filterNot { it.equals(skillName, ignoreCase = true) }
                             } else {
+                                ttsManager.speak(skillName)
                                 selectedSkills + skillName
                             }
                         }
@@ -214,26 +221,28 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
             ) {
                 Spacer(modifier = Modifier.weight(1.5f))
 
-                AppButton(text = "Lien avec la vie réelle", onClick = onNavigate)
+
+                if(navigateToBilan){
+                    AppButton(text = "Voir mes compétances", onClick = {navController.navigate(
+                        BilanCompetenceResumeRoute
+                    )})
+                }else{
+                    AppButton(text = "Lien avec la vie réelle", onClick = onNavigateToLienAvecLaVieReele)
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                IconButton(
+                FloatingActionButton(
+                    modifier = Modifier.size(48.dp),
                     onClick = { showBottomSheet = true },
-                    modifier = Modifier.size(48.dp).padding(end = 5.dp)
+                    containerColor = Color.Black,
+                    contentColor = Color.White,
+                    shape = CircleShape
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.Black,
-                        shadowElevation = 4.dp
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Ajouter",
-                            tint = Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Ajouter",
+                    )
                 }
             }
         }
@@ -245,4 +254,3 @@ fun BilanCompetanceScreen(onNavigate: () -> Unit) {
         onAddSkills = ::onAddSkills
     )
 }
-
