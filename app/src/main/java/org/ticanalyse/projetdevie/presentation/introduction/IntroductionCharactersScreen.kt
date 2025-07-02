@@ -121,7 +121,7 @@ fun IntroductionCharactersScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
 
-                            ExoPlayer(characters[currentPageIndex].video)
+                            ExoPlayer(characters[currentPageIndex].video, currentPageIndex == pagerState.currentPage)
 
                             Row (
                                 modifier = Modifier.fillMaxWidth(),

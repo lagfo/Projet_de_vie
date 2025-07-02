@@ -23,6 +23,15 @@ class MonReseauViewModel @Inject constructor(
     private val _upsertSuccess = MutableStateFlow(false)
     val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
 
+    private val _listActeursFamiliaux = MutableStateFlow<ActeursFamiliauxEtSociaux?>(null)
+    val listActeursFamiliaux = _listActeursFamiliaux.asStateFlow()
+    private val _listActeursEducatifs = MutableStateFlow<ActeursEducatifs?>(null)
+    val listActeursEducatifs = _listActeursEducatifs.asStateFlow()
+    private val _listActeursProfessionel = MutableStateFlow<ActeursProfessionnels?>(null)
+    val listActeursProfessionel = _listActeursProfessionel.asStateFlow()
+    private val _listActeursInstitutionel = MutableStateFlow<ActeursInstitutionnelsEtDeSoutien?>(null)
+    val listActeursInstitutionel = _listActeursInstitutionel.asStateFlow()
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
@@ -34,6 +43,14 @@ class MonReseauViewModel @Inject constructor(
         _errorMessage.value = null
     }
 
+    fun getMonReseau() {
+        viewModelScope.launch {
+            _listActeursProfessionel.value = monReseauUseCases.getMonReseau()?.acteursProfessionnels
+            _listActeursInstitutionel.value = monReseauUseCases.getMonReseau()?.acteursInstitutionnelsSoutien
+            _listActeursEducatifs.value = monReseauUseCases.getMonReseau()?.acteursEducatifs
+            _listActeursFamiliaux.value = monReseauUseCases.getMonReseau()?.acteursFamiliauxSociaux
+        }
+    }
 
     fun getReseauInfo(index: Int, category: String, onResult: (String?) -> Unit) {
         viewModelScope.launch {

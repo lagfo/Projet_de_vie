@@ -67,7 +67,7 @@ fun HomeScreen(
         Topic(6,painterResource(R.drawable.planification_du_projet),"Planification\ndu projet")
     )
 
-    Box(){
+    Box {
 
         Column(
             modifier= Modifier
@@ -113,7 +113,6 @@ fun HomeScreen(
                             }
                             6->{
                                 onNavigate("Plannification")
-
                             }
                         }
 
