@@ -1,25 +1,23 @@
-package org.ticanalyse.projetdevie.presentation.app_navigator
+package org.ticanalyse.projetdevie.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
 import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class AppNavigationViewModel @Inject constructor(
+class ProfileViewModel @Inject constructor(
+    private val setCurrentUserUseCase: SetCurrentUserUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
-): ViewModel() {
+) : ViewModel() {
 
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser
@@ -29,6 +27,23 @@ class AppNavigationViewModel @Inject constructor(
 
     init {
         getCurrentUser()
+    }
+
+    fun onSubmit(user: User) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            when (val result = setCurrentUserUseCase(user)) {
+                is Result.Error -> {
+                    Timber.d("Erreur lors de la modification de l'utilisateur: ${result.message}")
+                    _isLoading.value = false
+                }
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                    _isLoading.value = false
+                }
+                is Result.Loading -> { /* Optionnel */ }
+            }
+        }
     }
 
     fun getCurrentUser() {
@@ -48,5 +63,6 @@ class AppNavigationViewModel @Inject constructor(
             }
         }
     }
-
 }
+
+
