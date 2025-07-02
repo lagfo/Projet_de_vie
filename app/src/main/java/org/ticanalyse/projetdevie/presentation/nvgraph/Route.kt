@@ -66,6 +66,9 @@ object PlanificationProjetRoute:AppRoute
 @Serializable
 object PlanificationProjetResumeRoute:AppRoute
 
+@Serializable
+object BilanCompetenceResumeRoute:AppRoute
+
 
 //@Serializable
 //data class HomeRoute (

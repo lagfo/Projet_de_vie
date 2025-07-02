@@ -127,6 +127,7 @@ fun TopBarComponent(
                         shape = CircleShape
                     ),
                 painter = painter,
+                contentScale = ContentScale.Crop,
                 contentDescription = "Profil image"
             )
 //            } else {
