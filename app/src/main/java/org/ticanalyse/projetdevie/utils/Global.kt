@@ -105,4 +105,9 @@ object Global {
 //            return false;
 //        }
 //    }
+
+
+    fun isValideResponse(response1:String,response2: String): Boolean{
+        return response1.isNotBlank()&&response1.isNotEmpty()&&response2.isNotEmpty()&&response2.isNotBlank()
+    }
 }

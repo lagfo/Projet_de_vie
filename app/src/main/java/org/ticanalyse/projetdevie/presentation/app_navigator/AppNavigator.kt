@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +23,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceScreen
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceResumeScreen
@@ -62,11 +62,10 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.profile.ProfileScreen
-import org.ticanalyse.projetdevie.presentation.profile.ProfileViewModel
 import timber.log.Timber
 
 @Composable
-fun AppNavigator(currentUser: User) {
+fun AppNavigator() {
 
     val bottomNavigationItems = remember {
         listOf(
@@ -75,7 +74,8 @@ fun AppNavigator(currentUser: User) {
         )
     }
 
-    val viewModel = hiltViewModel<ProfileViewModel>()
+    val viewModel = hiltViewModel<AppNavigationViewModel>()
+    val currentUserState by viewModel.currentUser.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
@@ -110,7 +110,7 @@ fun AppNavigator(currentUser: User) {
             .fillMaxSize(),
         topBar = {
             if(isHomeTopBarVisible){
-                TopBarComponent(currentUser.nom,currentUser.prenom,currentUser.avatarUri)
+                TopBarComponent(currentUserState?.nom ?: "",currentUserState?.prenom ?: "",currentUserState?.avatarUri ?: "")
             }
             else{
 
@@ -207,9 +207,6 @@ fun AppNavigator(currentUser: User) {
             composable<ProfileRoute> {
                 ProfileScreen(
                     navController = navController,
-                    onSubmitClick = { user ->
-                        viewModel.onSubmit(user)
-                    }
                 )
             }
 
@@ -282,7 +279,8 @@ fun AppNavigator(currentUser: User) {
             composable<RecapitulatifRoute>{
                 RecapitulatifScreen(
                     onNavigate ={
-                        navController.navigate(LienVieReelIntroductionScreenRoute)
+                       // navController.navigate(LienVieReelIntroductionScreenRoute)
+                        navController.navigate(BilanCompetanceIntroductionRoute)
                     }
                 )
             }
