@@ -1,5 +1,7 @@
 package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +26,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,9 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.itextpdf.text.Document
+import com.itextpdf.text.PageSize
 import com.maxkeppeker.sheets.core.views.Grid
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.ActeursEducatifs
+import org.ticanalyse.projetdevie.domain.model.ActeursFamiliauxEtSociaux
+import org.ticanalyse.projetdevie.domain.model.ActeursInstitutionnelsEtDeSoutien
+import org.ticanalyse.projetdevie.domain.model.ActeursProfessionnels
 import org.ticanalyse.projetdevie.domain.model.Element
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
@@ -45,6 +57,7 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
+import androidx.core.graphics.createBitmap
 
 @Composable
 fun ResumePlanificationProjetScreen() {
@@ -246,15 +259,15 @@ fun MonReseauElement(nomCategorie: String, listElement: Map<String, List<String>
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
         )
-        if (listElement.isEmpty()) {
-            Text(
-                text = "Pas d'élément",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        } else {
-            listElement.forEach { element ->
+        if (listElement.any { listElement -> listElement.value.isNotEmpty() }) {
+            listElement.filter { listElement -> listElement.value.isNotEmpty() }.forEach { element ->
                 MonReseauSousCategorieElement(element.key, element.value)
             }
+        } else {
+            Text(
+                text = "Aucune information enregistrée pour cette catégorie",
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
@@ -264,7 +277,7 @@ fun MonReseauSousCategorieElement(nomSousCategorie: String, listElement: List<St
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 5.dp),
+            .padding(start = 6.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start
     ) {
@@ -273,20 +286,30 @@ fun MonReseauSousCategorieElement(nomSousCategorie: String, listElement: List<St
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold
         )
-        if (listElement.isEmpty()) {
-            Text(
-                text = "Pas d'élément",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        } else {
-            listElement.forEach { element ->
-                Text(
-                    text = "- $element",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 5.dp)
-                )
+        if (listElement.isNotEmpty()) {
+            listElement.chunked(2).forEach { element ->
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(start = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "Nom et prénoms: ${element.first()}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "Description: ${element.last()}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
+//        else {
+//            Text(
+//                text = "Pas d'élément",
+//                style = MaterialTheme.typography.bodySmall,
+//            )
+//        }
     }
 }
 
@@ -395,11 +418,35 @@ fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String
                 text = element,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(5.dp))
-                    .padding(MediumPadding1)
+                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                    .padding(6.dp)
             )
         }
     }
+}
+
+fun generatePdf(context: Context) {
+
+    val document = Document(PageSize.A4)
+
+    val composeView = ComposeView(context).apply {
+        setContent { 
+            ResumePlanificationProjetScreen()
+        }
+    }
+
+    composeView.measure(
+        android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.EXACTLY),
+        android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
+    )
+
+    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+
+    val bitmap = ImageBitmap(composeView.measuredWidth, composeView.measuredHeight)
+    val canvas = Canvas(bitmap)
+
+    //where to store the file
+
 }
 
 @Preview(device = "id:pixel_8", showSystemUi = true, showBackground = true)
