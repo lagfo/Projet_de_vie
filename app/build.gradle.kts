@@ -118,6 +118,7 @@ dependencies {
 
     //Library
     implementation(libs.androidx.livedata)
+    implementation(libs.itext.compose)
 
 
     //Compose Dialog
