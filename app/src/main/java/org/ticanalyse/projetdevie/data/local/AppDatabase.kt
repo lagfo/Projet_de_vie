@@ -16,8 +16,7 @@ import org.ticanalyse.projetdevie.domain.model.User
 
 @Database(
     entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class, Skill::class],
-    version = 1,
-    exportSchema = false
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {

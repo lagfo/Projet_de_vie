@@ -200,7 +200,7 @@ fun AppInputFieldMultiLine(
     sttManager: SpeechToTextManager,
     onSubmit: Boolean= false,
     minLines: Int = 3,
-    maxLines: Int = 5
+    maxLines: Int = 15
 ) {
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -208,7 +208,7 @@ fun AppInputFieldMultiLine(
         val data = result.data
         val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
         if (!matches.isNullOrEmpty()) {
-            onValueChange(matches[0])
+            onValueChange("${value.replaceFirstChar { it.uppercaseChar() }}. ${matches[0].replaceFirstChar { it.uppercaseChar() }}")
         }
     }
 
@@ -221,9 +221,9 @@ fun AppInputFieldMultiLine(
 
     Column {
         OutlinedTextField(
-            value = value,
+            value = value.replaceFirstChar { it.uppercaseChar() },
             onValueChange = { newValue ->
-                onValueChange(newValue)
+                onValueChange(newValue.replaceFirstChar { it.uppercaseChar() })
             },
             label = { Text(label) },
             supportingText = {

@@ -93,7 +93,9 @@ import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.ExoPlayer
+import org.ticanalyse.projetdevie.utils.Global
 import timber.log.Timber
+import java.time.LocalDate
 import kotlin.collections.lastIndex
 
 
@@ -147,8 +149,18 @@ fun LigneDeVieScreen(
     val sttManager = appSTTManager()
     var reponse1 by remember { mutableStateOf("") }
     var reponse2 by remember { mutableStateOf("") }
+    var isResponseValide by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(false) }
     var isButtonVisible by remember { mutableStateOf(false) }
     isButtonVisible=if(pagerState.currentPage==0) false else if(pagerState.currentPage==1) false else if(pagerState.currentPage==2) true else false
+    val context = LocalContext.current
+    LaunchedEffect(isResponseValide,isClicked){
+        if(!isResponseValide && isClicked){
+            Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
+            isClicked=false
+        }
+    }
+
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -503,7 +515,19 @@ fun LigneDeVieScreen(
             )
             if(isButtonVisible){
                 AppButton (text = "Voir récapitulatif", onClick = {
-                    onNavigate()
+                    if(Global.isValideResponse(reponse1,reponse2)){
+                        isResponseValide=true
+                        viewModel.addResponsesLigneDeVie(
+                            id=1,
+                            firstResponse = reponse1,
+                            secondResponse = reponse2,
+                            creationDate = LocalDate.now().toString()
+                        )
+                        onNavigate()
+                    }else{
+                        isResponseValide=false
+                    }
+                    isClicked=true
                 })
             }
         }

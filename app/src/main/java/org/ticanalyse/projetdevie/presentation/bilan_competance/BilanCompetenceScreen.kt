@@ -71,6 +71,7 @@ fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVi
     var showBottomSheet by remember { mutableStateOf(false) }
 
 
+
     fun syncBadges() {
         defaultSkills.replaceAll { skill ->
             val skillName = when (val txt = skill.txt) {
@@ -106,7 +107,7 @@ fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVi
                         AppSkillCardIcon(
                             txt = Txt.Raw(skillName),
                             strokeColor = R.color.primary_color,
-                            paint = R.drawable.communication,
+                            paint = R.drawable.default_competence,
                             badgeStatus = true
                         )
                     )
@@ -152,7 +153,7 @@ fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVi
                     AppSkillCardIcon(
                         txt = Txt.Raw(skillName),
                         strokeColor = R.color.primary_color,
-                        paint = R.drawable.communication,
+                        paint = R.drawable.default_competence,
                         badgeStatus = true
                     )
                 )
@@ -161,7 +162,6 @@ fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVi
             }
         }
 
-        //showBottomSheet = false
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -205,6 +205,7 @@ fun BilanCompetanceScreen(navController: NavController, onNavigateToLienAvecLaVi
                             selectedSkills = if (selectedSkills.any { it.equals(skillName, ignoreCase = true) }) {
                                 selectedSkills.filterNot { it.equals(skillName, ignoreCase = true) }
                             } else {
+                                ttsManager.speak(skillName)
                                 selectedSkills + skillName
                             }
                         }
