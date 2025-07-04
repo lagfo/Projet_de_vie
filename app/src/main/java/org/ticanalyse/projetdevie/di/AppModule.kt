@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.ticanalyse.projetdevie.data.local.AppDatabase
 import org.ticanalyse.projetdevie.data.local.dao.AppDao
+import org.ticanalyse.projetdevie.data.local.dao.LienVieReelDao
 import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
 import org.ticanalyse.projetdevie.data.local.dao.ReponseQuestionLigneDeVieDao
@@ -152,6 +153,12 @@ object AppModule {
     fun provideLigneDeVieDao(
         appDatabase: AppDatabase
     ): LigneDeVieDao=appDatabase.ligneDeVieDao
+
+    @Provides
+    @Singleton
+    fun provideLienVieReelDao(
+        appDatabase: AppDatabase
+    ): LienVieReelDao=appDatabase.lienVieReelDao
 
 //    @Provides
 //    @Singleton
