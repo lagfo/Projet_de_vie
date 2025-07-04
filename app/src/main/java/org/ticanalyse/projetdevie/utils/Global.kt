@@ -7,6 +7,8 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -21,13 +23,26 @@ object Global {
         return true
     }
 
-    fun validateAge(value: String): Boolean{
+    /*fun validateAge(value: String): Boolean{
         if(value.isBlank())
             return false
         else if(value.toInt() <= 13)
             return false
         return true
     }
+
+     */
+
+    private val BIRTHDATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    fun validateAge(value: String): Boolean =
+        value.takeIf { it.isNotBlank() }
+            ?.let {
+                runCatching { LocalDate.parse(it, BIRTHDATE_FORMATTER) }
+                    .getOrNull()
+            }
+            ?.let { Period.between(it, LocalDate.now()).years > 13 }
+            ?: false
+
 
     fun validateNumber(value: String): Boolean{
         if(value.isBlank())

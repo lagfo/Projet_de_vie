@@ -85,13 +85,9 @@ fun RegisterScreen (
             )
         }
 
-        //Register
-
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
-
-            //Form
             Box(modifier = Modifier.weight(.9f)) {
 
                 AppForm(
@@ -120,7 +116,6 @@ fun RegisterScreen (
                     text = stringResource(id = R.string.register_btn_title),
                     onClick = {
                         if(validateTextEntries(nom.value,prenom.value,genre.value) and validateNumber(numTel.value)){
-//                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumber(numTel.value)){
                             val user = User(
                                 nom = nom.value,
                                 prenom = prenom.value,
@@ -132,25 +127,9 @@ fun RegisterScreen (
                             )
 
                             onSubmitClick(user)
-                        }
+                        }else onSubmit.value=true
                     }
-//                        {
-//                        onSubmit.value = true
-//                        if(validateTextEntries(nom.value,prenom.value,genre.value) and validateAge(age.value) and validateNumer(numTel.value)){
-//
-//                            val user = User(
-//                                nom = nom.value,
-//                                prenom = prenom.value,
-//                                genre = genre.value,
-//                                age = age.value,
-//                                numTel = numTel.value,
-//                                avatarUri = imageUri.value
-//                            )
-//                            Timber.tag("tag").d("$user")
-//                            onEvent(RegisterEvent.UpsertUser(user))
-//                            onEvent(RegisterEvent.SaveAppEntry)
-//                        }
-//                    }
+
                 )
                 Spacer(modifier = Modifier.height(5.dp))
             }

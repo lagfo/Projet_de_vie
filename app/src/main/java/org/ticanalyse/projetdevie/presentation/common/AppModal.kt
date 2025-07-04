@@ -41,7 +41,6 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,7 +182,6 @@ fun AppModal(
                             if( validateTextEntries(nom.value,description.value,nom2.value,description2.value))
                                 viewModel.upsertData(index=index, category = icon.category, nom = nom.value, description = description.value, nom2 = nom2.value, description2 = description2.value)
                             else onSubmit.value=true
-                            Timber.tag("tag").d("onsubmit: $onSubmit ")
                         }
                     )
 
