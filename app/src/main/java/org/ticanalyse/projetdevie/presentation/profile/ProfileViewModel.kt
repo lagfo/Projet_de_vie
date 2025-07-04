@@ -25,6 +25,14 @@ class ProfileViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    // Ajout d'un état pour les messages d'erreur
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    // Ajout d'un état pour indiquer si la sauvegarde a réussi
+    private val _saveSuccess = MutableStateFlow(false)
+    val saveSuccess: StateFlow<Boolean> = _saveSuccess
+
     init {
         getCurrentUser()
     }
@@ -32,16 +40,24 @@ class ProfileViewModel @Inject constructor(
     fun onSubmit(user: User) {
         viewModelScope.launch {
             _isLoading.value = true
+            _errorMessage.value = null
+            _saveSuccess.value = false
+
             when (val result = setCurrentUserUseCase(user)) {
                 is Result.Error -> {
-                    Timber.d("Erreur lors de la modification de l'utilisateur: ${result.message}")
+                    _errorMessage.value = result.message
                     _isLoading.value = false
+                    Timber.d("Erreur lors de la modification de l'utilisateur: ${result.message}")
                 }
                 is Result.Success -> {
                     _currentUser.value = result.data
+                    _saveSuccess.value = true
                     _isLoading.value = false
+                    Timber.d("Utilisateur modifié avec succès")
                 }
-                is Result.Loading -> { /* Optionnel */ }
+                is Result.Loading -> {
+                    // Optionnel : gérer l'état de chargement si nécessaire
+                }
             }
         }
     }
@@ -49,17 +65,45 @@ class ProfileViewModel @Inject constructor(
     fun getCurrentUser() {
         viewModelScope.launch {
             _isLoading.value = true
+            _errorMessage.value = null
+
             when (val result = getCurrentUserUseCase()) {
                 is Result.Error -> {
                     _currentUser.value = null
+                    _errorMessage.value = result.message
                     _isLoading.value = false
                     Timber.d("Erreur lors de la récupération de l'utilisateur: ${result.message}")
                 }
                 is Result.Success -> {
                     _currentUser.value = result.data
                     _isLoading.value = false
+                    Timber.d("Utilisateur récupéré avec succès")
                 }
-                is Result.Loading -> { /* Optionnel */ }
+                is Result.Loading -> {
+                    // Optionnel
+                }
+            }
+        }
+    }
+
+    // Fonction pour effacer les messages d'erreur
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
+
+    // Fonction pour réinitialiser l'état de succès
+    fun resetSaveSuccess() {
+        _saveSuccess.value = false
+    }
+
+    // Fonction pour gérer les événements (si vous voulez utiliser le pattern événements)
+    fun onEvent(event: ProfileEvent) {
+        when (event) {
+            is ProfileEvent.UpsertUser -> {
+                onSubmit(event.user)
+            }
+            is ProfileEvent.SaveAppEntry -> {
+                // Gérer d'autres événements si nécessaire
             }
         }
     }

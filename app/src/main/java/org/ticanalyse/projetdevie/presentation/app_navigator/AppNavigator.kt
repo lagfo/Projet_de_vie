@@ -35,6 +35,7 @@ import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharacte
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.FormulaireScreen
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelScreen
+import org.ticanalyse.projetdevie.presentation.lien_vie_relle.RecapitulatifLienVieReelScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LienDeVieIntroductionScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.RecapitulatifScreen
@@ -58,6 +59,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRou
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
@@ -125,6 +127,8 @@ fun AppNavigator() {
                     backStackState?.destination?.route == RecapitulatifRoute::class.qualifiedName->AppModuleTopBar(title =R.string.ligne_vie,R.color.primary_color )
                     backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
                     backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
+                    backStackState?.destination?.route == RecapitulatifLienVieReelRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
+                    backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName->AppModuleTopBar(title =R.string.lien_vie_reelle,R.color.primary_color )
                     backStackState?.destination?.route?.startsWith(MonReseauSubCategoriesRoute::class.qualifiedName ?: "") == true -> {
                         val category = backStackState.arguments?.getString("category")
                         when(category){
@@ -207,6 +211,7 @@ fun AppNavigator() {
             composable<ProfileRoute> {
                 ProfileScreen(
                     navController = navController,
+                    sharedViewModel = viewModel
                 )
             }
 
@@ -293,7 +298,18 @@ fun AppNavigator() {
                 )
             }
             composable<FormulaireScreenRoute>{
-                FormulaireScreen()
+                FormulaireScreen(
+                    onNavigate = {
+                        navController.navigate(RecapitulatifLienVieReelRoute)
+                    }
+                )
+            }
+            composable<RecapitulatifLienVieReelRoute>{
+                RecapitulatifLienVieReelScreen(
+                    onNavigate = {
+                        navController.navigate(PlanificationProjetRoute)
+                    }
+                )
             }
 
             composable<BilanCompetanceIntroductionRoute> {
