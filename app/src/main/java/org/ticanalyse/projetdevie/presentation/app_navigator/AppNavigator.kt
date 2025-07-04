@@ -201,6 +201,7 @@ fun AppNavigator() {
             composable<ProfileRoute> {
                 ProfileScreen(
                     navController = navController,
+                    sharedViewModel = viewModel
                 )
             }
 
