@@ -15,11 +15,13 @@ import org.ticanalyse.projetdevie.R
 @Composable
 fun AppButton(
     text: String,
+    enabled:Boolean=true,
     onClick: () -> Unit
 ){
 
     Button(
         onClick = onClick,
+        enabled=enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.secondary_color),
             contentColor = Color.White

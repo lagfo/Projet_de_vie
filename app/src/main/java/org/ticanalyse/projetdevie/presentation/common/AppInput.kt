@@ -322,15 +322,13 @@ fun AppBirthDateInput(
         )
     )
 
-
-    val isErrorExist by remember { derivedStateOf {
-        if (value.isEmpty()) {
-            false
-        } else {
-            validateAge(value)
+    val isErrorExist by remember (value, onSubmit) {
+        derivedStateOf {
+            if (onSubmit && value.isBlank()) true
+            else if(validateAge(value)) false
+            else false
         }
-    } }
-
+    }
 
     OutlinedTextField(
         enabled = isEnable,
@@ -386,7 +384,7 @@ fun AppBirthDateInput(
 }
 
 @Composable
-fun AppAgeInput(
+fun   AppAgeInput(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -484,13 +482,12 @@ fun AppSelection(
     onSubmit: Boolean = false
 ){
     var expanded by remember { mutableStateOf(false) }
-    val isErrorExist by remember { derivedStateOf {
-        if (value.isBlank()) {
-            false
-        } else {
-            options.contains(value)
+    val isErrorExist by remember (value, onSubmit) {
+        derivedStateOf {
+            onSubmit && value.isBlank()
         }
-    } }
+    }
+
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -541,16 +538,6 @@ fun AppSelection(
                     )
                 }
             }
-
-//            if(onSubmit and value.isBlank()){
-//                Text(
-//                    text = "Champs requis",
-//                    color = MaterialTheme.colorScheme.error,
-//                    style = MaterialTheme.typography.labelSmall,
-//                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
-//                )
-//
-//            }
 
         }
 
