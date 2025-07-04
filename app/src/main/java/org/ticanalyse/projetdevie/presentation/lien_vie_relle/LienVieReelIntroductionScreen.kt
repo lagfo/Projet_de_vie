@@ -61,7 +61,7 @@ fun LienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
                         fontWeight = FontWeight.Normal,
                     )
                     Spacer(modifier = Modifier.height(5.dp))
-                    ExoPlayer(R.raw.intro_safi)
+                    ExoPlayer(R.raw.intro_safy)
                 }
 
             }

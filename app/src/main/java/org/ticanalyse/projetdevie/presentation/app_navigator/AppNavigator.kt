@@ -324,9 +324,7 @@ fun AppNavigator() {
                 }
             }
             composable<PlanificationProjetResumeRoute> {
-                ResumePlanificationProjetScreen(
-
-                )
+                ResumePlanificationProjetScreen()
             }
         }
 
