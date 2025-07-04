@@ -27,7 +27,6 @@ data class ReponseQuestionLigneDeVie(
     val id:Int=1,
     var firstResponse:String,
     var secondResponse:String,
-    var userId:Int,
-    var status: Boolean, // 0 when it 's the pass and 1 when it's the present
+    var userId:Int=1,
     var creationDate: String
 ): Parcelable
