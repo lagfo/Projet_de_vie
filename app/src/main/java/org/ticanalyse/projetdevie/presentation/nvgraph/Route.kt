@@ -68,6 +68,9 @@ object PlanificationProjetRoute:AppRoute
 object PlanificationProjetResumeRoute:AppRoute
 
 @Serializable
+object PlanificationProjetPdfViewerRoute:AppRoute
+
+@Serializable
 object BilanCompetenceResumeRoute:AppRoute
 
 
