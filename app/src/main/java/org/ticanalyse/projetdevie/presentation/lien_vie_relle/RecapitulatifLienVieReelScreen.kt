@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,15 +25,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.first
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 
 @Composable
-fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
+fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
@@ -40,6 +45,15 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
     var reponse2 by remember { mutableStateOf("") }
     var reponse3 by remember { mutableStateOf("") }
     val onSubmit = rememberSaveable { mutableStateOf (false) }
+    val viewModel= hiltViewModel<LienVieReelViewModel>()
+    val element by viewModel.allElement.collectAsStateWithLifecycle()
+
+    LaunchedEffect(element) {
+        reponse1=element.first().firstResponse
+        reponse2=element.first().secondResponse
+        reponse3=element.first().thirdResponse
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -171,7 +185,9 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
             }
 
-            AppButton("Voir récapitulatif") { }
+            AppButton("Valider") {
+                onNavigate()
+            }
         }
 
     }
@@ -180,6 +196,6 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
 @Composable
 @Preview(showBackground = true)
-fun FormulaireScreenPreview(modifier: Modifier = Modifier) {
-    FormulaireScreen(onNavigate = {})
+fun RecapitulatifLienVieReelScreenPreview(modifier: Modifier = Modifier) {
+    RecapitulatifLienVieReelScreen(onNavigate = {})
 }

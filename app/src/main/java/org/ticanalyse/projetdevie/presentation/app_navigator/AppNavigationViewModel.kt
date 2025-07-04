@@ -49,4 +49,8 @@ class AppNavigationViewModel @Inject constructor(
         }
     }
 
+    fun refreshCurrentUser() {
+        getCurrentUser()
+    }
+
 }
