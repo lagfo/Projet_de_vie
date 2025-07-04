@@ -1,7 +1,5 @@
 package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
-import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -9,55 +7,45 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.itextpdf.text.Document
-import com.itextpdf.text.PageSize
-import com.maxkeppeker.sheets.core.views.Grid
+import coil.compose.rememberAsyncImagePainter
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.domain.model.ActeursEducatifs
-import org.ticanalyse.projetdevie.domain.model.ActeursFamiliauxEtSociaux
-import org.ticanalyse.projetdevie.domain.model.ActeursInstitutionnelsEtDeSoutien
-import org.ticanalyse.projetdevie.domain.model.ActeursProfessionnels
 import org.ticanalyse.projetdevie.domain.model.Element
-import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
-import org.ticanalyse.projetdevie.utils.ExoPlayer
-import androidx.core.graphics.createBitmap
+import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
+import kotlin.text.ifEmpty
 
 @Composable
 fun ResumePlanificationProjetScreen() {
@@ -65,10 +53,13 @@ fun ResumePlanificationProjetScreen() {
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     val ligneDeVieViewModel = hiltViewModel<LigneDeVieViewModel>()
     val bilanCompetenceViewModel = hiltViewModel<BilanCompetenceViewModel>()
+    val viewModel = hiltViewModel<AppNavigationViewModel>()
 //    val lienVieReelle = hiltViewModel<LienVie>()
 
     monReseauViewModel.getMonReseau()
     bilanCompetenceViewModel.getSkills()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
     val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
     val listActeursEducatifs = monReseauViewModel.listActeursEducatifs.collectAsStateWithLifecycle()
     val listActeursProfessionnels = monReseauViewModel.listActeursProfessionel.collectAsStateWithLifecycle()
@@ -78,6 +69,14 @@ fun ResumePlanificationProjetScreen() {
     val listQuestionElement: List<Element> = emptyList()
     val listBilanCompetence = bilanCompetenceViewModel.skillsState.collectAsStateWithLifecycle()
     val listLienVieReelle: List<String> = emptyList()
+    val context = LocalContext.current
+
+
+    val mapListActeursFamiliaux = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    val mapListActeursEducatifs = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    val mapListActeursProfessionnels = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    val mapListActeursInstitutionnelsEtDeSoutien = remember { mutableStateOf(mapOf<String, List<String>>()) }
+
 
     Box(
         modifier = Modifier
@@ -112,6 +111,63 @@ fun ResumePlanificationProjetScreen() {
                 verticalArrangement = Arrangement.spacedBy(MediumPadding1),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                item {
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .size(90.dp)
+                                .clip(CircleShape)
+                                .border(
+                                    width = 1.dp,
+                                    color =colorResource(R.color.secondary_color),
+                                    shape = CircleShape
+                                ),
+                            painter = painter,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "Profil image"
+                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Row {
+                                Text(
+                                    text = "Sexe: ${currentUser?.genre}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Text(
+                                    text = "Date de naissance: ${currentUser?.dateNaissance}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Text(
+                                text = "Numero de telephone: ${currentUser?.numTel}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            currentUser?.email?.let {
+                                Text(
+                                    text = "Email: ${currentUser!!.email}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
 
                 item {
                     Text(
@@ -122,7 +178,7 @@ fun ResumePlanificationProjetScreen() {
                 }
 
                 item {
-                    val listActeursFamiliaux = remember { mutableStateOf(mapOf(
+                    mapListActeursFamiliaux.value = mapOf(
                         "Parents ou tuteurs: " to (listActeursFamiliauxEtSociaux.value?.parentsTuteurs?.split("|") ?: emptyList()),
                         "Frères, soeurs, cousins ou cousines: " to (listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines?.split("|") ?: emptyList()),
                         "Voisins" to (listActeursFamiliauxEtSociaux.value?.voisins?.split("|") ?: emptyList()),
@@ -131,36 +187,36 @@ fun ResumePlanificationProjetScreen() {
                         "Amis proches: " to (listActeursFamiliauxEtSociaux.value?.amisProches?.split("|") ?: emptyList()),
                         "Mentor ou modèle dans la communauté: " to (listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute?.split("|") ?: emptyList()),
                         "Leaders communautaires ou d'associations locales: " to (listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales?.split("|") ?: emptyList()),
-                    )) }
-                    MonReseauElement("Acteurs familiaux et sociaux", listActeursFamiliaux.value)
+                    )
+                    MonReseauElement("Acteurs familiaux et sociaux", mapListActeursFamiliaux.value)
                 }
                 item {
-                    val listActeursEducatifs = mapOf(
+                    mapListActeursEducatifs.value = mapOf(
                         "Enseignants ou professeurs: " to (listActeursEducatifs.value?.EnseignantsProfesseurs?.split("|") ?: emptyList()),
                         "Encadreurs de centres de formation professionnelle: " to (listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle?.split("|") ?: emptyList()),
                         "Anciens camarades de classe: " to (listActeursEducatifs.value?.anciensCamaradesClasse?.split("|") ?: emptyList()),
                         "Conseillers d'orientation scolaire ou professionnelle: " to (listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle?.split("|") ?: emptyList()),
                         "Animateurs d'ONG éducatives: " to (listActeursEducatifs.value?.animateursONGEducatives?.split("|") ?: emptyList()),
                     )
-                    MonReseauElement("Acteurs educatifs", listActeursEducatifs)
+                    MonReseauElement("Acteurs educatifs", mapListActeursEducatifs.value)
                 }
                 item {
-                    val listActeursProfessionnels = mapOf(
+                    mapListActeursProfessionnels.value = mapOf(
                         "Anciens employeurs ou maîtres d'apprentissage: " to (listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage?.split("|") ?: emptyList()),
                         "Employés d'ONG ou de projets de développement: " to (listActeursProfessionnels.value?.employesONGProjetsDeveloppement?.split("|") ?: emptyList()),
                         "Artisans ou entrepreneurs locaux: " to (listActeursProfessionnels.value?.artisansEntrepreneursLocaux?.split("|") ?: emptyList()),
                         "Personnes ressources dans les coopératives, groupements ou mutuelles: " to (listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles?.split("|") ?: emptyList()),
                     )
-                    MonReseauElement("Acteurs professionnels", listActeursProfessionnels)
+                    MonReseauElement("Acteurs professionnels", mapListActeursProfessionnels.value)
                 }
                 item {
-                    val listActeursInstitutionnelsEtDeSoutien = mapOf(
+                    mapListActeursInstitutionnelsEtDeSoutien.value = mapOf(
                         "Agents des services sociaux ou administratifs: " to (listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs?.split("|") ?: emptyList()),
                         "Representants de structures comme une agence nationale pour l'emploi: " to (listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi?.split("|") ?: emptyList()),
                         "Formateurs des programmes publics ou privés de formation et insertion: " to (listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion?.split("|") ?: emptyList()),
                         "Personnel de santé: " to (listActeursInstitutionnelsEtDeSoutien.value?.personnelSante?.split("|") ?: emptyList()),
                     )
-                    MonReseauElement("Acteurs institutionnels et de soutien", listActeursInstitutionnelsEtDeSoutien)
+                    MonReseauElement("Acteurs institutionnels et de soutien", mapListActeursInstitutionnelsEtDeSoutien.value)
                 }
 
                 item {
@@ -189,7 +245,7 @@ fun ResumePlanificationProjetScreen() {
                     )
                 }
                 item {
-                    BilanCompetenceElement(listItems = listBilanCompetence.value!!)
+                    BilanCompetenceElement(listItems = listBilanCompetence.value)
                 }
                 item {
                     Text(
@@ -236,7 +292,19 @@ fun ResumePlanificationProjetScreen() {
 //                    }
 
                     item {
-                        AppButton (text = "Generer pdf", onClick = {})
+                        AppButton (text = "Generer pdf", onClick = {
+                            createResumePlanificationPdf(
+                                context = context,
+                                user = currentUser!!,
+                                listActeursFamiliaux = mapListActeursFamiliaux.value,
+                                listActeursEducatifs = mapListActeursEducatifs.value,
+                                listActeursProfessionnels = mapListActeursProfessionnels.value,
+                                listActeursInstitutionnels = mapListActeursInstitutionnelsEtDeSoutien.value,
+                                listPassedElement = listPassedElement.value,
+                                listPresentElement = listPresentElement.value,
+                                listBilanCompetence = listBilanCompetence.value
+                            )
+                        })
                     }
             }
 
@@ -405,7 +473,7 @@ fun LigneDeVieQuestion(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>) {
+fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>?) {
     FlowRow (
         modifier = modifier
             .fillMaxWidth()
@@ -413,41 +481,25 @@ fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String
         horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
         verticalArrangement = Arrangement.spacedBy(MediumPadding1)
     ) {
-        listItems.forEach { element ->
+        if (listItems.isNullOrEmpty()) {
             Text(
-                text = element,
+                text = "Pas d'élément",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                    .padding(6.dp)
             )
+        } else {
+            listItems.forEach { element ->
+                Text(
+                    text = element,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                        .padding(6.dp)
+                )
+            }
         }
     }
 }
 
-fun generatePdf(context: Context) {
-
-    val document = Document(PageSize.A4)
-
-    val composeView = ComposeView(context).apply {
-        setContent { 
-            ResumePlanificationProjetScreen()
-        }
-    }
-
-    composeView.measure(
-        android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.EXACTLY),
-        android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
-    )
-
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-
-    val bitmap = ImageBitmap(composeView.measuredWidth, composeView.measuredHeight)
-    val canvas = Canvas(bitmap)
-
-    //where to store the file
-
-}
 
 @Preview(device = "id:pixel_8", showSystemUi = true, showBackground = true)
 @Composable
