@@ -18,6 +18,7 @@ import org.ticanalyse.projetdevie.domain.repository.lienVieReelRepository.LienVi
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ResponseLigneDeVieElementRepository
+import timber.log.Timber
 
 enum class  DISPLAY_TYPE{
     ALL,
@@ -55,11 +56,11 @@ class LienVieReelViewModel @Inject constructor(
             try{
                 repository.insertLienVieReel(lienVieReelLigne)
                 _upsertSuccess.value=true
-                Log.d("TAG", "addElement: insertion succeed and status is $upsertSuccess")
+                Timber.tag("TAG").d("addElement: insertion succeed and status is $upsertSuccess")
 
             }catch (e: Exception){
                 _upsertSuccess.value=false
-                Log.d("TAG", "addElement: insertion failed . Error message : ${e.message}")
+                Timber.tag("TAG").d("addElement: insertion failed . Error message : ${e.message}")
             }
         }
     }

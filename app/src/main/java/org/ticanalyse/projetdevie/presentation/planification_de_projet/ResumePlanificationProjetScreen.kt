@@ -40,6 +40,7 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelViewModel
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
@@ -48,13 +49,15 @@ import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
 import kotlin.text.ifEmpty
 
 @Composable
-fun ResumePlanificationProjetScreen() {
+fun ResumePlanificationProjetScreen(
+    onNavigate: () -> Unit = {},
+) {
 
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     val ligneDeVieViewModel = hiltViewModel<LigneDeVieViewModel>()
     val bilanCompetenceViewModel = hiltViewModel<BilanCompetenceViewModel>()
     val viewModel = hiltViewModel<AppNavigationViewModel>()
-//    val lienVieReelle = hiltViewModel<LienVie>()
+    val lienVieReelle = hiltViewModel<LienVieReelViewModel>()
 
     monReseauViewModel.getMonReseau()
     bilanCompetenceViewModel.getSkills()
@@ -66,9 +69,9 @@ fun ResumePlanificationProjetScreen() {
     val listActeursInstitutionnelsEtDeSoutien = monReseauViewModel.listActeursInstitutionel.collectAsStateWithLifecycle()
     val listPassedElement = ligneDeVieViewModel.allPassedElement.collectAsStateWithLifecycle()
     val listPresentElement = ligneDeVieViewModel.allPresentElement.collectAsStateWithLifecycle()
-    val listQuestionElement: List<Element> = emptyList()
+    val listQuestionElement = ligneDeVieViewModel.allResponse.collectAsStateWithLifecycle()
     val listBilanCompetence = bilanCompetenceViewModel.skillsState.collectAsStateWithLifecycle()
-    val listLienVieReelle: List<String> = emptyList()
+    val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
 
@@ -234,7 +237,24 @@ fun ResumePlanificationProjetScreen() {
                     LigneDeVieComponent("Les évènements du présent", listPresentElement.value)
                 }
                 item {
-                    LigneDeVieQuestion()
+                    LigneDeVieQuestion(
+                        question = "Qu'ai-je déjà réalisé ?",
+                        response = if (listQuestionElement.value.isNotEmpty()) {
+                            listQuestionElement.value.first().firstResponse
+                        } else {
+                            "Aucune reponse renseignée"
+                        }
+                    )
+                }
+                item {
+                    LigneDeVieQuestion(
+                        question = "Qu'est ce que je suis capable de faire ?",
+                        response = if (listQuestionElement.value.isNotEmpty()) {
+                            listQuestionElement.value.first().secondResponse
+                        } else {
+                            "Aucune reponse renseignée"
+                        }
+                    )
                 }
 
                 item {
@@ -254,58 +274,88 @@ fun ResumePlanificationProjetScreen() {
                         fontWeight = FontWeight.Bold
                     )
                 }
+                item {
+                    LienVieReelComponent(
+                        question = "Qu'est ce que j'ai actuellement ?",
+                        response = if (listLienVieReelle.value.isNotEmpty()) {
+                            listLienVieReelle.value.first().firstResponse
+                        } else {
+                            "Aucune reponse renseignée"
+                        }
+                    )
+                }
+                item {
+                    LienVieReelComponent(
+                        question = "Qu'est ce qui me manque ?",
+                        response = if (listLienVieReelle.value.isNotEmpty()) {
+                            listLienVieReelle.value.first().secondResponse
+                        } else {
+                            "Aucune reponse renseignée"
+                        }
+                    )
+                }
+                item {
+                    LienVieReelComponent(
+                        question = "Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?",
+                        response = if (listLienVieReelle.value.isNotEmpty()) {
+                            listLienVieReelle.value.first().thirdResponse
+                        } else {
+                            "Aucune reponse renseignée"
+                        }
+                    )
+                }
 
-
-
-//                item {
-//                    Text("Ligne de vie")
-//                    Spacer(Modifier.height(8.dp))
-//                    Text("Liste des evenements passees")
-//                }
-//                    if (listPassedElement.isNotEmpty()) {
-//                        items(
-//                            listPassedElement,
-//                        ) { passedElement ->
-//                            LigneDeVieComponent(element = passedElement)
-//                        }
-//                    } else {
-//                        item {
-//                            Text("Pas d'élément passé")
-//                        }
-//                    }
-
-//                    item {
-//                        Text("Liste des evenements present")
-//                        Spacer(Modifier.height(8.dp))
-//                    }
-//                    if (listPresentElement.isNotEmpty()) {
-//                        items(
-//                            listPresentElement,
-//                        ) { presentElement ->
-//                            LigneDeVieComponent(element = presentElement)
-//                        }
-//                    }
-
-//                    item {
-//                        Text("Liste des evenements present")
-//                        Spacer(Modifier.height(8.dp))
-//                    }
-
-                    item {
-                        AppButton (text = "Generer pdf", onClick = {
-                            createResumePlanificationPdf(
-                                context = context,
-                                user = currentUser!!,
-                                listActeursFamiliaux = mapListActeursFamiliaux.value,
-                                listActeursEducatifs = mapListActeursEducatifs.value,
-                                listActeursProfessionnels = mapListActeursProfessionnels.value,
-                                listActeursInstitutionnels = mapListActeursInstitutionnelsEtDeSoutien.value,
-                                listPassedElement = listPassedElement.value,
-                                listPresentElement = listPresentElement.value,
-                                listBilanCompetence = listBilanCompetence.value
+                item {
+                    AppButton (text = "Generer pdf", onClick = {
+                        createResumePlanificationPdf(
+                            context = context,
+                            user = currentUser!!,
+                            listActeursFamiliaux = mapListActeursFamiliaux.value,
+                            listActeursEducatifs = mapListActeursEducatifs.value,
+                            listActeursProfessionnels = mapListActeursProfessionnels.value,
+                            listActeursInstitutionnels = mapListActeursInstitutionnelsEtDeSoutien.value,
+                            listPassedElement = listPassedElement.value,
+                            listPresentElement = listPresentElement.value,
+                            listBilanCompetence = listBilanCompetence.value,
+                            listQuestionsLigneDeVie = listOf(
+                                Pair("Qu'ai-je déjà réalisé ?", if (listQuestionElement.value.isNotEmpty()) {
+                                    listQuestionElement.value.first().firstResponse
+                                } else {
+                                    "Aucune reponse renseignée"
+                                }
+                                ),
+                                Pair("Qu'est ce que je suis capable de faire ?", if (listQuestionElement.value.isNotEmpty()) {
+                                    listQuestionElement.value.first().secondResponse
+                                } else {
+                                    "Aucune reponse renseignée"
+                                })
+                            ),
+                            listQuestionsLienVieReel = listOf(
+                                Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                    listLienVieReelle.value.first().firstResponse
+                                } else {
+                                    "Aucune reponse renseignée"
+                                }
+                                ),
+                                Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                    listLienVieReelle.value.first().secondResponse
+                                } else {
+                                    "Aucune reponse renseignée"
+                                }),
+                                Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                    listLienVieReelle.value.first().thirdResponse
+                                } else {
+                                    "Aucune reponse renseignée"
+                                })
                             )
-                        })
-                    }
+                            ,
+                        ) {
+                            onNavigate()
+                        }
+                    })
+                }
+
+
             }
 
         }
@@ -445,28 +495,52 @@ fun LigneDeVieComponent(nomCategorie: String, element: List<Element>) {
             Text(
                 text = "Pas d'élément",
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold
             )
         }
     }
 }
 
 @Composable
-fun LigneDeVieQuestion(modifier: Modifier = Modifier) {
+fun LigneDeVieQuestion(question: String = "Questions", response: String = "Description") {
     Column(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = question,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = response,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 6.dp)
+        )
+    }
+
+}
+
+@Composable
+fun LienVieReelComponent(question: String = "Questions", response: String = "Description") {
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = MediumPadding1),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "Question",
+            text = question,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Description",
+            text = "    $response",
             style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 6.dp)
         )
     }
 
@@ -485,6 +559,7 @@ fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String
             Text(
                 text = "Pas d'élément",
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold
             )
         } else {
             listItems.forEach { element ->

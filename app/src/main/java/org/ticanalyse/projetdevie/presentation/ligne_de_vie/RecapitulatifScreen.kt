@@ -102,9 +102,14 @@ fun RecapitulatifScreen(
 
 
     LaunchedEffect(listOfElement,listOfPresentElement,listOfPassedElement,reponseQuestion,isClicked,isClicked) {
+        if(reponseQuestion.isNotEmpty()){
+            reponse1=reponseQuestion.first().firstResponse
+            reponse2=reponseQuestion.first().secondResponse
+        }else{
+            Log.d("TAG", "RecapitulatifScreen:$reponseQuestion ")
 
-        reponse1=reponseQuestion[0].firstResponse
-        reponse2=reponseQuestion[0].secondResponse
+        }
+
         if(!isResponseValide && isClicked){
             Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
             isClicked=false

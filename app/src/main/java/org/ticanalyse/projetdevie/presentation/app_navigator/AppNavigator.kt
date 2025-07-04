@@ -56,11 +56,13 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetPdfViewerRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.PdfViewerScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.profile.ProfileScreen
@@ -340,7 +342,12 @@ fun AppNavigator() {
                 }
             }
             composable<PlanificationProjetResumeRoute> {
-                ResumePlanificationProjetScreen()
+                ResumePlanificationProjetScreen {
+                    navController.navigate(PlanificationProjetPdfViewerRoute)
+                }
+            }
+            composable<PlanificationProjetPdfViewerRoute> {
+                PdfViewerScreen()
             }
         }
 
