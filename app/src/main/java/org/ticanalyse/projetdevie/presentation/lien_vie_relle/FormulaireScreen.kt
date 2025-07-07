@@ -24,12 +24,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import java.time.LocalDate
 
 @Composable
 fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
@@ -39,6 +41,7 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
     var reponse1 by remember { mutableStateOf("") }
     var reponse2 by remember { mutableStateOf("") }
     var reponse3 by remember { mutableStateOf("") }
+    val viewModel= hiltViewModel<LienVieReelViewModel>()
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -171,7 +174,15 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
             }
 
-            AppButton("Voir récapitulatif") { }
+            AppButton("Voir récapitulatif") {
+                viewModel.addLienDeVieReelLine(
+                    firstResponse = reponse1,
+                    secondResponse = reponse2,
+                    thirdResponse = reponse3,
+                    creationDate = LocalDate.now().toString())
+
+                onNavigate()
+            }
         }
 
     }
