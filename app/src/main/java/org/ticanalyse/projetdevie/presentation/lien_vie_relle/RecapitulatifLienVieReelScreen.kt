@@ -35,6 +35,7 @@ import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import java.time.LocalDate
 
 @Composable
 fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
@@ -186,6 +187,10 @@ fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->
             }
 
             AppButton("Valider") {
+                viewModel.addLienDeVieReelLine(
+                    firstResponse = reponse1,
+                    secondResponse = reponse2,
+                    thirdResponse = reponse3, creationDate = LocalDate.now().toString())
                 onNavigate()
             }
         }
