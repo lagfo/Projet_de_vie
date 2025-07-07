@@ -171,7 +171,9 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
             }
 
-            AppButton("Voir récapitulatif") { }
+            AppButton("Voir récapitulatif") {
+                onNavigate()
+            }
         }
 
     }
