@@ -401,6 +401,7 @@ fun AppNavigator() {
             composable<RecapitulatifLienVieReelRoute> {
                 RecapitulatifLienVieReelScreen(
                     onNavigate = {
+                        navController.navigate(PlanificationProjetRoute)
                     }
                 )
             }

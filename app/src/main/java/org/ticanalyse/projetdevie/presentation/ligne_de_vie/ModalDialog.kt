@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,15 +49,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
@@ -153,15 +158,23 @@ fun ModalDialog(
                 ) {
                     Text(
                         text="Evènement passé",
-                        fontSize = 9.99.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
+
+//                    VerticalDivider(
+//                        modifier = Modifier.height(20.dp), // Adjust height as needed
+//                        thickness = 1.dp,
+//                        color = Color.Black
+//                    )
+
                     Text(
                         text="Evènement en cours",
-                        fontSize = 9.99.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+
                     )
                 }
                 Row(
@@ -290,6 +303,12 @@ fun ModalDialog(
                             },
                         )
                     }
+                    VerticalDivider(
+                        modifier = Modifier.height(150.dp), // Adjust height as needed
+                        thickness = 1.dp,
+                        color = colorResource(R.color.primary_color)
+                    )
+
                     Column(
                         modifier = Modifier.weight(1f)
                     ){
@@ -397,4 +416,13 @@ fun ModalDialog(
 }
 
 
+@Composable
+@Preview(showBackground = true)
+fun ModalDialogPreview(modifier: Modifier = Modifier) {
+    ModalDialog(
+        item = ElementScolarite(0, painterResource(R.drawable.ali), ""), onDismiss = {},
+        modifier =modifier,
+        viewModel = viewModel(),
+    )
+}
 
