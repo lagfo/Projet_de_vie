@@ -58,10 +58,17 @@ fun MonReseauSubCategoriesScreen(navController: NavController, category: String,
         ) {
             Box(modifier = Modifier.fillMaxSize().weight(.9f)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val title = when(category){
+                        "acteurFamiliauxSociaux" -> "Acteurs familiaux et sociaux"
+                        "acteurProfessionnel" -> "Acteurs professionnels"
+                        "acteurEducatif" -> "Acteurs éducatifs"
+                        "acteurInstitutionnel" -> "Acteurs institutionnels et de soutien"
+                        else -> ""
+                    }
                     AppText(
-                        text = stringResource(id = R.string.mon_reseau_categories_title),
+                        text = title,
                         fontFamily = Roboto,
-                        fontWeight = FontWeight.Black,
+                        fontWeight = FontWeight.ExtraBold,
                         fontStyle = FontStyle.Normal,
                         color = colorResource(id = R.color.text),
                         fontSize = 12.sp,

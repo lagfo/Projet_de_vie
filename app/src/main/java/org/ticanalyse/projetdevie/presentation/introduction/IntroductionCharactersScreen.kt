@@ -1,5 +1,8 @@
 package org.ticanalyse.projetdevie.presentation.introduction
 
+import android.content.Context
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -29,17 +32,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
 import timber.log.Timber
+import androidx.core.net.toUri
 
 @Composable
 fun IntroductionCharactersScreen(
@@ -78,13 +85,20 @@ fun IntroductionCharactersScreen(
             nextPage.intValue = (pagerState.currentPage + 1) % pagerState.pageCount
         }
     }
-
-     */
-    LaunchedEffect(pagerState.currentPage) {
+ LaunchedEffect(pagerState.currentPage) {
         delay(15000)
         val next = (pagerState.currentPage + 1) % pagerState.pageCount
         pagerState.animateScrollToPage(next)
     }
+     */
+
+    val context = LocalContext.current
+    LaunchedEffect(pagerState.currentPage) {
+        val duration = getVideoDuration(context, characters[pagerState.currentPage].video)
+        delay(duration + 1000L) // +1s buffer
+        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
+    }
+
 
 
     Box(
@@ -217,6 +231,18 @@ fun IntroductionCharactersScreen(
 
 
 }
+
+
+suspend fun getVideoDuration(context: Context, videoResId: Int): Long =
+    withContext(Dispatchers.IO) {
+        runCatching {
+            MediaMetadataRetriever().use { retriever ->
+                val uri = "android.resource://${context.packageName}/$videoResId".toUri()
+                retriever.setDataSource(context, uri)
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 15000L
+            }
+        }.getOrElse { 15000L }
+    }
 
 data class Characters(
     val name: String,
