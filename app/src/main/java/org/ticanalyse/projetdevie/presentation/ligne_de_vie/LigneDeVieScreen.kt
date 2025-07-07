@@ -109,6 +109,7 @@ fun LigneDeVieScreen(
 
     val onSubmit = rememberSaveable { mutableStateOf (false) }
 
+
     val items= listOf(
         ElementScolarite(1,painterResource(R.drawable.ecole_primaire),"École primaire"),
         ElementScolarite(2,painterResource(R.drawable.ecole_secondaire),"École secondaire (collège/lycée)"),
@@ -154,12 +155,28 @@ fun LigneDeVieScreen(
     var isButtonVisible by remember { mutableStateOf(false) }
     isButtonVisible=if(pagerState.currentPage==0) false else if(pagerState.currentPage==1) false else if(pagerState.currentPage==2) true else false
     val context = LocalContext.current
+    val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
     LaunchedEffect(isResponseValide,isClicked){
         if(!isResponseValide && isClicked){
             Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
             isClicked=false
         }
     }
+
+    LaunchedEffect(reponseQuestion,isClicked,context) {
+
+        if(reponseQuestion.isNotEmpty()){
+            Log.d("TAG", "RecapitulatifScreen: $reponseQuestion ")
+            reponse1=reponseQuestion[0].firstResponse
+            reponse2=reponseQuestion[0].secondResponse
+        }
+        if(!isResponseValide && isClicked){
+            Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
+            isClicked=false
+        }
+
+    }
+
 
 
     Box(

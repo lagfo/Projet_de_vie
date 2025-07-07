@@ -305,6 +305,11 @@ fun RecapitulatifScreen(
                                                 }
                                             }
 
+                                        }else{
+                                            Text(
+                                                text = "Aucun évènement passé n'a été enregistré",
+                                                color = Color.White
+                                            )
                                         }
 
                                     }
@@ -416,6 +421,12 @@ fun RecapitulatifScreen(
                                                     }
                                                 }
                                             }
+
+                                        }else{
+                                            Text(
+                                                text = "Aucun évènement présent n'a été enregistré",
+                                                color = Color.White
+                                            )
 
                                         }
 
