@@ -32,7 +32,7 @@ import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 
 @Composable
-fun FormulaireScreen(modifier: Modifier = Modifier) {
+fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
 
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
@@ -171,7 +171,7 @@ fun FormulaireScreen(modifier: Modifier = Modifier) {
 
             }
 
-            AppButton("Valider") { }
+            AppButton("Voir récapitulatif") { }
         }
 
     }
@@ -181,5 +181,5 @@ fun FormulaireScreen(modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true)
 fun FormulaireScreenPreview(modifier: Modifier = Modifier) {
-    FormulaireScreen()
+    FormulaireScreen(onNavigate = {})
 }
