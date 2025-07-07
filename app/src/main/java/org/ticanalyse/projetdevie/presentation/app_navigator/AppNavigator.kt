@@ -104,6 +104,8 @@ fun AppNavigator() {
         backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
 
@@ -136,12 +138,12 @@ fun AppNavigator() {
                     )
 
                     backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> AppModuleTopBar(
-                        title = R.string.introduction_title,
+                        title = R.string.mon_reseau_title,
                         R.color.primary_color
                     )
 
                     backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> AppModuleTopBar(
-                        title = R.string.introduction_title,
+                        title = R.string.mon_reseau_title,
                         R.color.primary_color
                     )
 
@@ -181,22 +183,22 @@ fun AppNavigator() {
                         val category = backStackState.arguments?.getString("category")
                         when (category) {
                             "acteurFamiliauxSociaux" -> AppModuleTopBar(
-                                title = R.string.introduction_title,
+                                title = R.string.mon_reseau_title,
                                 R.color.thirty_color
                             )
 
                             "acteurProfessionnel" -> AppModuleTopBar(
-                                title = R.string.introduction_title,
+                                title = R.string.mon_reseau_title,
                                 R.color.secondary_color
                             )
 
                             "acteurEducatif" -> AppModuleTopBar(
-                                title = R.string.introduction_title,
+                                title = R.string.mon_reseau_title,
                                 R.color.primary_color
                             )
 
                             "acteurInstitutionnel" -> AppModuleTopBar(
-                                title = R.string.introduction_title,
+                                title = R.string.mon_reseau_title,
                                 R.color.fourty_color
                             )
                         }
