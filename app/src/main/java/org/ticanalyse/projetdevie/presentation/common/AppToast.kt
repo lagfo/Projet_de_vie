@@ -39,6 +39,7 @@ fun AppToast(
             )
         }
     }
+
     LaunchedEffect(Unit) {
         delay(2000)
         onDismiss()

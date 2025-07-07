@@ -65,7 +65,7 @@ fun MonReseauIntroductionScreen(onNavigate: () -> Unit) {
                         ttsManager = ttsManager
                     )
                     Spacer(modifier = Modifier.height(MediumPadding1))
-                    ExoPlayer(R.raw.intro_safi)
+                    ExoPlayer(R.raw.intro_safy)
                 }
 
             }

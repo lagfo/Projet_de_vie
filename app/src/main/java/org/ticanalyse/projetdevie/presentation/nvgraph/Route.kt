@@ -58,10 +58,21 @@ object LigneDeVieElementRoute: AppRoute
 object LienVieReelIntroductionScreenRoute: AppRoute
 @Serializable
 object FormulaireScreenRoute: AppRoute
+@Serializable
+object RecapitulatifLienVieReelRoute:AppRoute
 
+@Serializable
+object PlanificationProjetRoute:AppRoute
+
+@Serializable
+object PlanificationProjetResumeRoute:AppRoute
+
+@Serializable
+object PlanificationProjetPdfViewerRoute:AppRoute
 
 @Serializable
 object BilanCompetenceResumeRoute:AppRoute
+
 
 
 //@Serializable

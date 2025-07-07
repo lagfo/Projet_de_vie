@@ -26,7 +26,8 @@ import androidx.media3.ui.PlayerView
 
 @Composable
 fun ExoPlayer(
-    videoId: Int
+    videoId: Int,
+    onPageChanged: Boolean = true,
 ) {
     val context = LocalContext.current
 //    val showControls by remember { mutableStateOf(true) }
@@ -47,7 +48,17 @@ fun ExoPlayer(
                 exoPlayer.playWhenReady = true
             }
     }
-    
+
+    DisposableEffect(key1 = onPageChanged) {
+        onDispose {
+            if (!onPageChanged) {
+                exoPlayer.pause()
+            }
+        }
+    }
+
+
+
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -80,7 +91,8 @@ fun ExoPlayer(
                 player = exoPlayer
             }
         },
-        modifier = Modifier.background(Color.Black)
+        modifier = Modifier
+            .background(Color.Black)
 //            .aspectRatio(16 / 12f)
             .fillMaxWidth(),
         update = {

@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -47,8 +46,8 @@ fun IntroductionCharactersScreen(
     onBackPressed: () -> Unit
 ) {
     val characters = listOf(
-        Characters("Ali", R.drawable.ali, R.raw.intro_ali/*, R.raw.intro_ali*/),
-        Characters("Safy", R.drawable.saly, R.raw.intro_safi/*, R.raw.intro_safi*/),
+        Characters("Ali", R.drawable.ali, R.raw.intro_aly/*, R.raw.intro_ali*/),
+        Characters("Safy", R.drawable.saly, R.raw.intro_safy/*, R.raw.intro_safi*/),
         Characters("Myriam", R.drawable.coach, R.raw.intro_myriam/*, R.raw.intro_myriam*/),
     )
 
@@ -121,7 +120,7 @@ fun IntroductionCharactersScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
 
-                            ExoPlayer(characters[currentPageIndex].video)
+                            ExoPlayer(characters[currentPageIndex].video, currentPageIndex == pagerState.currentPage)
 
                             Row (
                                 modifier = Modifier.fillMaxWidth(),
