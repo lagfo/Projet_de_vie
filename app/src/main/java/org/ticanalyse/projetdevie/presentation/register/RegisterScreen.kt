@@ -28,6 +28,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppForm
+import org.ticanalyse.projetdevie.presentation.common.AppProfileForm
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.utils.Global.validateAge
@@ -87,10 +88,10 @@ fun RegisterScreen (
 
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, end = 10.dp, top = 10.dp)) {
+            .padding(start = 5.dp, end = 5.dp, top = 10.dp)) {
             Box(modifier = Modifier.weight(.9f)) {
 
-                AppForm(
+                AppProfileForm(
                     imageUri = imageUri,
                     ttsManager = ttsManager,
                     sttManager = sttManager,

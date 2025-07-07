@@ -39,6 +39,7 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
     var reponse1 by remember { mutableStateOf("") }
     var reponse2 by remember { mutableStateOf("") }
     var reponse3 by remember { mutableStateOf("") }
+    val viewModel= hiltViewModel<LienVieReelViewModel>()
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -172,6 +173,12 @@ fun FormulaireScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
             }
 
             AppButton("Voir récapitulatif") {
+                viewModel.addLienDeVieReelLine(
+                    firstResponse = reponse1,
+                    secondResponse = reponse2,
+                    thirdResponse = reponse3,
+                    creationDate = LocalDate.now().toString())
+
                 onNavigate()
             }
         }

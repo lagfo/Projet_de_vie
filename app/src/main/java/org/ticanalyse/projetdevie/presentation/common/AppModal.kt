@@ -179,7 +179,7 @@ fun AppModal(
                     AppButton(
                         text = stringResource(id = R.string.valider),
                         onClick = {
-                            if( validateTextEntries(nom.value,description.value,nom2.value,description2.value))
+                            if( validateTextEntries(nom.value,description.value))
                                 viewModel.upsertData(index=index, category = icon.category, nom = nom.value, description = description.value, nom2 = nom2.value, description2 = description2.value)
                             else onSubmit.value=true
                         }
