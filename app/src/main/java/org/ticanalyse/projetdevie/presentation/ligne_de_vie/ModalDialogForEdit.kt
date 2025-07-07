@@ -162,31 +162,23 @@ fun ModalDialogForEdit(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-
-                Row(
-                    modifier= Modifier.fillMaxWidth().offset(0.dp, (15).dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(
-                        text="Evènement passé",
-                        fontSize = 9.99.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text="Evènement en cours",
-                        fontSize = 9.99.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically
+
                 ){
                     Column(
                         modifier = Modifier.weight(1f)
                     ){
+                        Text(
+                            modifier= Modifier.fillMaxWidth(),
+                            text="Evènement passé",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+
                         OutlinedTextField(
                             enabled = dateEncours.isBlank(),
                             value =dateDebut,
@@ -313,8 +305,16 @@ fun ModalDialogForEdit(
                     )
 
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center
                     ){
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text="Evènement en cours",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            )
                         OutlinedTextField(
                             enabled = !(dateDebut.isNotBlank()||dateFin.isNotBlank()),
                             value =dateEncours,
