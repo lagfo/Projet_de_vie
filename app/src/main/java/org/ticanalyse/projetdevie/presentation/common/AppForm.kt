@@ -32,14 +32,12 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -336,8 +334,8 @@ fun AppProfileForm(
                     ) {
                         val infiniteTransition = rememberInfiniteTransition()
                         val scale by infiniteTransition.animateFloat(
-                            initialValue = 0f,
-                            targetValue = 2.5f,
+                            initialValue = 0.5f,
+                            targetValue = 1f,
                             animationSpec = infiniteRepeatable(
                                 animation = tween(800, easing = FastOutSlowInEasing),
                                 repeatMode = RepeatMode.Reverse

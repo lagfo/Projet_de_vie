@@ -58,7 +58,12 @@ fun IntroductionHomeScreen(
            Box {
                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                    Text(
-                       text = "asdkjflsajdflsajdl alsdkfjlsakdjflaskdjflaksjlfdkjsadlfa asldkfjlaksdjflkajdsflasdkjflaksjdflasdlaskdjflkldas",
+                       text = "\uD83D\uDC4B Salut à toi et bienvenue dans cette première activité !\n" +
+                               "Aujourd’hui, on commence un super voyage : celui de ton Projet de Vie. \uD83C\uDF31\n" +
+                               " Retiens bien : tu es la force du changement dans ta propre vie.\n" +
+                               "\uD83C\uDFAF Tu es prêt(e) à avancer dans la construction de ton avenir. Alors,\n" +
+                               "découvrons ensemble les étapes suivantes de ton parcours pour définir ton\n" +
+                               "« Projet de Vie » ! \uD83D\uDE80",
                        style = MaterialTheme.typography.bodySmall,
                        textAlign = TextAlign.Center,
                        modifier = Modifier.fillMaxWidth()

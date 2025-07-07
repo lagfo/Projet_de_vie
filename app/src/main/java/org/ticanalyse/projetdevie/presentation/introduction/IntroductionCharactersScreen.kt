@@ -39,6 +39,7 @@ import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
+import timber.log.Timber
 
 @Composable
 fun IntroductionCharactersScreen(
@@ -56,6 +57,8 @@ fun IntroductionCharactersScreen(
         initialPage = 0
     )
 
+    Timber.tag("btntag").d("page state: ${pagerState.currentPage}")
+
     BackHandler {
         onBackPressed()
     }
@@ -69,12 +72,20 @@ fun IntroductionCharactersScreen(
         pagerState.animateScrollToPage(nextPage.intValue)
     }
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+    /*LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         while (true) {
             delay(15000)
             nextPage.intValue = (pagerState.currentPage + 1) % pagerState.pageCount
         }
     }
+
+     */
+    LaunchedEffect(pagerState.currentPage) {
+        delay(15000)
+        val next = (pagerState.currentPage + 1) % pagerState.pageCount
+        pagerState.animateScrollToPage(next)
+    }
+
 
     Box(
         modifier = Modifier
@@ -119,8 +130,12 @@ fun IntroductionCharactersScreen(
                             verticalArrangement = Arrangement.SpaceBetween,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
+                            Timber.tag("btntag").d("currentPageIndex: ${pagerState.currentPage}")
 
-                            ExoPlayer(characters[currentPageIndex].video, currentPageIndex == pagerState.currentPage)
+                            //ExoPlayer(characters[currentPageIndex].video, currentPageIndex == pagerState.currentPage)
+                            if (currentPageIndex == pagerState.currentPage) {
+                                ExoPlayer(characters[currentPageIndex].video, true)
+                            }
 
                             Row (
                                 modifier = Modifier.fillMaxWidth(),
@@ -130,6 +145,7 @@ fun IntroductionCharactersScreen(
                                 IconButton(
                                     onClick = {
                                         val prevPage = pagerState.currentPage - 1
+                                        Timber.tag("btntag").d("prev page $prevPage: current page ${pagerState.currentPage}")
                                         if (prevPage >= 0) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(prevPage)
@@ -165,6 +181,7 @@ fun IntroductionCharactersScreen(
                                 IconButton(
                                     onClick = {
                                         val nextPage = pagerState.currentPage + 1
+                                        Timber.tag("btntag").d(" next page $nextPage: curent page${pagerState.currentPage}")
                                         if (nextPage < pagerState.pageCount) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(nextPage)
@@ -197,9 +214,6 @@ fun IntroductionCharactersScreen(
         }
 
     }
-
-
-
 
 
 }

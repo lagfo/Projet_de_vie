@@ -100,7 +100,7 @@ fun ResumePlanificationProjetScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "asdkjflsajdflsajdl alsdkfjlsakdjflaskdjflaksjlfdkjsadlfa asldkfjlaksdjflkajdsflasdkjflaksjdflasdlaskdjflkldas",
+                text = "Fiche",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()

@@ -104,6 +104,8 @@ fun AppNavigator() {
         backStackState?.destination?.route == BilanCompetanceIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetanceRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
 
