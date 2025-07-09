@@ -92,6 +92,10 @@ fun AppNavigator() {
         backStackState?.destination?.route == HomeRoute::class.qualifiedName -> 0
         backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> 1
         backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetPdfViewerRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
@@ -133,6 +137,10 @@ fun AppNavigator() {
                     )
                     //backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> AppModuleTopBar(title = R.string.introduction_title,R.color.primary_color)
                     backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.introduction_title,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.introduction_title,
                         R.color.primary_color
                     )
