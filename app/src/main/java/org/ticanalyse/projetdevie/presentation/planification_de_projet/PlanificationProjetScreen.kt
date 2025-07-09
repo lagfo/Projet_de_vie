@@ -65,7 +65,7 @@ fun PlanificationProjetScreen(
                        modifier = Modifier.fillMaxWidth()
                    )
                    Spacer(modifier = Modifier.height(MediumPadding1))
-                   ExoPlayer(R.raw.intro_safy)
+                   ExoPlayer(R.raw.planification_du_projet)
                }
 
            }

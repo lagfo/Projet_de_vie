@@ -26,7 +26,7 @@ class WatermarkImageEventHandler(
         val pageSize = docEvent.page.pageSize
 
         pdfCanvas.saveState()
-        pdfCanvas.setExtGState(PdfExtGState().setFillOpacity(0.2f)) // transparence
+        pdfCanvas.setExtGState(PdfExtGState().setFillOpacity(0.1f)) // transparence
 
         val x = (pageSize.left + pageSize.right) / 2 - imageData.width / 2
         val y = (pageSize.bottom + pageSize.top) / 2 - imageData.height / 2

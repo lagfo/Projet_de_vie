@@ -32,6 +32,8 @@ import org.ticanalyse.projetdevie.domain.model.User
 import androidx.core.graphics.createBitmap
 import com.itextpdf.io.image.ImageData
 import com.itextpdf.kernel.pdf.xobject.PdfXObject
+import com.itextpdf.layout.element.AreaBreak
+import com.itextpdf.layout.properties.AreaBreakType
 import com.itextpdf.layout.properties.BackgroundImage
 import java.io.File
 
@@ -65,11 +67,16 @@ object PdfUtil {
         // --- Infos utilisateur
         addUserInfoSection(document, user, context)
 
+        document.add(Paragraph("\n\n\n"))
+
+
         // --- Réseau
         addReseauSection(document, "Acteurs familiaux et sociaux", listActeursFamiliaux)
         addReseauSection(document, "Acteurs éducatifs", listActeursEducatifs)
         addReseauSection(document, "Acteurs professionnels", listActeursProfessionnels)
         addReseauSection(document, "Acteurs institutionnels et de soutien", listActeursInstitutionnels)
+
+        document.add(Paragraph("\n\n\n"))
 
         // --- Ligne de vie
         document.add(Paragraph("Ligne de vie").setTextAlignment(TextAlignment.CENTER)
@@ -79,7 +86,9 @@ object PdfUtil {
         addLigneDeVieSection(document, "Évènements du présent", listPresentElement)
         addQuestions(document, "Questions sur la ligne de vie", listQuestionsLigneDeVie)
 
-        // --- Bilan
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Bilan de competence
         document.add(Paragraph("Bilan de compétences")
             .setTextAlignment(TextAlignment.CENTER)
             .setFontSize(17.5f)
@@ -94,6 +103,7 @@ object PdfUtil {
             document.add(Paragraph("Pas d'éléments"))
         }
 
+        document.add(Paragraph("\n\n\n"))
         // --- Lien de vie réel
         addQuestions(document, "Lien avec la vie réel", listQuestionsLienVieReel)
 
@@ -192,15 +202,15 @@ object PdfUtil {
             elements.forEach { element ->
                 document.add(Paragraph(element.label).setTextAlignment(TextAlignment.LEFT)
                     .setFontSize(15f)
-                    .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+                    .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
                 if (element.status) {
                     document.add(Paragraph("Année: ${element.inProgressYear}").setTextAlignment(TextAlignment.LEFT)
                         .setFontSize(15f)
-                        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+                        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
                 } else {
                     document.add(Paragraph("De ${element.startYear} à ${element.endYear}").setTextAlignment(TextAlignment.LEFT)
                         .setFontSize(15f)
-                        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+                        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
                 }
                 document.add(Paragraph(element.labelDescription).setTextAlignment(TextAlignment.LEFT)
                     .setFontSize(13f)
