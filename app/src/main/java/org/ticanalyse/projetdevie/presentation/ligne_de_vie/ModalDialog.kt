@@ -64,6 +64,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -158,12 +159,16 @@ fun ModalDialog(
                     Column(
                         modifier = Modifier.weight(1f)
                     ){
-                        Text(
-                            modifier= Modifier.fillMaxWidth(),
-                            text="Evènement passé",
-                            fontSize = 12.sp,
+                        AppText(
+                            text = "Evènement passé",
+                            fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
+                            fontStyle = FontStyle.Normal,
+                            color = colorResource(id = R.color.text),
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            ttsManager = ttsManager,
+                            isTextAlignCenter = true
                         )
 
                         OutlinedTextField(
@@ -175,6 +180,7 @@ fun ModalDialog(
                                 }
                             },
                             label = {
+
                                 Text(
                                     text="Année de début",
                                     fontSize = 9.99.sp,
@@ -295,14 +301,19 @@ fun ModalDialog(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.Center
                     ){
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text="Evènement en cours",
-                            fontSize = 12.sp,
+                        AppText(
+                            text = "Evènement en cours",
+                            fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
+                            fontStyle = FontStyle.Normal,
+                            color = colorResource(id = R.color.text),
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            ttsManager = ttsManager,
+                            isTextAlignCenter = true
+                        )
 
-                            )
+
                         OutlinedTextField(
                             enabled = !(dateDebut.isNotBlank()||dateFin.isNotBlank()),
                             value =dateEncours,

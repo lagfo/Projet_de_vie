@@ -9,18 +9,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
@@ -28,6 +34,7 @@ import org.ticanalyse.projetdevie.utils.ExoPlayer
 
 @Composable
 fun LienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
+    val ttsManager = appTTSManager()
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -50,15 +57,15 @@ fun LienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
             Box {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(7.dp),
-                        text = stringResource(R.string.lien_avec_la_vie_reel) ,
-                        maxLines = 6,
-                        textAlign = TextAlign.Center,
+                    AppText(
+                        text = stringResource(id = R.string.video_title),
                         fontFamily = Roboto,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Black,
+                        fontStyle = FontStyle.Normal,
+                        color = colorResource(id = R.color.text),
+                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        ttsManager = ttsManager
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     ExoPlayer(R.raw.lien_avec_la_vie_reelle)

@@ -22,13 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
@@ -37,7 +44,7 @@ import org.ticanalyse.projetdevie.utils.ExoPlayer
 fun PlanificationProjetScreen(
     onNavigate: () -> Unit
 ) {
-
+    val ttsManager = appTTSManager()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,11 +65,16 @@ fun PlanificationProjetScreen(
         ) {
            Box {
                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                   Text(
+                   AppText(
                        text = stringResource(id = R.string.video_title),
-                       style = MaterialTheme.typography.bodySmall,
-                       textAlign = TextAlign.Center,
-                       modifier = Modifier.fillMaxWidth()
+                       fontFamily = Roboto,
+                       fontWeight = FontWeight.Black,
+                       fontStyle = FontStyle.Normal,
+                       color = colorResource(id = R.color.text),
+                       fontSize = 12.sp,
+                       style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                       ttsManager = ttsManager,
+                       isTextAlignCenter = true
                    )
                    Spacer(modifier = Modifier.height(MediumPadding1))
                    ExoPlayer(R.raw.planification_du_projet)
