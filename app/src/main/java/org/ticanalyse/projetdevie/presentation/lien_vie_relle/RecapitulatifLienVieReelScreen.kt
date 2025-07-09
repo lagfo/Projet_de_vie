@@ -192,7 +192,7 @@ fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->
 
             }
 
-            AppButton("Valider") {
+            AppButton("Planification du projet") {
                 viewModel.addLienDeVieReelLine(
                     firstResponse = reponse1,
                     secondResponse = reponse2,

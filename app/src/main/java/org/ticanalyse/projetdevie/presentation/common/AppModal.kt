@@ -158,7 +158,7 @@ fun AppModal(
                         label = stringResource(id = R.string.nom_prenom),
                         ttsManager=ttsManager,
                         sttManager=sttManager,
-                        onSubmit=onSubmit.value
+                        onSubmit=if (nom2.value.isBlank())false else onSubmit.value
                     )
                 }
 
@@ -169,7 +169,7 @@ fun AppModal(
                         label = stringResource(id = R.string.commentaire),
                         ttsManager=ttsManager,
                         sttManager=sttManager,
-                        onSubmit=onSubmit.value
+                        onSubmit=if (nom2.value.isBlank())false else onSubmit.value
                     )
                 }
 

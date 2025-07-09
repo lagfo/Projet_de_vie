@@ -61,7 +61,7 @@ fun LienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
                         fontWeight = FontWeight.Normal,
                     )
                     Spacer(modifier = Modifier.height(5.dp))
-                    ExoPlayer(R.raw.intro_safy)
+                    ExoPlayer(R.raw.lien_avec_la_vie_reelle)
                 }
 
             }

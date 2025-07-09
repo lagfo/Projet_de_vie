@@ -111,11 +111,6 @@ fun AppInputField(
                     Text(text = "invalide")
                 }
             },
-            prefix = {
-                if (inputType == "number") {
-                    Text(text = "+226 ")
-                }
-            },
             isError = isErrorExist,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,

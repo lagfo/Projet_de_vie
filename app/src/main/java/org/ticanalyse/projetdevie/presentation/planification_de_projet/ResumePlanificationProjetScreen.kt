@@ -46,6 +46,7 @@ import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
+import timber.log.Timber
 import kotlin.text.ifEmpty
 
 @Composable
@@ -143,19 +144,17 @@ fun ResumePlanificationProjetScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            Row {
-                                Text(
-                                    text = "Sexe: ${currentUser?.genre}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            Text(
+                                text = "Sexe: ${currentUser?.genre}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
 
-                                Text(
-                                    text = "Date de naissance: ${currentUser?.dateNaissance}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                            Text(
+                                text = "Date de naissance: ${currentUser?.dateNaissance}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
                             Text(
                                 text = "Numero de telephone: ${currentUser?.numTel}",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -163,7 +162,7 @@ fun ResumePlanificationProjetScreen(
                             )
                             currentUser?.email?.let {
                                 Text(
-                                    text = "Email: ${currentUser!!.email}",
+                                    text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -182,42 +181,42 @@ fun ResumePlanificationProjetScreen(
 
                 item {
                     mapListActeursFamiliaux.value = mapOf(
-                        "Parents ou tuteurs: " to (listActeursFamiliauxEtSociaux.value?.parentsTuteurs?.split("|") ?: emptyList()),
-                        "Frères, soeurs, cousins ou cousines: " to (listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines?.split("|") ?: emptyList()),
-                        "Voisins" to (listActeursFamiliauxEtSociaux.value?.voisins?.split("|") ?: emptyList()),
-                        "Chefs coutumiers ou religieux: " to (listActeursFamiliauxEtSociaux.value?.chefsCoutumiersReligieux?.split("|") ?: emptyList()),
-                        "Grands-parents: " to (listActeursFamiliauxEtSociaux.value?.grandsParents?.split("|") ?: emptyList()),
-                        "Amis proches: " to (listActeursFamiliauxEtSociaux.value?.amisProches?.split("|") ?: emptyList()),
-                        "Mentor ou modèle dans la communauté: " to (listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute?.split("|") ?: emptyList()),
-                        "Leaders communautaires ou d'associations locales: " to (listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales?.split("|") ?: emptyList()),
+                        "Parents ou tuteurs: " to (listActeursFamiliauxEtSociaux.value?.parentsTuteurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Frères, soeurs, cousins ou cousines: " to (listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Voisins" to (listActeursFamiliauxEtSociaux.value?.voisins?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Chefs coutumiers ou religieux: " to (listActeursFamiliauxEtSociaux.value?.chefsCoutumiersReligieux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Grands-parents: " to (listActeursFamiliauxEtSociaux.value?.grandsParents?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Amis proches: " to (listActeursFamiliauxEtSociaux.value?.amisProches?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Mentor ou modèle dans la communauté: " to (listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Leaders communautaires ou d'associations locales: " to (listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
                     )
                     MonReseauElement("Acteurs familiaux et sociaux", mapListActeursFamiliaux.value)
                 }
                 item {
                     mapListActeursEducatifs.value = mapOf(
-                        "Enseignants ou professeurs: " to (listActeursEducatifs.value?.EnseignantsProfesseurs?.split("|") ?: emptyList()),
-                        "Encadreurs de centres de formation professionnelle: " to (listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle?.split("|") ?: emptyList()),
-                        "Anciens camarades de classe: " to (listActeursEducatifs.value?.anciensCamaradesClasse?.split("|") ?: emptyList()),
-                        "Conseillers d'orientation scolaire ou professionnelle: " to (listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle?.split("|") ?: emptyList()),
-                        "Animateurs d'ONG éducatives: " to (listActeursEducatifs.value?.animateursONGEducatives?.split("|") ?: emptyList()),
+                        "Enseignants ou professeurs: " to (listActeursEducatifs.value?.EnseignantsProfesseurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Encadreurs de centres de formation professionnelle: " to (listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Anciens camarades de classe: " to (listActeursEducatifs.value?.anciensCamaradesClasse?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Conseillers d'orientation scolaire ou professionnelle: " to (listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Animateurs d'ONG éducatives: " to (listActeursEducatifs.value?.animateursONGEducatives?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
                     )
                     MonReseauElement("Acteurs educatifs", mapListActeursEducatifs.value)
                 }
                 item {
                     mapListActeursProfessionnels.value = mapOf(
-                        "Anciens employeurs ou maîtres d'apprentissage: " to (listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage?.split("|") ?: emptyList()),
-                        "Employés d'ONG ou de projets de développement: " to (listActeursProfessionnels.value?.employesONGProjetsDeveloppement?.split("|") ?: emptyList()),
-                        "Artisans ou entrepreneurs locaux: " to (listActeursProfessionnels.value?.artisansEntrepreneursLocaux?.split("|") ?: emptyList()),
-                        "Personnes ressources dans les coopératives, groupements ou mutuelles: " to (listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles?.split("|") ?: emptyList()),
+                        "Anciens employeurs ou maîtres d'apprentissage: " to (listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Employés d'ONG ou de projets de développement: " to (listActeursProfessionnels.value?.employesONGProjetsDeveloppement?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Artisans ou entrepreneurs locaux: " to (listActeursProfessionnels.value?.artisansEntrepreneursLocaux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Personnes ressources dans les coopératives, groupements ou mutuelles: " to (listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
                     )
                     MonReseauElement("Acteurs professionnels", mapListActeursProfessionnels.value)
                 }
                 item {
                     mapListActeursInstitutionnelsEtDeSoutien.value = mapOf(
-                        "Agents des services sociaux ou administratifs: " to (listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs?.split("|") ?: emptyList()),
-                        "Representants de structures comme une agence nationale pour l'emploi: " to (listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi?.split("|") ?: emptyList()),
-                        "Formateurs des programmes publics ou privés de formation et insertion: " to (listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion?.split("|") ?: emptyList()),
-                        "Personnel de santé: " to (listActeursInstitutionnelsEtDeSoutien.value?.personnelSante?.split("|") ?: emptyList()),
+                        "Agents des services sociaux ou administratifs: " to (listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Representants de structures comme une agence nationale pour l'emploi: " to (listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Formateurs des programmes publics ou privés de formation et insertion: " to (listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+                        "Personnel de santé: " to (listActeursInstitutionnelsEtDeSoutien.value?.personnelSante?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
                     )
                     MonReseauElement("Acteurs institutionnels et de soutien", mapListActeursInstitutionnelsEtDeSoutien.value)
                 }
@@ -377,8 +376,9 @@ fun MonReseauElement(nomCategorie: String, listElement: Map<String, List<String>
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
         )
-        if (listElement.any { listElement -> listElement.value.isNotEmpty() }) {
-            listElement.filter { listElement -> listElement.value.isNotEmpty() }.forEach { element ->
+        if (listElement.any { list -> list.value.isNotEmpty() }) {
+            listElement.filter { list2 -> list2.value.isNotEmpty() }.forEach { element ->
+                Timber.d("Element: ${element.key} et valeur: ${element.value} est ce que c'est vide: ${element.value.isEmpty()} et les valeurs: nombre de valeur: ${element.value.size} et premier element: ${element.value.first()}")
                 MonReseauSousCategorieElement(element.key, element.value)
             }
         } else {
@@ -404,7 +404,7 @@ fun MonReseauSousCategorieElement(nomSousCategorie: String, listElement: List<St
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold
         )
-        if (listElement.isNotEmpty()) {
+        if (listElement.isNotEmpty() ) {
             listElement.chunked(2).forEach { element ->
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(start = 6.dp),
@@ -527,8 +527,7 @@ fun LigneDeVieQuestion(question: String = "Questions", response: String = "Descr
 fun LienVieReelComponent(question: String = "Questions", response: String = "Description") {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = MediumPadding1),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start
     ) {
@@ -550,10 +549,9 @@ fun LienVieReelComponent(question: String = "Questions", response: String = "Des
 fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>?) {
     FlowRow (
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = MediumPadding1),
-        horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
-        verticalArrangement = Arrangement.spacedBy(MediumPadding1)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (listItems.isNullOrEmpty()) {
             Text(

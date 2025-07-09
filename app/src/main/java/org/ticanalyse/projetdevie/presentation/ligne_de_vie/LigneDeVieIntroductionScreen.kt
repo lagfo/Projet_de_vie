@@ -62,7 +62,7 @@ fun LienDeVieIntroductionScreen(modifier: Modifier = Modifier,onNavigate:()->Uni
                         fontWeight = FontWeight.Normal,
                     )
                     Spacer(modifier = Modifier.height(5.dp))
-                    ExoPlayer(R.raw.intro_safy)
+                    ExoPlayer(R.raw.ligne_de_vie)
                 }
 
             }
