@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,7 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +55,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import timber.log.Timber
 import java.io.File
 import kotlin.text.ifEmpty
@@ -65,6 +69,7 @@ fun TopBarComponent(
     Timber.d("TopBarComponent: $profileImagePath")
  //   var isDropdownMenuExpanded by remember { mutableStateOf(false) }
     val painter = rememberAsyncImagePainter (profileImagePath.ifEmpty {R.drawable.avatar})
+    val ttsManager = appTTSManager()
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -100,15 +105,18 @@ fun TopBarComponent(
             horizontalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.width(105.dp))
-            Text(
-                modifier = Modifier.width(200.dp),
-                text="$nom $prenom",
-                fontFamily = BelfastGrotesk,
-                fontWeight= FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style= TextStyle(Color.White)
-            )
+            Box(modifier = Modifier.width(200.dp)) {
+                AppText(
+                    text = "$nom $prenom",
+                    fontFamily = BelfastGrotesk,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal,
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    style = TextStyle(Color.White),
+                    ttsManager = ttsManager
+                )
+            }
 
         }
         Box(

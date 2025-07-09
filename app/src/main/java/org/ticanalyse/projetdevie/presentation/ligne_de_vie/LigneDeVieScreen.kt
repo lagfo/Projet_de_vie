@@ -82,6 +82,7 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.AppTextInput
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -92,6 +93,8 @@ import org.ticanalyse.projetdevie.presentation.introduction.IndicatorDots
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
+import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
 import org.ticanalyse.projetdevie.utils.Global
 import timber.log.Timber
@@ -125,7 +128,7 @@ fun LigneDeVieScreen(
         ElementScolarite(10,painterResource(R.drawable.naissance_enfant),"Naissance d’un enfant"),
         ElementScolarite(11,painterResource(R.drawable.mariage),"Mariage"),
         ElementScolarite(12,painterResource(R.drawable.depart_foyer_familial),"Départ du foyer familial"),
-        ElementScolarite(13,painterResource(R.drawable.ecole_coranique),"Déménagement / Changement de\n" +
+        ElementScolarite(13,painterResource(R.drawable.depart_migration),"Déménagement / Changement de\n" +
                 "village ou de ville"),
         ElementScolarite(14,painterResource(R.drawable.premier_emploi),"Premier emploi"),
         ElementScolarite(15,painterResource(R.drawable.projet),"Création de ton premier petit commerce\n" +
@@ -186,29 +189,35 @@ fun LigneDeVieScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize().padding(top= MediumPadding3, bottom = MediumPadding1, start = 5.dp, end = 5.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                text = if(pagerState.currentPage==0)stringResource(R.string.instructionLigneDeVie) else if(pagerState.currentPage==1)stringResource(R.string.instructionLigneDeVie) else "" ,
-                maxLines = 5,
-                textAlign = TextAlign.Center,
-                fontFamily = Roboto,
-                fontWeight = FontWeight.Normal,
 
-                )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text =if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Questions",
-                textAlign = TextAlign.Center,
+
+            AppText(
+                text = if(pagerState.currentPage==0)stringResource(R.string.instructionLigneDeVie) else if(pagerState.currentPage==1)stringResource(R.string.instructionLigneDeVie) else "" ,
                 fontFamily = Roboto,
-                fontWeight = FontWeight.Bold,
-                fontSize = 21.sp,
-                color = colorResource(R.color.primary_color)
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Normal,
+                color = colorResource(R.color.primary_color),
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                ttsManager = ttsManager,
+                isDefineMaxLine = false,
+                isTextAlignCenter = true
+            )
+
+            AppText(
+                text = if(pagerState.currentPage==0)"Éléments de Scolarité" else if(pagerState.currentPage==1) "Autres Événements Importants de la Vie" else "Questions",
+                fontFamily = Roboto,
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Normal,
+                color = colorResource(R.color.primary_color),
+                fontSize = 18.sp,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                ttsManager = ttsManager,
+                isTextAlignCenter = true
             )
 
             Box {
@@ -420,10 +429,17 @@ fun LigneDeVieScreen(
                                                         horizontalAlignment = Alignment.CenterHorizontally
 
                                                     ) {
-                                                        Text(
-                                                            text ="Qu'ai-je déjà réalisé ?",
-                                                            color = Color.White
+                                                        AppText(
+                                                            text = "Qu'ai-je déjà réalisé ?",
+                                                            fontFamily = Roboto,
+                                                            fontWeight = FontWeight.Black,
+                                                            fontStyle = FontStyle.Normal,
+                                                            color = Color.White,
+                                                            fontSize = 12.sp,
+                                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                                            ttsManager = ttsManager
                                                         )
+
                                                         AppInputFieldMultiLine(
                                                             value =reponse1,
                                                             onValueChange = {
@@ -446,9 +462,15 @@ fun LigneDeVieScreen(
                                                         horizontalAlignment = Alignment.CenterHorizontally
 
                                                     ) {
-                                                        Text(
-                                                            text ="Qu'est-ce que je suis capable de faire ?",
-                                                            color = Color.White
+                                                        AppText(
+                                                            text = "Qu'est-ce que je suis capable de faire ?",
+                                                            fontFamily = Roboto,
+                                                            fontWeight = FontWeight.Black,
+                                                            fontStyle = FontStyle.Normal,
+                                                            color = Color.White,
+                                                            fontSize = 12.sp,
+                                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                                            ttsManager = ttsManager
                                                         )
                                                         AppInputFieldMultiLine(
                                                             value =reponse2,
@@ -556,6 +578,7 @@ fun LigneDeVieScreen(
 
 @Composable
 fun ItemScolariteLayout(item: ElementScolarite, onClick:()->Unit) {
+    val ttsManager = appTTSManager()
     val interactionSource = remember { MutableInteractionSource() }
     Row (
         modifier = Modifier
@@ -568,7 +591,7 @@ fun ItemScolariteLayout(item: ElementScolarite, onClick:()->Unit) {
         verticalAlignment = Alignment.CenterVertically
     ){
         Surface(
-            modifier = Modifier.size(width = 35.dp, height = 35.dp),
+            modifier = Modifier.size(width = 36.dp, height = 36.dp),
             shape = CircleShape,
             color = Color.White                                      // ← solid background
         ) {
@@ -580,13 +603,15 @@ fun ItemScolariteLayout(item: ElementScolarite, onClick:()->Unit) {
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            text=item.topicTitle,
+        AppText(
+            text = item.topicTitle,
             fontFamily = Roboto,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Black,
             fontStyle = FontStyle.Normal,
-            color =Color.White,
-            style = TextStyle(fontSize =20.sp)
+            color = Color.White,
+            fontSize = 14.sp,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            ttsManager = ttsManager
         )
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -49,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +65,7 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
@@ -130,15 +133,15 @@ fun RecapitulatifScreen(
         ) {
 
             Spacer(modifier = Modifier.height(25.dp))
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text ="Récapitulatifs",
-                textAlign = TextAlign.Center,
+            AppText(
+                text = "Récapitulatifs",
                 fontFamily = Roboto,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Normal,
+                color = colorResource(R.color.primary_color),
                 fontSize = 21.sp,
-                color = colorResource(R.color.primary_color)
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                ttsManager = ttsManager
             )
 
             Box {
@@ -150,17 +153,19 @@ fun RecapitulatifScreen(
                 )
 
 
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(0.dp, 10.dp),
-                        text =if(pagerState.currentPage==0)"Passé" else if(pagerState.currentPage==1)"Présent" else if(pagerState.currentPage==2) "Questions" else "",
-                        textAlign = TextAlign.Center,
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(modifier=Modifier.height(5.dp))
+
+                    AppText(
+                        text = if(pagerState.currentPage==0)"Passé" else if(pagerState.currentPage==1)"Présent" else if(pagerState.currentPage==2) "Questions" else "",
                         fontFamily = Roboto,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Black,
+                        fontStyle = FontStyle.Normal,
+                        color = Color.White,
                         fontSize = 19.sp,
-                        color = Color.White
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        ttsManager = ttsManager,
+                        isTextAlignCenter = true
                     )
 
                     Box(
@@ -169,8 +174,7 @@ fun RecapitulatifScreen(
                     ) {
                         HorizontalPager(
                             state = pagerState,
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxSize(),
 
                             ) { currentPageIndex ->
                             Row(
@@ -307,10 +311,18 @@ fun RecapitulatifScreen(
                                             }
 
                                         }else{
-                                            Text(
+                                            AppText(
                                                 text = "Aucun évènement passé n'a été enregistré",
-                                                color = Color.White
+                                                fontFamily = Roboto,
+                                                fontWeight = FontWeight.Black,
+                                                fontStyle = FontStyle.Normal,
+                                                color = Color.White,
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                                ttsManager = ttsManager,
+                                                isTextAlignCenter = true
                                             )
+
                                         }
 
                                     }
@@ -424,9 +436,16 @@ fun RecapitulatifScreen(
                                             }
 
                                         }else{
-                                            Text(
+                                            AppText(
                                                 text = "Aucun évènement présent n'a été enregistré",
-                                                color = Color.White
+                                                fontFamily = Roboto,
+                                                fontWeight = FontWeight.Black,
+                                                fontStyle = FontStyle.Normal,
+                                                color = Color.White,
+                                                fontSize = 12.sp,
+                                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                                ttsManager = ttsManager,
+                                                isTextAlignCenter = true
                                             )
 
                                         }

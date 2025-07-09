@@ -22,12 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
@@ -36,6 +44,7 @@ import org.ticanalyse.projetdevie.utils.ExoPlayer
 fun IntroductionHomeScreen(
     onNavigate: () -> Unit
 ) {
+    val ttsManager = appTTSManager()
 
     Box(
         modifier = Modifier
@@ -57,16 +66,15 @@ fun IntroductionHomeScreen(
         ) {
            Box {
                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                   Text(
-                       text = "\uD83D\uDC4B Salut à toi et bienvenue dans cette première activité !\n" +
-                               "Aujourd’hui, on commence un super voyage : celui de ton Projet de Vie. \uD83C\uDF31\n" +
-                               " Retiens bien : tu es la force du changement dans ta propre vie.\n" +
-                               "\uD83C\uDFAF Tu es prêt(e) à avancer dans la construction de ton avenir. Alors,\n" +
-                               "découvrons ensemble les étapes suivantes de ton parcours pour définir ton\n" +
-                               "« Projet de Vie » ! \uD83D\uDE80",
-                       style = MaterialTheme.typography.bodySmall,
-                       textAlign = TextAlign.Center,
-                       modifier = Modifier.fillMaxWidth()
+                   AppText(
+                       text = stringResource(id = R.string.video_title),
+                       fontFamily = Roboto,
+                       fontWeight = FontWeight.Black,
+                       fontStyle = FontStyle.Normal,
+                       color = colorResource(id = R.color.text),
+                       fontSize = 12.sp,
+                       style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                       ttsManager = ttsManager
                    )
                    Spacer(modifier = Modifier.height(MediumPadding1))
                    ExoPlayer(R.raw.introduction)

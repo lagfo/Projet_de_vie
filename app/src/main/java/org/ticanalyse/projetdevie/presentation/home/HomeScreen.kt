@@ -48,8 +48,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 
 
 data class Topic(val id:Int,val topicImage:Painter,val topicTitle:String)
@@ -66,6 +69,7 @@ fun HomeScreen(
         Topic(5,painterResource(R.drawable.lien_avec_la_vie_reelle),"Lien avec\nla vie réelle"),
         Topic(6,painterResource(R.drawable.planification_du_projet),"Planification\ndu projet")
     )
+    val ttsManager = appTTSManager()
 
     Box {
 
@@ -76,14 +80,22 @@ fun HomeScreen(
         ) {
 
             Spacer(modifier= Modifier.height(40.dp))
-            Text(
-                modifier= Modifier.fillMaxWidth(),
-                text = "Mon projet de vie !",
-                fontFamily = BelfastGrotesk,
-                textAlign = TextAlign.Center,
-                style = TextStyle(fontSize =33.sp),
-                color =colorResource(R.color.primary_color),
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                AppText(
+                    text = "Mon projet de vie !",
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                    color = colorResource(R.color.primary_color),
+                    fontSize = 33.sp,
+                    ttsManager = ttsManager
+                )
+            }
+
+
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),
             ) {

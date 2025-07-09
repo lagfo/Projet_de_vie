@@ -99,8 +99,11 @@ fun AppNavigator() {
         backStackState?.destination?.route == MonReseauIntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauCategoriesRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LigneDeVieRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == LigneDeVieElementRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == RecapitulatifRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == RecapitulatifLienVieReelRoute::class.qualifiedName ->-1
         backStackState?.destination?.route?.startsWith(
             MonReseauSubCategoriesRoute::class.qualifiedName ?: ""
         ) == true -> -1
