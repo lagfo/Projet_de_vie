@@ -75,29 +75,32 @@ fun IntroductionCharactersScreen(
 
     val nextPage = remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(nextPage) {
-        pagerState.animateScrollToPage(nextPage.intValue)
-    }
+//    LaunchedEffect(nextPage) {
+//        pagerState.animateScrollToPage(nextPage.intValue)
+//    }
 
     /*LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         while (true) {
             delay(15000)
             nextPage.intValue = (pagerState.currentPage + 1) % pagerState.pageCount
         }
-    }
- LaunchedEffect(pagerState.currentPage) {
-        delay(15000)
-        val next = (pagerState.currentPage + 1) % pagerState.pageCount
-        pagerState.animateScrollToPage(next)
-    }
-     */
-
+    }*/
     val context = LocalContext.current
-    LaunchedEffect(pagerState.currentPage) {
+    LaunchedEffect(nextPage.intValue, pagerState.currentPage,pagerState.isScrollInProgress) {
         val duration = getVideoDuration(context, characters[pagerState.currentPage].video)
-        delay(duration + 1000L) // +1s buffer
-        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
+        delay(duration + 1000L)
+        nextPage.intValue = (pagerState.currentPage + 1) % pagerState.pageCount
+        pagerState.animateScrollToPage(nextPage.intValue)
     }
+
+
+
+//    LaunchedEffect(pagerState.currentPage) {
+//        val duration = getVideoDuration(context, characters[pagerState.currentPage].video)
+//        delay(duration + 1000L) // +1s buffer
+//
+//        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
+//    }
 
 
 

@@ -68,6 +68,7 @@ import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Global
+import timber.log.Timber
 import java.time.LocalDate
 
 
@@ -106,7 +107,7 @@ fun RecapitulatifScreen(
 //        reponse1=reponseQuestion[0].firstResponse
 //        reponse2=reponseQuestion[0].secondResponse
         if(reponseQuestion.isNotEmpty()){
-            Log.d("TAG", "RecapitulatifScreen: $reponseQuestion ")
+            Timber.tag("TAG").d("RecapitulatifScreen: $reponseQuestion ")
             reponse1=reponseQuestion[0].firstResponse
             reponse2=reponseQuestion[0].secondResponse
         }

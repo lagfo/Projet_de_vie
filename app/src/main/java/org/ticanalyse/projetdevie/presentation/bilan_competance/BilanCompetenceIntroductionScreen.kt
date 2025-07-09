@@ -64,7 +64,7 @@ fun BilanCompetanceIntroductionScreen(onNavigate: () -> Unit) {
                         ttsManager = ttsManager
                     )
                     Spacer(modifier = Modifier.height(MediumPadding1))
-                    ExoPlayer(R.raw.intro_safy)
+                    ExoPlayer(R.raw.bilan_des_competances)
                 }
 
             }
