@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Environment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -43,7 +44,7 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         mutableStateOf<List<Bitmap>>(emptyList())
     }
 
-    val file = File(context.cacheDir,"resume_planification.pdf")
+    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),"resume_planification.pdf")
     pdfUri = file.toUri()
 
     LaunchedEffect(key1 = pdfUri) {
