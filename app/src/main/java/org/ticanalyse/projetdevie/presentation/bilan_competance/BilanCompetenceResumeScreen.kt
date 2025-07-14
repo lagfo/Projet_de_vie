@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -256,6 +257,7 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
     }
 
 }
+
 
 fun generatePdf(
     context: Context,
