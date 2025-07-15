@@ -10,4 +10,5 @@
     <color name="placeholder">#DDDDDD</color>
     <color name="shimmer">#414243</color>
     <color name="bg">#1C1E21</color>
+    <color name="card">#000</color>
 </resources>

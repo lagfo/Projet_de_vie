@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Environment
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -34,6 +35,7 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.User
 import timber.log.Timber
 import java.io.File
+import androidx.core.net.toUri
 
 object PdfUtil {
     fun createResumePlanificationPdf(
@@ -113,28 +115,36 @@ object PdfUtil {
 
     fun getImageDataFromPathOrResource(context: Context, imagePath: String?, fallbackResId: Int): ImageData {
         val bitmap = if (!imagePath.isNullOrEmpty()) {
-            // Try to load from file path
-            val fileBitmap = BitmapFactory.decodeFile(imagePath)
-            if (fileBitmap != null) {
-                fileBitmap
+            if (imagePath.startsWith("content://")) {
+                // Chargement depuis un content Uri
+                try {
+                    val uri = imagePath.toUri()
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)
+                    }
+                } catch (e: Exception) {
+                    // Si échec, fallback sur le drawable resource
+                    loadBitmapFromResource(context, fallbackResId)
+                }
             } else {
-                // File failed to load, fall back to resource
-                loadBitmapFromResource(context, fallbackResId)
+                // Chargement depuis un chemin de fichier "classique"
+                BitmapFactory.decodeFile(imagePath) ?: loadBitmapFromResource(context, fallbackResId)
             }
         } else {
-            // No file path provided, use resource
+            // Pas d'image, fallback sur le drawable resource
             loadBitmapFromResource(context, fallbackResId)
         }
 
-        // Final null check before compression
+        // Contrôle nullité finale
         if (bitmap == null) {
-            throw IllegalStateException("Failed to load image from both file path and resource")
+            throw IllegalStateException("Failed to load image from URI, file path and resource")
         }
 
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return ImageDataFactory.create(stream.toByteArray())
     }
+
 
     private fun loadBitmapFromResource(context: Context, resId: Int): Bitmap? {
         return try {
@@ -188,6 +198,8 @@ object PdfUtil {
         infos.append("Sexe: ${user.genre}\n")
         infos.append("Date de naissance: ${user.dateNaissance}\n")
         infos.append("Téléphone: ${user.numTel}\n")
+
+        Timber.tag("bd").d("Nom et prénoms: ${user.avatarUri} \n")
         if (user.email.isNotEmpty() && user.email.isNotBlank())
             infos.append("Email: ${user.email}\n")
 
