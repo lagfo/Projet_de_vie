@@ -1,4 +1,4 @@
-package org.ticanalyse.projetdevie.presentation.bilan_competance
+package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +42,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.ProjectInfo
 import org.ticanalyse.projetdevie.domain.model.Skill
+import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
@@ -57,11 +60,11 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
 
 @Composable
-fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateToLienAvecLaVieReele : () -> Unit) {
+fun CompetenceNonDisponibleScreen() {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
-
+    val planificationViewModel=hiltViewModel<PlanificationViewModel>()
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
     var navigateToBilan by remember {  mutableStateOf(false) }
 
@@ -83,43 +86,56 @@ fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateTo
     }
 
     LaunchedEffect(Unit) {
-        viewModel.getSkill { stored ->
-            stored?.let {
-                val storedLower = it.map(String::lowercase)
-                defaultSkills.replaceAll { skill ->
-                    val skillName = when (val txt = skill.txt) {
+        PlanificationProjet.listOfSkill?.let {
+            val storedLower = it.map(String::lowercase)
+            defaultSkills.replaceAll { skill ->
+                val skillName = when (val txt = skill.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+                skill.copy(badgeStatus = storedLower.contains(skillName.lowercase()))
+            }
+            it.filter { skillName ->
+                defaultSkills.none { skill ->
+                    val name = when (val txt = skill.txt) {
                         is Txt.Res -> context.getString(txt.id)
                         is Txt.Raw -> txt.text
                     }
-                    skill.copy(badgeStatus = storedLower.contains(skillName.lowercase()))
+                    name.equals(skillName, ignoreCase = true)
                 }
-                it.filter { skillName ->
-                    defaultSkills.none { skill ->
-                        val name = when (val txt = skill.txt) {
-                            is Txt.Res -> context.getString(txt.id)
-                            is Txt.Raw -> txt.text
-                        }
-                        name.equals(skillName, ignoreCase = true)
-                    }
-                }.forEach { skillName ->
-                    defaultSkills.add(
-                        0,
-                        AppSkillCardIcon(
-                            txt = Txt.Raw(skillName),
-                            strokeColor = R.color.primary_color,
-                            paint = R.drawable.default_competence,
-                            badgeStatus = true
-                        )
+            }.forEach { skillName ->
+                defaultSkills.add(
+                    0,
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus =true
                     )
-                }
-                selectedSkills = it
+                )
             }
         }
     }
 
     LaunchedEffect(selectedSkills) {
         syncBadges()
-        viewModel.saveSkill(Skill(skills = selectedSkills))
+        //viewModel.saveSkill(Skill(skills = selectedSkills))
+        if(selectedSkills.isNotEmpty()){
+            PlanificationProjet.projectInfo.competenceNonDisponible=selectedSkills
+
+//            PlanificationProjet.projectInfo.competenceNonDisponible!!.forEach {
+//                skillName->
+//                defaultSkills.add(
+//                    0,
+//                    AppSkillCardIcon(
+//                        txt = Txt.Raw(skillName),
+//                        strokeColor = R.color.primary_color,
+//                        paint = R.drawable.default_competence,
+//                        badgeStatus =true
+//                    )
+//                )
+//            }
+        }
         navigateToBilan = selectedSkills.isNotEmpty()
     }
 
@@ -130,7 +146,7 @@ fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateTo
                 Toast.makeText(context, "La compétence \"$newSkill\" existe déjà", Toast.LENGTH_SHORT).show()
                 false
             } else{
-                Toast.makeText(context, "Compétence(s) ajoutée(s)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Compétence non-disponibles(s) ou à renforcer ajoutée(s)", Toast.LENGTH_SHORT).show()
                 true
             }
         }
@@ -181,18 +197,6 @@ fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateTo
         ) {
             Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    AppText(
-                        text = stringResource(id = R.string.competance_title),
-                        fontFamily = Roboto,
-                        fontWeight = FontWeight.Black,
-                        fontStyle = FontStyle.Normal,
-                        color = colorResource(id = R.color.text),
-                        fontSize = 12.sp,
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        ttsManager = ttsManager
-                    )
-                    Spacer(modifier = Modifier.height(MediumPadding1))
-
                     AppSkillGrid(
                         icons = defaultSkills,
                         column = 2,
@@ -211,31 +215,11 @@ fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateTo
                         }
                     )
                 }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1.5f))
-
-
-                if(navigateToBilan && from!="planification"){
-                    AppButton(text = "Voir mes compétances", onClick = {navController.navigate(
-                        BilanCompetenceResumeRoute
-                    )})
-                }else if(!navigateToBilan && from!="planification"){
-                    AppButton(text = "Lien avec la vie réelle", onClick = onNavigateToLienAvecLaVieReele)
-                }else{
-                    AppButton(text = "Retour", onClick = {navController.popBackStack()})
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
 
                 FloatingActionButton(
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(48.dp).align(Alignment.BottomEnd).offset(((-10).dp),
+                        (60).dp
+                    ),
                     onClick = { showBottomSheet = true },
                     containerColor = Color.Black,
                     contentColor = Color.White,
@@ -246,7 +230,10 @@ fun BilanCompetanceScreen(navController: NavController,from:String, onNavigateTo
                         contentDescription = "Ajouter",
                     )
                 }
+
             }
+
+
         }
     }
 
