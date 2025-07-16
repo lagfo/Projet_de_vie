@@ -47,8 +47,10 @@ object LigneDeVieRoute: AppRoute
 @Serializable
 object BilanCompetanceIntroductionRoute:AppRoute
 
+//@Serializable
+//object BilanCompetanceRoute:AppRoute
 @Serializable
-object BilanCompetanceRoute:AppRoute
+data class BilanCompetanceRoute(val from:String):AppRoute
 @Serializable
 object RecapitulatifRoute: AppRoute
 @Serializable
@@ -72,6 +74,9 @@ object PlanificationProjetPdfViewerRoute:AppRoute
 
 @Serializable
 object BilanCompetenceResumeRoute:AppRoute
+
+@Serializable
+object PlanificationProjetEtapeRoute:AppRoute
 
 
 

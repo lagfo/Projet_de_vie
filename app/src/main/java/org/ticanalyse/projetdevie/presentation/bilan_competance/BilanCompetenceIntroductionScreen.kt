@@ -29,7 +29,7 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
 
 @Composable
-fun BilanCompetanceIntroductionScreen(onNavigate: () -> Unit) {
+fun BilanCompetanceIntroductionScreen(onNavigate: (String) -> Unit) {
 
     val ttsManager = appTTSManager()
 
@@ -70,7 +70,7 @@ fun BilanCompetanceIntroductionScreen(onNavigate: () -> Unit) {
             }
 
 
-            AppButton(text = "Suivant", onClick = onNavigate)
+            AppButton(text = "Suivant", onClick = { onNavigate("bilan_intro") })
         }
     }
 
