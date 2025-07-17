@@ -284,6 +284,7 @@ object PdfUtil {
                 document.add(Paragraph(element.label).setTextAlignment(TextAlignment.LEFT)
                     .setFontSize(15f)
                     .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
+
                 if (element.status) {
                     document.add(Paragraph("Année: ${element.inProgressYear}").setTextAlignment(TextAlignment.LEFT)
                         .setFontSize(15f)
