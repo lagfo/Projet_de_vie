@@ -41,6 +41,7 @@ import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.RecapitulatifScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauIntroductionScreen
+import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauResumeScreen
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauSubCategoriesScreen
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetanceIntroductionRoute
@@ -55,6 +56,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieElementRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanActionTableRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetEtapeRoute
@@ -117,6 +119,7 @@ fun AppNavigator() {
         backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == MonReseauResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
 
@@ -252,6 +255,11 @@ fun AppNavigator() {
                         R.color.primary_color
                     )
 
+                    backStackState?.destination?.route == MonReseauResumeRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.mon_reseau_title,
+                        R.color.primary_color
+                    )
+
                 }
                 !isHomeTopBarVisible
             }
@@ -374,6 +382,19 @@ fun AppNavigator() {
                     category = arg.category,
                     column = arg.column
                 )
+            }
+
+            composable<MonReseauResumeRoute> {
+                MonReseauResumeScreen(
+                    navController = navController,
+                    onNavigate = {
+                        navigateToScreen(
+                            navController = navController,
+                            route = LigneDeVieRoute
+                        )
+                    }
+                )
+
             }
 
             composable<LigneDeVieRoute> {

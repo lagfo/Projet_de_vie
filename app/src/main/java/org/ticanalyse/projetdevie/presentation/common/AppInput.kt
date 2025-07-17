@@ -258,11 +258,7 @@ fun AppInputFieldMultiLine(
                     )
                 }
             },
-            colors= OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor =Color.White,
-                focusedContainerColor = Color.White,
-                errorContainerColor = Color.White
-            )
+
         )
     }
 }

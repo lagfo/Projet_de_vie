@@ -216,7 +216,7 @@ fun AppProfileForm(
         )
         Card (
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-            colors = CardDefaults.cardColors(Color.White),
+            colors = CardDefaults.cardColors(colorResource(id=R.color.card)),
             shape = RoundedCornerShape(35.dp),
             border = BorderStroke(3.dp, color = colorResource(R.color.secondary_color))
         ){

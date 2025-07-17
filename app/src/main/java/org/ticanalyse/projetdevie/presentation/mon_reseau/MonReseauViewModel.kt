@@ -52,6 +52,8 @@ class MonReseauViewModel @Inject constructor(
         }
     }
 
+
+
     fun getReseauInfo(index: Int, category: String, onResult: (String?) -> Unit) {
         viewModelScope.launch {
             val monReseau = monReseauUseCases.getMonReseau() ?: MonReseau(
