@@ -61,6 +61,8 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanActionTableRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetEtapeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetPdfViewerRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
@@ -69,6 +71,8 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifLienVieReelR
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ResumeLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PdfViewerScreen
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanActionTable
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetEtapeScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.profile.ProfileScreen
@@ -251,6 +255,14 @@ fun AppNavigator() {
                     )
 
                     backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.planification_projet_title,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route == PlanificationProjetEtapeRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.planification_projet_title,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route == PlanActionTableRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.planification_projet_title,
                         R.color.primary_color
                     )
@@ -464,14 +476,16 @@ fun AppNavigator() {
             }
 
             composable<BilanCompetanceIntroductionRoute> {
-                BilanCompetanceIntroductionScreen {
-                    navigateToScreen(navController = navController, route = BilanCompetanceRoute)
+                BilanCompetanceIntroductionScreen {from->
+                    navigateToScreen(navController = navController, route = BilanCompetanceRoute(from))
                 }
             }
 
             composable<BilanCompetanceRoute> {
+                val args=it.toRoute<BilanCompetanceRoute>()
                 BilanCompetanceScreen(
                     navController = navController,
+                    from=args.from,
                     onNavigateToLienAvecLaVieReele = {
                         navigateToScreen(
                             navController = navController,
@@ -497,8 +511,25 @@ fun AppNavigator() {
 
             composable<PlanificationProjetRoute> {
                 PlanificationProjetScreen {
-                    navController.navigate(PlanificationProjetResumeRoute)
+                   // navController.navigate(PlanificationProjetResumeRoute)
+                    navController.navigate(PlanificationProjetEtapeRoute)
                 }
+            }
+            composable<PlanActionTableRoute>{
+                PlanActionTable()
+            }
+            composable<PlanificationProjetEtapeRoute> {
+//                ResumePlanificationProjetScreen {
+//                    navController.navigate(PlanificationProjetPdfViewerRoute)
+//                }
+                PlanificationProjetEtapeScreen {from->
+                    if(from=="planification"){
+                        navController.navigate(BilanCompetanceRoute(from))
+                    }else if(from=="tableau"){
+                        navController.navigate(PlanActionTableRoute)
+                    }
+                }
+
             }
             composable<PlanificationProjetResumeRoute> {
                 ResumePlanificationProjetScreen {
