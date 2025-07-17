@@ -62,6 +62,7 @@ import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import timber.log.Timber
 import java.time.LocalDate
 
 object PlanificationProjet{
@@ -122,12 +123,13 @@ fun PlanificationProjetEtapeScreen(
     LaunchedEffect(reponseQuestion,isClicked,context) {
 
         if(reponseQuestion.isNotEmpty()){
-            Log.d("TAG", "RecapitulatifScreen: $reponseQuestion ")
+            Timber.tag("TAG").d("RecapitulatifScreen: $reponseQuestion ")
             reponse1=reponseQuestion[0].firstResponse
             reponse2=reponseQuestion[0].secondResponse
             PlanificationProjet.projectInfo.ressourceDisponible=reponse1
             PlanificationProjet.projectInfo.ressourceNonDispnible=reponse2
-            Log.d("TAG", "RecapitulatifScreen: $reponseQuestion and project entity is ${PlanificationProjet.projectInfo} ")
+            Timber.tag("TAG")
+                .d("RecapitulatifScreen: $reponseQuestion and project entity is ${PlanificationProjet.projectInfo} ")
 
         }
         if(!isResponseValide && isClicked){
