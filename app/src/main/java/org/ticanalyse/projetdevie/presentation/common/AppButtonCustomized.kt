@@ -13,14 +13,14 @@ import androidx.compose.ui.text.font.FontWeight
 import org.ticanalyse.projetdevie.R
 
 @Composable
-fun AppButton(
+fun AppButtonCustomized(
     text: String,
     enabled:Boolean=true,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit
 ){
 
     Button(
-        onClick = onClick,
+        onClick = { onClick("") },
         enabled=enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.secondary_color),
@@ -38,7 +38,7 @@ fun AppButton(
 }
 
 @Composable
-fun AppTextButton(
+fun AppTextButtonCustomized(
     text: String,
     onClick: () -> Unit,
 ) {
