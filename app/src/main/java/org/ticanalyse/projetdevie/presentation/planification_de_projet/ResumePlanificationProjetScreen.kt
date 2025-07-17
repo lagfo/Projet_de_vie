@@ -64,10 +64,12 @@ fun ResumePlanificationProjetScreen(
     bilanCompetenceViewModel.getSkills()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
+
     val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
     val listActeursEducatifs = monReseauViewModel.listActeursEducatifs.collectAsStateWithLifecycle()
     val listActeursProfessionnels = monReseauViewModel.listActeursProfessionel.collectAsStateWithLifecycle()
     val listActeursInstitutionnelsEtDeSoutien = monReseauViewModel.listActeursInstitutionel.collectAsStateWithLifecycle()
+
     val listPassedElement = ligneDeVieViewModel.allPassedElement.collectAsStateWithLifecycle()
     val listPresentElement = ligneDeVieViewModel.allPresentElement.collectAsStateWithLifecycle()
     val listQuestionElement = ligneDeVieViewModel.allResponse.collectAsStateWithLifecycle()

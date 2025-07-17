@@ -49,8 +49,6 @@ object Global {
             return false
         else if(value.length <= 7)
             return false
-        else if(value.length > 8)
-            return false
         return true
     }
 

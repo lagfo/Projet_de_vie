@@ -33,9 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,6 +51,9 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.ExoPlayer
 import timber.log.Timber
 import androidx.core.net.toUri
+import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 
 @Composable
 fun IntroductionCharactersScreen(
@@ -58,6 +65,7 @@ fun IntroductionCharactersScreen(
         Characters("Safy", R.drawable.saly, R.raw.intro_safy/*, R.raw.intro_safi*/),
         Characters("Myriam", R.drawable.coach, R.raw.intro_myriam/*, R.raw.intro_myriam*/),
     )
+    val ttsManager = appTTSManager()
 
     val pagerState = rememberPagerState(
         pageCount = {characters.size},
@@ -124,9 +132,17 @@ fun IntroductionCharactersScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            AppText(
+                text = "Personnages",
+                fontFamily = Roboto,
+                fontWeight = FontWeight.Bold,
+                fontStyle = FontStyle.Normal,
+                color = colorResource(id = R.color.text),
+                fontSize = 15.sp,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                ttsManager = ttsManager
+            )
 
-            Text(text = "Personnages",
-                style = MaterialTheme.typography.bodyMedium)
 
             Column(
                 modifier = Modifier.fillMaxWidth(),

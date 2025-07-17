@@ -8,9 +8,13 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Environment
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.io.image.ImageData
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.io.source.ByteArrayOutputStream
 import com.itextpdf.kernel.font.PdfFontFactory
@@ -29,13 +33,9 @@ import com.itextpdf.layout.properties.VerticalAlignment
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.User
-import androidx.core.graphics.createBitmap
-import com.itextpdf.io.image.ImageData
-import com.itextpdf.kernel.pdf.xobject.PdfXObject
-import com.itextpdf.layout.element.AreaBreak
-import com.itextpdf.layout.properties.AreaBreakType
-import com.itextpdf.layout.properties.BackgroundImage
+import timber.log.Timber
 import java.io.File
+import androidx.core.net.toUri
 
 object PdfUtil {
     fun createResumePlanificationPdf(
@@ -50,9 +50,10 @@ object PdfUtil {
         listQuestionsLigneDeVie: List<Pair<String, String>>,
         listBilanCompetence: List<String>?,
         listQuestionsLienVieReel: List<Pair<String, String>>,
-        outputPath: String = "${context.filesDir}/${user.nom} ${user.prenom}.pdf",
+        outputPath: String = "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}/resume_planification.pdf",
         onNavigate: () -> Unit
     ) {
+        Timber.tag("pdf").d("$outputPath")
         val pdfWriter = PdfWriter(outputPath)
         val pdfDoc = PdfDocument(pdfWriter)
         pdfDoc.defaultPageSize = PageSize.A4
@@ -114,23 +115,63 @@ object PdfUtil {
 
     fun getImageDataFromPathOrResource(context: Context, imagePath: String?, fallbackResId: Int): ImageData {
         val bitmap = if (!imagePath.isNullOrEmpty()) {
-            BitmapFactory.decodeFile(imagePath)
-        } else {
-            val drawable = ContextCompat.getDrawable(context, fallbackResId)!!
-            if (drawable is BitmapDrawable) {
-                drawable.bitmap
+            if (imagePath.startsWith("content://")) {
+                // Chargement depuis un content Uri
+                try {
+                    val uri = imagePath.toUri()
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)
+                    }
+                } catch (e: Exception) {
+                    // Si échec, fallback sur le drawable resource
+                    loadBitmapFromResource(context, fallbackResId)
+                }
             } else {
-                val b = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
-                val canvas = Canvas(b)
-                drawable.setBounds(0, 0, canvas.width, canvas.height)
-                drawable.draw(canvas)
-                b
+                // Chargement depuis un chemin de fichier "classique"
+                BitmapFactory.decodeFile(imagePath) ?: loadBitmapFromResource(context, fallbackResId)
             }
+        } else {
+            // Pas d'image, fallback sur le drawable resource
+            loadBitmapFromResource(context, fallbackResId)
+        }
+
+        // Contrôle nullité finale
+        if (bitmap == null) {
+            throw IllegalStateException("Failed to load image from URI, file path and resource")
         }
 
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return ImageDataFactory.create(stream.toByteArray())
+    }
+
+
+    private fun loadBitmapFromResource(context: Context, resId: Int): Bitmap? {
+        return try {
+            val drawable = ContextCompat.getDrawable(context, resId)
+                ?: return null
+
+            if (drawable is BitmapDrawable) {
+                drawable.bitmap
+            } else {
+                val width = drawable.intrinsicWidth
+                val height = drawable.intrinsicHeight
+
+                // Check for valid dimensions
+                if (width <= 0 || height <= 0) {
+                    return null
+                }
+
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.setBounds(0, 0, width, height)
+                drawable.draw(canvas)
+                bitmap
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     fun addUserInfoSection(document: Document, user: User, context: Context) {
@@ -157,6 +198,8 @@ object PdfUtil {
         infos.append("Sexe: ${user.genre}\n")
         infos.append("Date de naissance: ${user.dateNaissance}\n")
         infos.append("Téléphone: ${user.numTel}\n")
+
+        Timber.tag("bd").d("Nom et prénoms: ${user.avatarUri} \n")
         if (user.email.isNotEmpty() && user.email.isNotBlank())
             infos.append("Email: ${user.email}\n")
 
