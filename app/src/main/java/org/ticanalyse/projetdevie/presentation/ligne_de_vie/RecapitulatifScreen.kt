@@ -1,6 +1,9 @@
 package org.ticanalyse.projetdevie.presentation.ligne_de_vie
 
-import android.util.Log
+import android.content.ClipData
+import android.content.Context
+import android.content.Intent
+import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,11 +18,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,14 +58,34 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.kernel.font.PdfFontFactory
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.kernel.pdf.event.PdfDocumentEvent
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.borders.Border
+import com.itextpdf.layout.element.Cell
+import com.itextpdf.layout.element.Div
+import com.itextpdf.layout.element.Image
+import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.element.Table
+import com.itextpdf.layout.properties.TextAlignment
+import com.itextpdf.layout.properties.UnitValue
+import com.itextpdf.layout.properties.VerticalAlignment
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
+import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
@@ -71,8 +95,16 @@ import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Global
+import org.ticanalyse.projetdevie.utils.PdfUtil.addUserInfoSection
+import org.ticanalyse.projetdevie.utils.PdfUtil.getImageDataFromResource
+import org.ticanalyse.projetdevie.utils.SimpleFooterEventHandler
+import org.ticanalyse.projetdevie.utils.WatermarkImageEventHandler
 import timber.log.Timber
+import java.io.File
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -93,6 +125,7 @@ fun RecapitulatifScreen(
     val listOfPassedElement by viewModel.allPassedElement.collectAsStateWithLifecycle()
     val listOfPresentElement by viewModel.allPresentElement.collectAsStateWithLifecycle()
     val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
+
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
     var reponse1 by remember { mutableStateOf("") }
@@ -101,7 +134,12 @@ fun RecapitulatifScreen(
     isButtonVisible = pagerState.currentPage == 2
     var isClicked by remember { mutableStateOf(false) }
     var isResponseValide by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
+    val pdfscope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
+    val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
 
 
 
@@ -125,6 +163,17 @@ fun RecapitulatifScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -555,21 +604,75 @@ fun RecapitulatifScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             if(isButtonVisible){
-                AppButton (text = "Bilan des compétences", onClick = {
-                    if(Global.isValideResponse(reponse1,reponse2)){
-                        isResponseValide=true
-                        viewModel.addResponsesLigneDeVie(
-                            id=1,
-                            firstResponse = reponse1,
-                            secondResponse = reponse2,
-                            creationDate = LocalDate.now().toString()
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    AppButton (text = "Bilan des compétences", onClick = {
+                        if(Global.isValideResponse(reponse1,reponse2)){
+                            isResponseValide=true
+                            viewModel.addResponsesLigneDeVie(
+                                id=1,
+                                firstResponse = reponse1,
+                                secondResponse = reponse2,
+                                creationDate = LocalDate.now().toString()
+                            )
+                            onNavigate()
+                        }else{
+                            isResponseValide=false
+                        }
+                        isClicked=true
+                    })
+
+                    Spacer(modifier = Modifier.width(14.dp))
+                    FloatingActionButton(
+                        modifier = Modifier.size(45.dp),
+                        onClick = {
+                            pdfscope.launch {
+                                isLoading = true
+                                withContext(Dispatchers.IO) {
+                                    generatePdf(
+                                        context=context,
+                                        user = currentUser!!,
+                                        listOfPassedElement = listOfPassedElement,
+                                        listOfPresentElement  = listOfPresentElement,
+                                        listQuestionsLigneDeVie = listOf(
+                                            Pair("Qu'ai-je déjà réalisé ?", if (reponse1.isNotEmpty()) {
+                                                reponse1
+                                            } else {
+                                                "Aucune reponse renseignée"
+                                            }
+                                            ),
+                                            Pair("Qu'est ce que je suis capable de faire ?", if (reponse2.isNotEmpty()) {
+                                                reponse2
+                                            } else {
+                                                "Aucune reponse renseignée"
+                                            })
+                                        )
+                                    )
+                                }
+                                isLoading = false
+                            }
+                        },
+                        containerColor = colorResource(id = R.color.secondary_color),
+                        contentColor = Color.White,
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            painter  = painterResource(id=R.drawable.picture_as_pdf_24),
+                            contentDescription = "Generer le PDF",
                         )
-                        onNavigate()
-                    }else{
-                        isResponseValide=false
                     }
-                    isClicked=true
-                })
+
+                }
+
+
             }
         }
 
@@ -814,22 +917,13 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text ="Année de début:${item.startYear}",
+                            text ="Année de début:${item.inProgressYear}",
                             textAlign = TextAlign.Center,
                             fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
                             fontSize = 10.sp,
                             color = Color.Black,
                             maxLines =1
-                        )
-                        Text(
-                            text ="Année de fin:${item.endYear}",
-                            textAlign = TextAlign.Center,
-                            fontFamily = Roboto,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            color = Color.Black,
-                            maxLines = 1
                         )
                     }
 
@@ -863,74 +957,164 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun CustomedElementLayoutPreview(modifier: Modifier = Modifier) {
-    CustomedElementLayout(item =Element(id=1) ,onClick={})
+fun generatePdf(
+    context: Context,
+    user: User,
+    listOfPassedElement: List<Element>,
+    listOfPresentElement: List<Element>,
+    listQuestionsLigneDeVie: List<Pair<String, String>>
+){
+    val currentDateTime = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault()).format(Date())
+    val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+    val file = File(directory, "Projet_de_vie_ligne_de_vie_${user.nom.replace(" ","_")}${user.prenom.replace(" ","_")}_$currentDateTime.pdf")
+
+    val pdfWriter = PdfWriter(file)
+    val pdfDoc = PdfDocument(pdfWriter)
+    pdfDoc.defaultPageSize = PageSize.A4
+    val document = Document(pdfDoc, PageSize.A4)
+    document.setMargins(50f, 40f, 50f, 40f)
+
+    val watermarkImageData = getImageDataFromResource(context, R.drawable.logo)
+    pdfDoc.addEventHandler(PdfDocumentEvent.START_PAGE, WatermarkImageEventHandler(watermarkImageData))
+    pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, SimpleFooterEventHandler())
+
+
+    addUserInfoSection(document, user, context)
+
+    document.add(Paragraph("\n"))
+    val pageWidth = pdfDoc.defaultPageSize.width
+    addLigneDeVieSection(context,document, "Évènements du passé", listOfPassedElement,pageWidth)
+    document.add(Paragraph("\n\n\n"))
+    addLigneDeVieSection(context,document, "Évènements du présent", listOfPresentElement,pageWidth)
+    document.add(Paragraph("\n\n\n"))
+    addQuestions(document, "Questions sur la ligne de vie", listQuestionsLigneDeVie)
+
+
+    document.close()
+
+    val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", file)
+
+    if (file.exists()) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.setType("application/pdf")
+        intent.clipData = ClipData.newRawUri(file.name, uri)
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        intent.setDataAndType(uri, "application/pdf")
+        context.startActivity(Intent.createChooser(intent, "Veuillez choisir une application"))
+    }
 }
 
-//@Composable
-//fun PageContent(
-//    elements: List<Element>,
-//    modifier: Modifier = Modifier
-//) {
-//    LazyColumn(
-//        modifier = modifier,
-//        contentPadding = PaddingValues(20.dp)
-//    ) {
-//        itemsIndexed(elements) { index, item ->
-//            CustomedElementLayout(
-//                item = item,
-//                onClick = {
-//                    when(item.id){
-//                        1->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            item.label=item.topicTitle
-//                        }
-//                        2->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        3->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        4->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        5->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        6->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        7->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                        8->{
-//                            selectedItem=item
-//                            showDialog=true
-//                            element.label=item.topicTitle
-//                        }
-//                    }
-//
-//                }
-//            )
-//
-//            if(index < elements.lastIndex) {
-//                Spacer(modifier = Modifier.height(10.dp))
-//            }
-//        }
-//    }
-//}
+
+private fun addLigneDeVieSection(context: Context,document: Document, titre: String, elements: List<Element>,pageWidth: Float) {
+    val tableWidth = pageWidth - 80f
+    document.add(Paragraph(titre)
+        .setFontSize(17.5f)
+        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+    document.add(Paragraph("\n"))
+    val container = Div().setWidth(tableWidth)
+
+    if (elements.isNotEmpty()) {
+        elements.forEach { element ->
+
+            val labelTable = Table(UnitValue.createPercentArray(floatArrayOf(10f, 90f)))
+                .setWidth(UnitValue.createPercentValue(100f))
+                .setMarginBottom(10f)
+
+            val labelImageCell = Cell()
+                .setBorder(Border.NO_BORDER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setTextAlignment(TextAlignment.RIGHT)
+
+            val imageId = when(element.id){
+                1->R.drawable.ecole_primaire
+                2->R.drawable.ecole_secondaire
+                3->R.drawable.universite_ecole_superieur
+                4->R.drawable.alphabetisation_langue_locale
+                5->R.drawable.ecole_coranique
+                6->R.drawable.ecole_formation_prof
+                7->R.drawable.abandon_scolarite
+                8->R.drawable.reprise_interruption_etude
+                9->R.drawable.premier_apprentissage
+                10->R.drawable.naissance_enfant
+                11->R.drawable.mariage
+                12->R.drawable.depart_foyer_familial
+                13->R.drawable.ecole_coranique
+                14->R.drawable.premier_emploi
+                15->R.drawable.projet
+                16->R.drawable.deces
+                17->R.drawable.depart_migration
+                18->R.drawable.retrouvaille
+                19->R.drawable.grande_decision_personnel
+                else -> R.drawable.ecole_primaire
+            }
+
+            val labelImage = Image(getImageDataFromResource(context, imageId))
+                .setWidth(40f)
+                .setHeight(40f)
+
+            labelImageCell.add(labelImage)
+
+            val labelTextCell = Cell()
+                .setBorder(Border.NO_BORDER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setTextAlignment(TextAlignment.LEFT)
+
+            val labelText = Paragraph(element.label.replace("\n", " "))
+                .setFontSize(15f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD))
+
+            labelTextCell.add(labelText)
+            labelTable.addCell(labelImageCell)
+            labelTable.addCell(labelTextCell)
+            container.add(labelTable)
+
+
+            val yearText = if (element.status) {
+                "Année: ${element.inProgressYear}"
+            } else {
+                "De ${element.startYear} à ${element.endYear}"
+            }
+
+            val fullText = "▪ $yearText : ${element.labelDescription}"
+
+            val descriptionTable = Table(UnitValue.createPercentArray(floatArrayOf(100f)))
+                .setWidth(tableWidth)
+                .setMarginBottom(5f)
+
+            val descriptionCell = Cell()
+                .setBorder(Border.NO_BORDER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setTextAlignment(TextAlignment.LEFT)
+
+            val descriptionParagraph = Paragraph(fullText)
+                .setFontSize(13f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN))
+
+            descriptionCell.add(descriptionParagraph)
+            descriptionTable.addCell(descriptionCell)
+            container.add(descriptionTable)
+        }
+    } else {
+        container.add(Paragraph("Pas d'élément").setTextAlignment(TextAlignment.LEFT)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+    }
+    document.add(container)
+}
+
+private fun addQuestions(document: Document, titre: String, questions: List<Pair<String, String>>) {
+    document.add(Paragraph(titre).setTextAlignment(TextAlignment.CENTER)
+        .setFontSize(17.5f)
+        .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+    questions.forEach { element ->
+        document.add(Paragraph(element.first).setTextAlignment(TextAlignment.LEFT)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+        document.add(Paragraph(element.second).setTextAlignment(TextAlignment.LEFT)
+            .setFontSize(13f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
+    }
+}
