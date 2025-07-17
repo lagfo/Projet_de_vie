@@ -15,9 +15,5 @@ data class ProjectInfo(
     var competenceNonDisponible: List<String> ?=emptyList(),
     var ressourceDisponible:String="",
     var ressourceNonDispnible:String="",
-    var planActionReponse1:String="",
-    var planActionReponse2:String="",
-    var planActionReponse3:String="",
-    var planActionReponse4:String="",
     var creationDate: String=""
 ): Parcelable

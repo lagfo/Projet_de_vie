@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.LienVieReel
+import org.ticanalyse.projetdevie.domain.model.PlanAction
 import org.ticanalyse.projetdevie.domain.model.ProjectInfo
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
 import org.ticanalyse.projetdevie.domain.repository.PlanificationProjetRepository.PlanificationProjetRepository
@@ -48,12 +49,7 @@ class PlanificationViewModel @Inject constructor(
         competenceDisponible:List<String>?,
         competenceNonDisponible:List<String>?,
         ressourceDisponible: String,
-        ressourceNonDisponible:String,
-        planActionReponse1:String,
-        planActionReponse2:String,
-        planActionReponse3:String,
-        planActionReponse4:String
-
+        ressourceNonDisponible:String
         ){
 
         val projectInfo= ProjectInfo(
@@ -62,11 +58,7 @@ class PlanificationViewModel @Inject constructor(
             competenceDisponible = competenceDisponible,
             competenceNonDisponible = competenceNonDisponible,
             ressourceDisponible = ressourceDisponible,
-            ressourceNonDispnible = ressourceNonDisponible,
-            planActionReponse1 = planActionReponse1,
-            planActionReponse2 = planActionReponse2,
-            planActionReponse3 = planActionReponse3,
-            planActionReponse4 = planActionReponse4
+            ressourceNonDispnible = ressourceNonDisponible
         )
         viewModelScope.launch {
             try{
@@ -84,6 +76,7 @@ class PlanificationViewModel @Inject constructor(
     val uiState=mutableStateOf(ScreenState())
 init{
     getPlanificationLineLine()
+    getPlanActionLines()
 }
     private val _allElement = MutableStateFlow<List<ProjectInfo>>(emptyList())
     val planificationInfo: StateFlow<List<ProjectInfo>> = _allElement.asStateFlow()
@@ -95,4 +88,36 @@ init{
         }
     }
 
+    //Plan action
+
+    fun addPLanAction(
+        planAction: PlanAction
+    ){
+        viewModelScope.launch {
+            try{
+                repository.insertPlanAction(planAction)
+                _upsertSuccess.value=true
+                Timber.tag("TAG").d("addElement: insertion succeed and status is $upsertSuccess")
+
+            }catch (e: Exception){
+                _upsertSuccess.value=false
+                Timber.tag("TAG").d("addElement: insertion failed . Error message : ${e.message}")
+            }
+        }
+    }
+
+
+    private val _allPlanActionElement = MutableStateFlow<List<PlanAction>>(emptyList())
+    val planAction: StateFlow<List<PlanAction>> = _allPlanActionElement.asStateFlow()
+    fun getPlanActionLines(){
+        viewModelScope.launch {
+            repository.getPlanAction().collect { listElement ->
+                _allPlanActionElement.value=listElement
+            }
+        }
+    }
+
+
 }
+
+
