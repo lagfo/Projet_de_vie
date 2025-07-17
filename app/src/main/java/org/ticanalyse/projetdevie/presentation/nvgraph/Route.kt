@@ -78,6 +78,9 @@ object BilanCompetenceResumeRoute:AppRoute
 @Serializable
 object PlanificationProjetEtapeRoute:AppRoute
 
+@Serializable
+object PlanActionTableRoute: AppRoute
+
 
 
 //@Serializable

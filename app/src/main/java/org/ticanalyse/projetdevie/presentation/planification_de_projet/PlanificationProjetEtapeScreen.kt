@@ -93,6 +93,7 @@ fun PlanificationProjetEtapeScreen(
     val reponseQuestion by ligneDeVieviewModel.allResponse.collectAsStateWithLifecycle()
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
     val viewModelBilanCompetance = hiltViewModel<BilanCompetenceViewModel>()
+    val planActions by viewModel.planAction.collectAsStateWithLifecycle()
 
     LaunchedEffect(status){
         if(status){
@@ -372,19 +373,8 @@ fun PlanificationProjetEtapeScreen(
             )
 
             if(pagerState.currentPage==5){
-                AppButton("Enregistrer") {
-                    viewModel.addProjectInfo(
-                        projectIdee = PlanificationProjet.projectInfo.projetIdee,
-                        motivation = PlanificationProjet.projectInfo.motivation,
-                        competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
-                        competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
-                        ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
-                        ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
-                        planActionReponse1 =PlanificationProjet.projectInfo.planActionReponse1,
-                        planActionReponse2 =PlanificationProjet.projectInfo.planActionReponse2,
-                        planActionReponse3 =PlanificationProjet.projectInfo.planActionReponse3,
-                        planActionReponse4 =PlanificationProjet.projectInfo.planActionReponse4
-                    )
+                AppButton("Voir tableau") {
+                    onNavigate("tableau")
                 }
             }
 
