@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,7 +72,7 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
 
         LazyColumn (
             modifier = modifier.fillMaxSize()
-                .padding(top = MediumPadding3, bottom = MediumPadding1),
+                .padding(top = MediumPadding3, bottom = MediumPadding1, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -188,18 +190,19 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
                                 "Aucune reponse renseignée"
                             })
                         ),
-                    ) {
-                        viewModel.setResumeUri(
-                            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
-                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${
-                                        LocalDateTime.now().format(
-                                            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-                                        )
-                                    }.pdf",
-                            "lienVieReel"
-                        )
-                        onNavigate()
-                    }
+                    )
+//                    {
+//                        viewModel.setResumeUri(
+//                            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+//                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${
+//                                        LocalDateTime.now().format(
+//                                            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+//                                        )
+//                                    }.pdf",
+//                            "lienVieReel"
+//                        )
+//                        onNavigate()
+//                    }
                 }
             }
 
@@ -224,12 +227,14 @@ fun LienVieReelComponent(
     ) {
         AppText(
             text = question,
+            fontSize = TextUnit(20f, TextUnitType.Sp),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             ttsManager = ttsManager
         )
         AppText(
             text = response,
+            fontSize = TextUnit(16f, TextUnitType.Sp),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 6.dp),
             ttsManager = ttsManager,

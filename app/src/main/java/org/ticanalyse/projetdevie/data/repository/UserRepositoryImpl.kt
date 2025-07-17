@@ -74,6 +74,7 @@ class UserRepositoryImpl @Inject constructor(
             dataStore.data.map { preferences ->
                 when (module) {
                     "lienVieReel" -> preferences[PreferenceKeys.lienVieReelUri] ?: ""
+                    "planificationProjet" -> preferences[PreferenceKeys.planifierProjet] ?: ""
                     else -> preferences[PreferenceKeys.resumeUri] ?: ""
                 }
             }.first()

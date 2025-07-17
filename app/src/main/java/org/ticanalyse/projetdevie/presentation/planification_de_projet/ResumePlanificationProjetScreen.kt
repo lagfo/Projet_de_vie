@@ -13,16 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,17 +37,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
+import org.ticanalyse.projetdevie.domain.model.PlanAction
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
+import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelViewModel
@@ -51,8 +60,12 @@ import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
+import org.ticanalyse.projetdevie.utils.PdfUtil.createPlanificationProjetPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
+import org.ticanalyse.projetdevie.utils.PdfUtil.sharePdf
+import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.text.ifEmpty
@@ -72,6 +85,113 @@ fun ResumePlanificationProjetScreen(
     val listPlanAction = planificationViewModel.planAction.collectAsStateWithLifecycle()
 
     val ttsManager = appTTSManager()
+
+    val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
+
+    val  avalaibleSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
+    val  unAvailableSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
+
+    val scope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+
+    LaunchedEffect(Unit) {
+        projectInfo.value.firstOrNull()?.competenceDisponible?.let { stored ->
+            Timber.d("Stored1: $stored")
+            val storedLower = stored.map(String::lowercase).toSet()
+
+            fun getSkillName(skill: AppSkillCardIcon): String = when (val txt = skill.txt) {
+                is Txt.Res -> context.getString(txt.id)
+                is Txt.Raw -> txt.text
+            }
+
+            defaultSkills.retainAll { skill ->
+                storedLower.contains(getSkillName(skill).lowercase())
+            }
+
+            defaultSkills.replaceAll { skill ->
+                avalaibleSkills.add(
+                    skill.copy(badgeStatus = false)
+                )
+                skill.copy(badgeStatus = false)
+
+            }
+
+            stored.filter { skillName ->
+                defaultSkills.none { skill ->
+                    getSkillName(skill).equals(skillName, ignoreCase = true)
+                }
+            }.forEach { skillName ->
+                defaultSkills.add(
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus = false
+                    )
+                )
+                avalaibleSkills.add(
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus = false
+                    )
+                )
+            }
+        }
+        Timber.d("avalaibleSkills: $avalaibleSkills")
+    }
+    LaunchedEffect(Unit) {
+        projectInfo.value.firstOrNull()?.competenceNonDisponible?.let { stored ->
+
+            Timber.d("Stored: $stored")
+            val storedLower = stored.map(String::lowercase).toSet()
+
+            fun getSkillName(skill: AppSkillCardIcon): String = when (val txt = skill.txt) {
+                is Txt.Res -> context.getString(txt.id)
+                is Txt.Raw -> txt.text
+            }
+
+            defaultSkills.retainAll { skill ->
+                storedLower.contains(getSkillName(skill).lowercase())
+            }
+
+            defaultSkills.replaceAll { skill ->
+                unAvailableSkills.add(
+                    skill.copy(badgeStatus = true)
+                )
+                skill.copy(badgeStatus = true)
+
+            }
+
+            stored.filter { skillName ->
+                defaultSkills.none { skill ->
+                    getSkillName(skill).equals(skillName, ignoreCase = true)
+                }
+            }.forEach { skillName ->
+                defaultSkills.add(
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus = true
+                    )
+                )
+                unAvailableSkills.add(
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus = true
+                    )
+                )
+            }
+        }
+        Timber.d("unavalaibleSkills: $unAvailableSkills")
+    }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -93,6 +213,63 @@ fun ResumePlanificationProjetScreen(
         ) {
 
             item {
+                Row (
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(90.dp)
+                            .clip(CircleShape)
+                            .border(
+                                width = 1.dp,
+                                color =colorResource(R.color.secondary_color),
+                                shape = CircleShape
+                            ),
+                        painter = painter,
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Profil image"
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Sexe: ${currentUser?.genre}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            text = "Date de naissance: ${currentUser?.dateNaissance}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Numero de telephone: ${currentUser?.numTel}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        currentUser?.email?.let {
+                            Text(
+                                text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -106,13 +283,25 @@ fun ResumePlanificationProjetScreen(
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
-                    AppText(
-                        text = projectInfo.value.first().projetIdee,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Black,
-                        modifier = Modifier.fillMaxWidth(),
-                        ttsManager = ttsManager
-                    )
+                    if (projectInfo.value.firstOrNull() == null) {
+                        AppText(
+                            text = "Pas d'information",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    } else {
+                        AppText(
+                            text = projectInfo.value.first().projetIdee,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    }
                 }
             }
             item {
@@ -129,15 +318,63 @@ fun ResumePlanificationProjetScreen(
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
+                    if (projectInfo.value.firstOrNull() == null) {
+                        AppText(
+                            text = "Pas d'information",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    } else {
+                        AppText(
+                            text = projectInfo.value.first().motivation,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    }
+                }
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
                     AppText(
-                        text = projectInfo.value.first().motivation,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Black,
+                        text = "Mes compétences disponibles",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
+                    //BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceDisponible ?: emptyList(), ttsManager = ttsManager)
                 }
             }
+
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Mes compétences indisponibles",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
+                    )
+                    //BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceNonDisponible ?: emptyList(), ttsManager = ttsManager)
+                }
+            }
+
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -152,13 +389,25 @@ fun ResumePlanificationProjetScreen(
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
-                    AppText(
-                        text = projectInfo.value.first().ressourceDisponible,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Black,
-                        modifier = Modifier.fillMaxWidth(),
-                        ttsManager = ttsManager
-                    )
+                    if (projectInfo.value.firstOrNull() == null) {
+                        AppText(
+                            text = "Pas d'information",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    } else {
+                        AppText(
+                            text = projectInfo.value.first().ressourceDisponible,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    }
                 }
             }
             item {
@@ -175,16 +424,69 @@ fun ResumePlanificationProjetScreen(
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
+                    if (projectInfo.value.firstOrNull() == null) {
+                        AppText(
+                            text = "Pas d'information",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    } else {
+                        AppText(
+                            text = projectInfo.value.first().ressourceNonDispnible,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            ttsManager = ttsManager
+                        )
+                    }
+                }
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
                     AppText(
-                        text = projectInfo.value.first().ressourceNonDispnible,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Black,
+                        text = "Plan d'action",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
+                    PlanActionElement(listElement = listPlanAction.value, ttsManager = ttsManager)
                 }
+
             }
 
+            item {
+                AppButton(text = "Télécharger pdf") {
+                    createPlanificationProjetPdf(
+                        context = context,
+                        user = currentUser!!,
+                        ideeProjet = projectInfo.value.firstOrNull()?.projetIdee ?: "Pas d'information",
+                        motivation = projectInfo.value.firstOrNull()?.motivation ?: "Pas d'information",
+                        ressourceDisponible = projectInfo.value.firstOrNull()?.ressourceDisponible ?: "Pas d'information",
+                        ressourceIndisponible = projectInfo.value.firstOrNull()?.ressourceNonDispnible ?: "Pas d'information",
+                        competenceDisponible = avalaibleSkills,
+                        competenceIndisponible = unAvailableSkills,
+                        planAction = listPlanAction.value
+                    )
+
+//                    {
+//                        viewModel.setResumeUri("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+//                                "/planification_projet_${currentUser!!.nom}_${currentUser!!.prenom}_${LocalDateTime.now().format(
+//                                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf"
+//                        , "planificationProjet")
+//                        onNavigate()
+//                    }
+                }
+            }
         }
     }
 
@@ -216,6 +518,121 @@ fun MonReseauElement(nomCategorie: String, listElement: Map<String, List<String>
             )
         }
     }
+}
+
+@Composable
+fun PlanActionElement(listElement: List<PlanAction>, ttsManager: TextToSpeechManager) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        if (listElement.isEmpty()) {
+            AppText(
+                text = "Aucun plan d'action enregistré",
+                fontSize = TextUnit(17f, TextUnitType.Sp),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                ttsManager = ttsManager
+            )
+        } else {
+            listElement.forEachIndexed { index, element ->
+                Column (
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Plan d'action ${index + 1}",
+                        fontSize = TextUnit(20f, TextUnitType.Sp),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        ttsManager = ttsManager
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        AppText(
+                            text = "Activité (Quoi):",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            ttsManager = ttsManager
+                        )
+                        AppText(
+                            text = element.activite,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            ttsManager = ttsManager
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        AppText(
+                            text = "Qui fait:",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            ttsManager = ttsManager
+                        )
+                        AppText(
+                            text = element.activite,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            ttsManager = ttsManager
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        AppText(
+                            text = "Qui Finance:",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            ttsManager = ttsManager
+                        )
+                        AppText(
+                            text = element.activite,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            ttsManager = ttsManager
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        AppText(
+                            text = "Quand:",
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            ttsManager = ttsManager
+                        )
+                        AppText(
+                            text = element.activite,
+                            fontSize = TextUnit(17f, TextUnitType.Sp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            ttsManager = ttsManager
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -374,36 +791,28 @@ fun LienVieReelComponent(question: String = "Questions", response: String = "Des
 }
 
 @Composable
-fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>?) {
+fun BilanCompetenceElement(modifier: Modifier = Modifier, default: List<AppSkillCardIcon>, listItems: List<String>, ttsManager: TextToSpeechManager) {
 
-    val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
-    FlowRow (
+    Box (
         modifier = modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentAlignment = Alignment.CenterStart
     ) {
-        if (listItems.isNullOrEmpty()) {
-            Text(
+        if (listItems.isEmpty()) {
+            AppText(
                 text = "Pas d'élément",
+                fontSize = TextUnit(17f, TextUnitType.Sp),
                 style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                ttsManager = ttsManager
             )
         } else {
-            listItems.forEach { element ->
-                Column {
-//                    Image(
-//
-//                    )
-                    Text(
-                        text = element,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                            .padding(6.dp)
-                    )
-                }
-            }
+            AppSkillGrid(
+                icons = default,
+                column = 2,
+                selectedIcons = listItems,
+                onSkillClick = {}
+            )
         }
     }
 }
