@@ -346,9 +346,9 @@ fun ResumePlanificationProjetScreen(
                                 } else {
                                     "Aucune reponse renseignée"
                                 })
-                            )
-                            ,
+                            ),
                         ) {
+                            viewModel.setResumeUri("${context.filesDir}/${currentUser?.nom} ${currentUser?.prenom}.pdf")
                             onNavigate()
                         }
                     })

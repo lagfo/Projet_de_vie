@@ -60,6 +60,22 @@ class UserRepositoryImpl @Inject constructor(
         appDao.upsert(user)
     }
 
+    suspend fun setResumeUri(uri: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.resumeUri] = uri
+        }
+    }
+
+    suspend fun getResumeUri(): String {
+        return try {
+            dataStore.data.map { preferences ->
+                preferences[PreferenceKeys.resumeUri] ?: ""
+            }.first()
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
     override suspend fun getUser(): User {
         return appDao.getUser()
     }
