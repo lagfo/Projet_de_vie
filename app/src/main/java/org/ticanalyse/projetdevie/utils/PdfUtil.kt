@@ -36,6 +36,11 @@ import org.ticanalyse.projetdevie.domain.model.User
 import timber.log.Timber
 import java.io.File
 import androidx.core.net.toUri
+import com.itextpdf.layout.element.Div
+import com.itextpdf.layout.element.Image
+import org.ticanalyse.projetdevie.domain.model.PlanAction
+import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
+import org.ticanalyse.projetdevie.presentation.common.Txt
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -122,7 +127,7 @@ object PdfUtil {
         outputPath: String = "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
                 "/lien_vie_reel_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf",
-        onNavigate: () -> Unit
+//        onNavigate: () -> Unit
         ) {
 
         Timber.tag("pdf").d(outputPath)
@@ -147,7 +152,259 @@ object PdfUtil {
 
         document.close()
 
-        onNavigate()
+        val file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}",
+                "lien_vie_reel_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf")
+        sharePdf(file, context)
+//        onNavigate()
+
+    }
+
+
+    fun createPlanificationProjetPdf(
+        context: Context,
+        user: User,
+        ideeProjet: String,
+        motivation: String,
+        ressourceDisponible: String,
+        ressourceIndisponible: String,
+        competenceDisponible: List<AppSkillCardIcon>,
+        competenceIndisponible: List<AppSkillCardIcon>,
+        planAction: List<PlanAction>,
+        outputPath: String = "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+                "/planification_projet_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf",
+//        onNavigate: () -> Unit
+        ) {
+
+        Timber.tag("pdf").d(outputPath)
+        val pdfWriter = PdfWriter(outputPath)
+        val pdfDoc = PdfDocument(pdfWriter)
+        pdfDoc.defaultPageSize = PageSize.A4
+        val document = Document(pdfDoc, PageSize.A4)
+        document.setMargins(50f, 40f, 50f, 40f)
+
+        // watermark et footer handlers
+        val watermarkImageData = getImageDataFromResource(context, R.drawable.logo)
+        pdfDoc.addEventHandler(PdfDocumentEvent.START_PAGE, WatermarkImageEventHandler(watermarkImageData))
+        pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, SimpleFooterEventHandler())
+
+        // --- Infos utilisateur
+        addUserInfoSection(document, user, context)
+
+        document.add(Paragraph("\n\n\n"))
+
+        document.add(Paragraph("Planification de projet").setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Idee de projet
+        document.add(Paragraph("Idée de projet").setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+        document.add(Paragraph(ideeProjet)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Motivation
+        document.add(Paragraph("Motivation").setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+        document.add(Paragraph(motivation)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        // --- Competences disponible
+        document.add(Paragraph("Competences disponibles")
+            .setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        if (competenceDisponible.isNotEmpty()) {
+            val table = Table(UnitValue.createPercentArray(3)).useAllAvailableWidth()
+
+            competenceDisponible.forEach { competence ->
+                val cell = Cell()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+                val cellDiv = Div()
+
+                competence.paint.let { iconRes ->
+                    val imageData = getImageDataFromResource(context, iconRes)
+                    val image = Image(imageData)
+                        .setWidth(100f)
+                        .setHeight(100f)
+                        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                    cellDiv.add(image)
+                }
+
+                val txt = when (val txt = competence.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+                cellDiv.add(Paragraph(txt)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(12f)
+                    .setMarginTop(5f)
+                    .setMarginBottom(0f))
+
+                cell.add(cellDiv)
+                table.addCell(cell)
+            }
+
+            document.add(table)
+        } else {
+            document.add(Paragraph("Pas de compétance disponible"))
+        }
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Competences non disponible
+        document.add(Paragraph("Competences non disponible")
+            .setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        if (competenceIndisponible.isNotEmpty()) {
+            val table = Table(UnitValue.createPercentArray(3)).useAllAvailableWidth()
+
+            competenceIndisponible.forEach { competence ->
+                val cell = Cell()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+                val cellDiv = Div()
+
+                competence.paint.let { iconRes ->
+                    val imageData = getImageDataFromResource(context, iconRes)
+                    val image = Image(imageData)
+                        .setWidth(100f)
+                        .setHeight(100f)
+                        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                    cellDiv.add(image)
+                }
+
+                val txt = when (val txt = competence.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+                cellDiv.add(Paragraph(txt)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(12f)
+                    .setMarginTop(5f)
+                    .setMarginBottom(0f))
+
+                cell.add(cellDiv)
+                table.addCell(cell)
+            }
+
+            document.add(table)
+        } else {
+            document.add(Paragraph("Pas de compétence non disponible"))
+        }
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Ressources disponibles
+        document.add(Paragraph("Ressources disponibles").setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+        document.add(Paragraph(ressourceDisponible)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Ressources disponibles
+        document.add(Paragraph("Ressources non disponibles").setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+        document.add(Paragraph(ressourceIndisponible)
+            .setFontSize(15f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Plan d'action
+        document.add(Paragraph("Plan d'action")
+            .setTextAlignment(TextAlignment.CENTER)
+            .setFontSize(17.5f)
+            .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+
+        if (planAction.isNotEmpty()) {
+            val table = Table(UnitValue.createPercentArray(4)).useAllAvailableWidth()
+
+            table.addCell(Cell()
+                .add(Paragraph("Activité (quoi ?)"))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(16f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+            table.addCell(Cell()
+                .add(Paragraph("Qui fait ?"))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(16f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+            table.addCell(Cell()
+                .add(Paragraph("Qui finance ?"))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(16f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+            table.addCell(Cell()
+                .add(Paragraph("Quand ?"))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(16f)
+                .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
+            planAction.forEach { action ->
+                val cellActivite = Cell()
+                    .add(Paragraph(action.activite))
+                    .setFontSize(14f)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+                val cellActeur = Cell()
+                    .add(Paragraph(action.acteur))
+                    .setFontSize(14f)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+                val cellFinance = Cell()
+                    .add(Paragraph(action.financement))
+                    .setFontSize(14f)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+                val cellPeriode = Cell()
+                    .add(Paragraph(action.periode))
+                    .setFontSize(14f)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setPadding(10f)
+
+                table.addCell(cellActivite)
+                table.addCell(cellActeur)
+                table.addCell(cellFinance)
+                table.addCell(cellPeriode)
+            }
+
+            document.add(table)
+        } else {
+            document.add(Paragraph("Pas de plan d'action defini"))
+        }
+
+
+        document.close()
+
+        val file = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}",
+                "planification_projet_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf")
+        sharePdf(file, context)
+//        onNavigate()
 
     }
 
@@ -314,7 +571,7 @@ object PdfUtil {
             document.add(Paragraph(element.first).setTextAlignment(TextAlignment.LEFT)
                 .setFontSize(15f)
                 .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
-            document.add(Paragraph(element.first).setTextAlignment(TextAlignment.LEFT)
+            document.add(Paragraph(element.second).setTextAlignment(TextAlignment.LEFT)
                 .setFontSize(13f)
                 .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)))
         }

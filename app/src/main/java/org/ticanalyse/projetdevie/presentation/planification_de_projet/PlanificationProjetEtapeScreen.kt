@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -373,17 +374,38 @@ fun PlanificationProjetEtapeScreen(
             )
 
             if(pagerState.currentPage==5){
-                AppButton("Voir tableau") {
-                    viewModel.addProjectInfo(
-                        projectIdee = PlanificationProjet.projectInfo.projetIdee,
-                        motivation= PlanificationProjet.projectInfo.motivation,
-                        competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
-                        competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
-                        ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
-                        ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
-                        creationDate = LocalDate.now().toString()
-                    )
-                    onNavigate("tableau")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AppButton("Voir tableau") {
+                        viewModel.addProjectInfo(
+                            projectIdee = PlanificationProjet.projectInfo.projetIdee,
+                            motivation= PlanificationProjet.projectInfo.motivation,
+                            competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
+                            competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                            ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                            ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            creationDate = LocalDate.now().toString()
+                        )
+                        onNavigate("tableau")
+                    }
+                    AppButton("Télécharger pdf") {
+                        viewModel.addProjectInfo(
+                            projectIdee = PlanificationProjet.projectInfo.projetIdee,
+                            motivation= PlanificationProjet.projectInfo.motivation,
+                            competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
+                            competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                            ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                            ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            creationDate = LocalDate.now().toString()
+                        )
+                        onNavigate("pdf")
+                    }
+
                 }
             }
 

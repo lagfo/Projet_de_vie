@@ -39,6 +39,10 @@ import timber.log.Timber
 fun PdfViewerScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
+    val viewModel = hiltViewModel<AppNavigationViewModel>()
+
+    val fileUri = viewModel.resumeUri.collectAsStateWithLifecycle(initialValue = "")
+
     val pdfBitmapConverter = remember {
         PdfBitmapConverter(context)
     }
@@ -51,7 +55,8 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         mutableStateOf<List<Bitmap>>(emptyList())
     }
 
-    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),"resume_planification.pdf")
+    val file = File(fileUri.value)
+
     pdfUri = file.toUri()
 
     LaunchedEffect(key1 = pdfUri) {

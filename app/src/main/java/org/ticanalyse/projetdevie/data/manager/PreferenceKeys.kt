@@ -16,4 +16,5 @@ object PreferenceKeys {
     val avatarUri = stringPreferencesKey("user_avatarUri")
     val resumeUri = stringPreferencesKey("user_resumeUri")
     val lienVieReelUri = stringPreferencesKey("user_lienVieReelUri")
+    val planifierProjet = stringPreferencesKey("user_planifierProjet")
 }

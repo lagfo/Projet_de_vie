@@ -527,6 +527,8 @@ fun AppNavigator() {
                         navController.navigate(BilanCompetanceRoute(from))
                     }else if(from=="tableau"){
                         navController.navigate(PlanActionTableRoute)
+                    } else if(from=="pdf"){
+                        navController.navigate(PlanificationProjetResumeRoute)
                     }
                 }
 
