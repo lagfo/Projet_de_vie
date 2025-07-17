@@ -4,6 +4,7 @@ import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +35,7 @@ import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
+import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.PdfUtil.createLienVieReelPdf
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import java.time.LocalDateTime
@@ -53,143 +56,157 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-
-    LazyColumn (
-        modifier = modifier.fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        item {
-            Row (
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .clip(CircleShape)
-                        .border(
-                            width = 1.dp,
-                            color =colorResource(R.color.secondary_color),
-                            shape = CircleShape
-                        ),
-                    painter = painter,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "Profil image"
-                )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Sexe: ${currentUser?.genre}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+        Image(
+            painter = painterResource(id = R.drawable.bg_img),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+            alpha = 0.07f
+        )
 
-                    Text(
-                        text = "Date de naissance: ${currentUser?.dateNaissance}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+        LazyColumn (
+            modifier = modifier.fillMaxSize()
+                .padding(top = MediumPadding3, bottom = MediumPadding1),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Row (
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(90.dp)
+                            .clip(CircleShape)
+                            .border(
+                                width = 1.dp,
+                                color =colorResource(R.color.secondary_color),
+                                shape = CircleShape
+                            ),
+                        painter = painter,
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Profil image"
                     )
-                    Text(
-                        text = "Numero de telephone: ${currentUser?.numTel}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    currentUser?.email?.let {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
                         Text(
-                            text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
+                            text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
+                        Text(
+                            text = "Sexe: ${currentUser?.genre}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            text = "Date de naissance: ${currentUser?.dateNaissance}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Numero de telephone: ${currentUser?.numTel}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        currentUser?.email?.let {
+                            Text(
+                                text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        item {
-            LienVieReelComponent(
-                question = "Qu'est ce que j'ai actuellement ?",
-                response = if (listLienVieReelle.value.isNotEmpty()) {
-                    listLienVieReelle.value.first().firstResponse
-                } else {
-                    "Aucune reponse renseignée"
-                },
-                ttsManager = ttsManager
-            )
-        }
-        item {
-            LienVieReelComponent(
-                question = "Qu'est ce qui me manque ?",
-                response = if (listLienVieReelle.value.isNotEmpty()) {
-                    listLienVieReelle.value.first().secondResponse
-                } else {
-                    "Aucune reponse renseignée"
-                },
-                ttsManager = ttsManager
-            )
-        }
-        item {
-            LienVieReelComponent(
-                question = "Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?",
-                response = if (listLienVieReelle.value.isNotEmpty()) {
-                    listLienVieReelle.value.first().thirdResponse
-                } else {
-                    "Aucune reponse renseignée"
-                },
-                ttsManager = ttsManager
-            )
-        }
+            item {
+                LienVieReelComponent(
+                    question = "Qu'est ce que j'ai actuellement ?",
+                    response = if (listLienVieReelle.value.isNotEmpty()) {
+                        listLienVieReelle.value.first().firstResponse
+                    } else {
+                        "Aucune reponse renseignée"
+                    },
+                    ttsManager = ttsManager
+                )
+            }
+            item {
+                LienVieReelComponent(
+                    question = "Qu'est ce qui me manque ?",
+                    response = if (listLienVieReelle.value.isNotEmpty()) {
+                        listLienVieReelle.value.first().secondResponse
+                    } else {
+                        "Aucune reponse renseignée"
+                    },
+                    ttsManager = ttsManager
+                )
+            }
+            item {
+                LienVieReelComponent(
+                    question = "Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?",
+                    response = if (listLienVieReelle.value.isNotEmpty()) {
+                        listLienVieReelle.value.first().thirdResponse
+                    } else {
+                        "Aucune reponse renseignée"
+                    },
+                    ttsManager = ttsManager
+                )
+            }
 
-        item {
-            AppButton("Telecharger pdf") {
-                createLienVieReelPdf(
-                    context = context,
-                    user = currentUser!!,
-                    listQuestionsLienVieReel = listOf(
-                        Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().firstResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
+            item {
+                AppButton("Telecharger pdf") {
+                    createLienVieReelPdf(
+                        context = context,
+                        user = currentUser!!,
+                        listQuestionsLienVieReel = listOf(
+                            Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                listLienVieReelle.value.first().firstResponse
+                            } else {
+                                "Aucune reponse renseignée"
+                            }
+                            ),
+                            Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                listLienVieReelle.value.first().secondResponse
+                            } else {
+                                "Aucune reponse renseignée"
+                            }),
+                            Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                listLienVieReelle.value.first().thirdResponse
+                            } else {
+                                "Aucune reponse renseignée"
+                            })
                         ),
-                        Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().secondResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }),
-                        Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().thirdResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        })
-                    ),
-                ) {
-                    viewModel.setResumeUri(
-                        "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
-                                "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${
-                                    LocalDateTime.now().format(
-                                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-                                    )
-                                }.pdf",
-                        "lienVieReel"
-                    )
-                    onNavigate()
+                    ) {
+                        viewModel.setResumeUri(
+                            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${
+                                        LocalDateTime.now().format(
+                                            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+                                        )
+                                    }.pdf",
+                            "lienVieReel"
+                        )
+                        onNavigate()
+                    }
                 }
             }
-        }
 
+        }
     }
+
+
 
 }
 

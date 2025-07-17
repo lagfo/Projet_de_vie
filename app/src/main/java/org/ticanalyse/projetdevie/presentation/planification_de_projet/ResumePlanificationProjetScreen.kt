@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,6 +42,10 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
+import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
+import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
+import org.ticanalyse.projetdevie.presentation.common.skills
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelViewModel
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
@@ -57,39 +62,19 @@ fun ResumePlanificationProjetScreen(
     onNavigate: () -> Unit = {},
 ) {
 
-    val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
-    val ligneDeVieViewModel = hiltViewModel<LigneDeVieViewModel>()
-    val bilanCompetenceViewModel = hiltViewModel<BilanCompetenceViewModel>()
+    val planificationViewModel = hiltViewModel<PlanificationViewModel>()
     val viewModel = hiltViewModel<AppNavigationViewModel>()
-    val lienVieReelle = hiltViewModel<LienVieReelViewModel>()
 
-    monReseauViewModel.getMonReseau()
-    bilanCompetenceViewModel.getSkills()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
 
-    val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
-    val listActeursEducatifs = monReseauViewModel.listActeursEducatifs.collectAsStateWithLifecycle()
-    val listActeursProfessionnels = monReseauViewModel.listActeursProfessionel.collectAsStateWithLifecycle()
-    val listActeursInstitutionnelsEtDeSoutien = monReseauViewModel.listActeursInstitutionel.collectAsStateWithLifecycle()
+    val projectInfo = planificationViewModel.planificationInfo.collectAsStateWithLifecycle()
+    val listPlanAction = planificationViewModel.planAction.collectAsStateWithLifecycle()
 
-    val listPassedElement = ligneDeVieViewModel.allPassedElement.collectAsStateWithLifecycle()
-    val listPresentElement = ligneDeVieViewModel.allPresentElement.collectAsStateWithLifecycle()
-    val listQuestionElement = ligneDeVieViewModel.allResponse.collectAsStateWithLifecycle()
-    val listBilanCompetence = bilanCompetenceViewModel.skillsState.collectAsStateWithLifecycle()
-    val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-
-
-    val mapListActeursFamiliaux = remember { mutableStateOf(mapOf<String, List<String>>()) }
-    val mapListActeursEducatifs = remember { mutableStateOf(mapOf<String, List<String>>()) }
-    val mapListActeursProfessionnels = remember { mutableStateOf(mapOf<String, List<String>>()) }
-    val mapListActeursInstitutionnelsEtDeSoutien = remember { mutableStateOf(mapOf<String, List<String>>()) }
-
+    val ttsManager = appTTSManager()
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Image(
             painter = painterResource(id = R.drawable.bg_img),
@@ -98,270 +83,106 @@ fun ResumePlanificationProjetScreen(
             contentScale = ContentScale.FillBounds,
             alpha = 0.07f
         )
-        Column(
+
+        LazyColumn (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = MediumPadding3, bottom = MediumPadding1),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(top = MediumPadding3, bottom = MediumPadding1, start = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Fiche",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(MediumPadding1),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    Row (
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Idée du projet",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .size(90.dp)
-                                .clip(CircleShape)
-                                .border(
-                                    width = 1.dp,
-                                    color =colorResource(R.color.secondary_color),
-                                    shape = CircleShape
-                                ),
-                            painter = painter,
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Profil image"
-                        )
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Sexe: ${currentUser?.genre}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Text(
-                                text = "Date de naissance: ${currentUser?.dateNaissance}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Numero de telephone: ${currentUser?.numTel}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            currentUser?.email?.let {
-                                Text(
-                                    text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    Text(
-                        text = "Découvrir mon réseau",
+                        ttsManager = ttsManager
+                    )
+                    AppText(
+                        text = projectInfo.value.first().projetIdee,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
                 }
-
-                item {
-                    mapListActeursFamiliaux.value = mapOf(
-                        "Parents ou tuteurs: " to (listActeursFamiliauxEtSociaux.value?.parentsTuteurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Frères, soeurs, cousins ou cousines: " to (listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Voisins" to (listActeursFamiliauxEtSociaux.value?.voisins?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Chefs coutumiers ou religieux: " to (listActeursFamiliauxEtSociaux.value?.chefsCoutumiersReligieux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Grands-parents: " to (listActeursFamiliauxEtSociaux.value?.grandsParents?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Amis proches: " to (listActeursFamiliauxEtSociaux.value?.amisProches?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Mentor ou modèle dans la communauté: " to (listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Leaders communautaires ou d'associations locales: " to (listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Motivation",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
-                    MonReseauElement("Acteurs familiaux et sociaux", mapListActeursFamiliaux.value)
-                }
-                item {
-                    mapListActeursEducatifs.value = mapOf(
-                        "Enseignants ou professeurs: " to (listActeursEducatifs.value?.EnseignantsProfesseurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Encadreurs de centres de formation professionnelle: " to (listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Anciens camarades de classe: " to (listActeursEducatifs.value?.anciensCamaradesClasse?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Conseillers d'orientation scolaire ou professionnelle: " to (listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Animateurs d'ONG éducatives: " to (listActeursEducatifs.value?.animateursONGEducatives?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                    )
-                    MonReseauElement("Acteurs educatifs", mapListActeursEducatifs.value)
-                }
-                item {
-                    mapListActeursProfessionnels.value = mapOf(
-                        "Anciens employeurs ou maîtres d'apprentissage: " to (listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Employés d'ONG ou de projets de développement: " to (listActeursProfessionnels.value?.employesONGProjetsDeveloppement?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Artisans ou entrepreneurs locaux: " to (listActeursProfessionnels.value?.artisansEntrepreneursLocaux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Personnes ressources dans les coopératives, groupements ou mutuelles: " to (listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                    )
-                    MonReseauElement("Acteurs professionnels", mapListActeursProfessionnels.value)
-                }
-                item {
-                    mapListActeursInstitutionnelsEtDeSoutien.value = mapOf(
-                        "Agents des services sociaux ou administratifs: " to (listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Representants de structures comme une agence nationale pour l'emploi: " to (listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Formateurs des programmes publics ou privés de formation et insertion: " to (listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                        "Personnel de santé: " to (listActeursInstitutionnelsEtDeSoutien.value?.personnelSante?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
-                    )
-                    MonReseauElement("Acteurs institutionnels et de soutien", mapListActeursInstitutionnelsEtDeSoutien.value)
-                }
-
-                item {
-                    Text(
-                        text = "Ligne de vie",
+                    AppText(
+                        text = projectInfo.value.first().motivation,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
                 }
-
-                item {
-                    LigneDeVieComponent("Les évènements du passées", listPassedElement.value)
-                }
-                item {
-                    LigneDeVieComponent("Les évènements du présent", listPresentElement.value)
-                }
-                item {
-                    LigneDeVieQuestion(
-                        question = "Qu'ai-je déjà réalisé ?",
-                        response = if (listQuestionElement.value.isNotEmpty()) {
-                            listQuestionElement.value.first().firstResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Ressources disponibles",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
-                }
-                item {
-                    LigneDeVieQuestion(
-                        question = "Qu'est ce que je suis capable de faire ?",
-                        response = if (listQuestionElement.value.isNotEmpty()) {
-                            listQuestionElement.value.first().secondResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
-                    )
-                }
-
-                item {
-                    Text(
-                        text = "Bilan de compétences",
+                    AppText(
+                        text = projectInfo.value.first().ressourceDisponible,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
                 }
-                item {
-                    BilanCompetenceElement(listItems = listBilanCompetence.value)
-                }
-                item {
-                    Text(
-                        text = "Lien avec la vie réelle",
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    AppText(
+                        text = "Ressources non disponibles",
+                        style = MaterialTheme.typography.titleMedium,
+                        isTextAlignCenter = true,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
+                    )
+                    AppText(
+                        text = projectInfo.value.first().ressourceNonDispnible,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.fillMaxWidth(),
+                        ttsManager = ttsManager
                     )
                 }
-                item {
-                    LienVieReelComponent(
-                        question = "Qu'est ce que j'ai actuellement ?",
-                        response = if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().firstResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
-                    )
-                }
-                item {
-                    LienVieReelComponent(
-                        question = "Qu'est ce qui me manque ?",
-                        response = if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().secondResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
-                    )
-                }
-                item {
-                    LienVieReelComponent(
-                        question = "Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?",
-                        response = if (listLienVieReelle.value.isNotEmpty()) {
-                            listLienVieReelle.value.first().thirdResponse
-                        } else {
-                            "Aucune reponse renseignée"
-                        }
-                    )
-                }
-
-                item {
-                    AppButton (text = "Generer pdf", onClick = {
-                        createResumePlanificationPdf(
-                            context = context,
-                            user = currentUser!!,
-                            listActeursFamiliaux = mapListActeursFamiliaux.value,
-                            listActeursEducatifs = mapListActeursEducatifs.value,
-                            listActeursProfessionnels = mapListActeursProfessionnels.value,
-                            listActeursInstitutionnels = mapListActeursInstitutionnelsEtDeSoutien.value,
-                            listPassedElement = listPassedElement.value,
-                            listPresentElement = listPresentElement.value,
-                            listBilanCompetence = listBilanCompetence.value,
-                            listQuestionsLigneDeVie = listOf(
-                                Pair("Qu'ai-je déjà réalisé ?", if (listQuestionElement.value.isNotEmpty()) {
-                                    listQuestionElement.value.first().firstResponse
-                                } else {
-                                    "Aucune reponse renseignée"
-                                }
-                                ),
-                                Pair("Qu'est ce que je suis capable de faire ?", if (listQuestionElement.value.isNotEmpty()) {
-                                    listQuestionElement.value.first().secondResponse
-                                } else {
-                                    "Aucune reponse renseignée"
-                                })
-                            ),
-                            listQuestionsLienVieReel = listOf(
-                                Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                    listLienVieReelle.value.first().firstResponse
-                                } else {
-                                    "Aucune reponse renseignée"
-                                }
-                                ),
-                                Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                    listLienVieReelle.value.first().secondResponse
-                                } else {
-                                    "Aucune reponse renseignée"
-                                }),
-                                Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                    listLienVieReelle.value.first().thirdResponse
-                                } else {
-                                    "Aucune reponse renseignée"
-                                })
-                            ),
-                        ) {
-                            viewModel.setResumeUri("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
-                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${LocalDateTime.now().format(
-                                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf", "planificationProjet")
-                            onNavigate()
-                        }
-                    })
-                }
-
-
             }
 
         }
@@ -554,6 +375,8 @@ fun LienVieReelComponent(question: String = "Questions", response: String = "Des
 
 @Composable
 fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>?) {
+
+    val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
     FlowRow (
         modifier = modifier
             .fillMaxWidth(),
@@ -568,17 +391,359 @@ fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String
             )
         } else {
             listItems.forEach { element ->
-                Text(
-                    text = element,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                        .padding(6.dp)
-                )
+                Column {
+//                    Image(
+//
+//                    )
+                    Text(
+                        text = element,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                            .padding(6.dp)
+                    )
+                }
             }
         }
     }
 }
+//@Composable
+//fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<String>?) {
+//    FlowRow (
+//        modifier = modifier
+//            .fillMaxWidth(),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        if (listItems.isNullOrEmpty()) {
+//            Text(
+//                text = "Pas d'élément",
+//                style = MaterialTheme.typography.bodySmall,
+//                fontWeight = FontWeight.Bold
+//            )
+//        } else {
+//            listItems.forEach { element ->
+//                Text(
+//                    text = element,
+//                    style = MaterialTheme.typography.bodySmall,
+//                    modifier = Modifier
+//                        .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+//                        .padding(6.dp)
+//                )
+//            }
+//        }
+//    }
+//}
+
+//    val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
+//    val ligneDeVieViewModel = hiltViewModel<LigneDeVieViewModel>()
+//    val bilanCompetenceViewModel = hiltViewModel<BilanCompetenceViewModel>()
+//    val viewModel = hiltViewModel<AppNavigationViewModel>()
+//    val lienVieReelle = hiltViewModel<LienVieReelViewModel>()
+//
+//    monReseauViewModel.getMonReseau()
+//    bilanCompetenceViewModel.getSkills()
+//    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+//    val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
+//
+//    val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
+//    val listActeursEducatifs = monReseauViewModel.listActeursEducatifs.collectAsStateWithLifecycle()
+//    val listActeursProfessionnels = monReseauViewModel.listActeursProfessionel.collectAsStateWithLifecycle()
+//    val listActeursInstitutionnelsEtDeSoutien = monReseauViewModel.listActeursInstitutionel.collectAsStateWithLifecycle()
+//
+//    val listPassedElement = ligneDeVieViewModel.allPassedElement.collectAsStateWithLifecycle()
+//    val listPresentElement = ligneDeVieViewModel.allPresentElement.collectAsStateWithLifecycle()
+//    val listQuestionElement = ligneDeVieViewModel.allResponse.collectAsStateWithLifecycle()
+//    val listBilanCompetence = bilanCompetenceViewModel.skillsState.collectAsStateWithLifecycle()
+//    val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
+//    val context = LocalContext.current
+//
+//
+//    val mapListActeursFamiliaux = remember { mutableStateOf(mapOf<String, List<String>>()) }
+//    val mapListActeursEducatifs = remember { mutableStateOf(mapOf<String, List<String>>()) }
+//    val mapListActeursProfessionnels = remember { mutableStateOf(mapOf<String, List<String>>()) }
+//    val mapListActeursInstitutionnelsEtDeSoutien = remember { mutableStateOf(mapOf<String, List<String>>()) }
+//
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.bg_img),
+//            contentDescription = null,
+//            modifier = Modifier.fillMaxSize(),
+//            contentScale = ContentScale.FillBounds,
+//            alpha = 0.07f
+//        )
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(top = MediumPadding3, bottom = MediumPadding1),
+//            verticalArrangement = Arrangement.spacedBy(8.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Text(
+//                text = "Fiche",
+//                style = MaterialTheme.typography.bodySmall,
+//                textAlign = TextAlign.Center,
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            LazyColumn(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .fillMaxHeight()
+//                    .padding(horizontal = 8.dp),
+//                verticalArrangement = Arrangement.spacedBy(MediumPadding1),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                item {
+//                    Row (
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Image(
+//                            modifier = Modifier
+//                                .size(90.dp)
+//                                .clip(CircleShape)
+//                                .border(
+//                                    width = 1.dp,
+//                                    color =colorResource(R.color.secondary_color),
+//                                    shape = CircleShape
+//                                ),
+//                            painter = painter,
+//                            contentScale = ContentScale.Crop,
+//                            contentDescription = "Profil image"
+//                        )
+//                        Column(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            verticalArrangement = Arrangement.spacedBy(8.dp),
+//                            horizontalAlignment = Alignment.Start
+//                        ) {
+//                            Text(
+//                                text = "Nom et prenoms: ${currentUser?.nom} ${currentUser?.prenom}",
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                            Text(
+//                                text = "Sexe: ${currentUser?.genre}",
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//
+//                            Text(
+//                                text = "Date de naissance: ${currentUser?.dateNaissance}",
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                            Text(
+//                                text = "Numero de telephone: ${currentUser?.numTel}",
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                            currentUser?.email?.let {
+//                                Text(
+//                                    text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
+//                                    style = MaterialTheme.typography.bodyMedium,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                item {
+//                    Text(
+//                        text = "Découvrir mon réseau",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//
+//                item {
+//                    mapListActeursFamiliaux.value = mapOf(
+//                        "Parents ou tuteurs: " to (listActeursFamiliauxEtSociaux.value?.parentsTuteurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Frères, soeurs, cousins ou cousines: " to (listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Voisins" to (listActeursFamiliauxEtSociaux.value?.voisins?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Chefs coutumiers ou religieux: " to (listActeursFamiliauxEtSociaux.value?.chefsCoutumiersReligieux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Grands-parents: " to (listActeursFamiliauxEtSociaux.value?.grandsParents?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Amis proches: " to (listActeursFamiliauxEtSociaux.value?.amisProches?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Mentor ou modèle dans la communauté: " to (listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Leaders communautaires ou d'associations locales: " to (listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                    )
+//                    MonReseauElement("Acteurs familiaux et sociaux", mapListActeursFamiliaux.value)
+//                }
+//                item {
+//                    mapListActeursEducatifs.value = mapOf(
+//                        "Enseignants ou professeurs: " to (listActeursEducatifs.value?.EnseignantsProfesseurs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Encadreurs de centres de formation professionnelle: " to (listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Anciens camarades de classe: " to (listActeursEducatifs.value?.anciensCamaradesClasse?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Conseillers d'orientation scolaire ou professionnelle: " to (listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Animateurs d'ONG éducatives: " to (listActeursEducatifs.value?.animateursONGEducatives?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                    )
+//                    MonReseauElement("Acteurs educatifs", mapListActeursEducatifs.value)
+//                }
+//                item {
+//                    mapListActeursProfessionnels.value = mapOf(
+//                        "Anciens employeurs ou maîtres d'apprentissage: " to (listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Employés d'ONG ou de projets de développement: " to (listActeursProfessionnels.value?.employesONGProjetsDeveloppement?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Artisans ou entrepreneurs locaux: " to (listActeursProfessionnels.value?.artisansEntrepreneursLocaux?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Personnes ressources dans les coopératives, groupements ou mutuelles: " to (listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                    )
+//                    MonReseauElement("Acteurs professionnels", mapListActeursProfessionnels.value)
+//                }
+//                item {
+//                    mapListActeursInstitutionnelsEtDeSoutien.value = mapOf(
+//                        "Agents des services sociaux ou administratifs: " to (listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Representants de structures comme une agence nationale pour l'emploi: " to (listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Formateurs des programmes publics ou privés de formation et insertion: " to (listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                        "Personnel de santé: " to (listActeursInstitutionnelsEtDeSoutien.value?.personnelSante?.split("|")?.filter { it.isNotBlank() && it.isNotEmpty() }?.map { it.trimStart() } ?: emptyList()),
+//                    )
+//                    MonReseauElement("Acteurs institutionnels et de soutien", mapListActeursInstitutionnelsEtDeSoutien.value)
+//                }
+//
+//                item {
+//                    Text(
+//                        text = "Ligne de vie",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//
+//                item {
+//                    LigneDeVieComponent("Les évènements du passées", listPassedElement.value)
+//                }
+//                item {
+//                    LigneDeVieComponent("Les évènements du présent", listPresentElement.value)
+//                }
+//                item {
+//                    LigneDeVieQuestion(
+//                        question = "Qu'ai-je déjà réalisé ?",
+//                        response = if (listQuestionElement.value.isNotEmpty()) {
+//                            listQuestionElement.value.first().firstResponse
+//                        } else {
+//                            "Aucune reponse renseignée"
+//                        }
+//                    )
+//                }
+//                item {
+//                    LigneDeVieQuestion(
+//                        question = "Qu'est ce que je suis capable de faire ?",
+//                        response = if (listQuestionElement.value.isNotEmpty()) {
+//                            listQuestionElement.value.first().secondResponse
+//                        } else {
+//                            "Aucune reponse renseignée"
+//                        }
+//                    )
+//                }
+//
+//                item {
+//                    Text(
+//                        text = "Bilan de compétences",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//                item {
+//                    BilanCompetenceElement(listItems = listBilanCompetence.value)
+//                }
+//                item {
+//                    Text(
+//                        text = "Lien avec la vie réelle",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//                item {
+//                    LienVieReelComponent(
+//                        question = "Qu'est ce que j'ai actuellement ?",
+//                        response = if (listLienVieReelle.value.isNotEmpty()) {
+//                            listLienVieReelle.value.first().firstResponse
+//                        } else {
+//                            "Aucune reponse renseignée"
+//                        }
+//                    )
+//                }
+//                item {
+//                    LienVieReelComponent(
+//                        question = "Qu'est ce qui me manque ?",
+//                        response = if (listLienVieReelle.value.isNotEmpty()) {
+//                            listLienVieReelle.value.first().secondResponse
+//                        } else {
+//                            "Aucune reponse renseignée"
+//                        }
+//                    )
+//                }
+//                item {
+//                    LienVieReelComponent(
+//                        question = "Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?",
+//                        response = if (listLienVieReelle.value.isNotEmpty()) {
+//                            listLienVieReelle.value.first().thirdResponse
+//                        } else {
+//                            "Aucune reponse renseignée"
+//                        }
+//                    )
+//                }
+//
+//                item {
+//                    AppButton (text = "Generer pdf", onClick = {
+//                        createResumePlanificationPdf(
+//                            context = context,
+//                            user = currentUser!!,
+//                            listActeursFamiliaux = mapListActeursFamiliaux.value,
+//                            listActeursEducatifs = mapListActeursEducatifs.value,
+//                            listActeursProfessionnels = mapListActeursProfessionnels.value,
+//                            listActeursInstitutionnels = mapListActeursInstitutionnelsEtDeSoutien.value,
+//                            listPassedElement = listPassedElement.value,
+//                            listPresentElement = listPresentElement.value,
+//                            listBilanCompetence = listBilanCompetence.value,
+//                            listQuestionsLigneDeVie = listOf(
+//                                Pair("Qu'ai-je déjà réalisé ?", if (listQuestionElement.value.isNotEmpty()) {
+//                                    listQuestionElement.value.first().firstResponse
+//                                } else {
+//                                    "Aucune reponse renseignée"
+//                                }
+//                                ),
+//                                Pair("Qu'est ce que je suis capable de faire ?", if (listQuestionElement.value.isNotEmpty()) {
+//                                    listQuestionElement.value.first().secondResponse
+//                                } else {
+//                                    "Aucune reponse renseignée"
+//                                })
+//                            ),
+//                            listQuestionsLienVieReel = listOf(
+//                                Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
+//                                    listLienVieReelle.value.first().firstResponse
+//                                } else {
+//                                    "Aucune reponse renseignée"
+//                                }
+//                                ),
+//                                Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
+//                                    listLienVieReelle.value.first().secondResponse
+//                                } else {
+//                                    "Aucune reponse renseignée"
+//                                }),
+//                                Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
+//                                    listLienVieReelle.value.first().thirdResponse
+//                                } else {
+//                                    "Aucune reponse renseignée"
+//                                })
+//                            ),
+//                        ) {
+//                            viewModel.setResumeUri("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+//                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${LocalDateTime.now().format(
+//                                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf", "planificationProjet")
+//                            onNavigate()
+//                        }
+//                    })
+//                }
+//
+//
+//            }
+//
+//        }
+//    }
 
 
 @Preview(device = "id:pixel_8", showSystemUi = true, showBackground = true)
