@@ -60,6 +60,7 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
@@ -151,15 +152,16 @@ fun ModalDialogForEdit(
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text=item.label,
+                    AppText(
+                        text = item.label,
                         fontFamily = Roboto,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
-                        color =Color.Black,
-                        style = TextStyle(fontSize =15.sp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        color = colorResource(id = R.color.text),
+                        fontSize = 15.sp,
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        ttsManager = ttsManager,
+                        isTextAlignCenter = true
                     )
                 }
                 Row(
@@ -171,12 +173,16 @@ fun ModalDialogForEdit(
                     Column(
                         modifier = Modifier.weight(1f)
                     ){
-                        Text(
-                            modifier= Modifier.fillMaxWidth(),
-                            text="Evènement passé",
-                            fontSize = 12.sp,
+                        AppText(
+                            text = "Evènement passé",
+                            fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
+                            fontStyle = FontStyle.Normal,
+                            color = colorResource(id = R.color.text),
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            ttsManager = ttsManager,
+                            isTextAlignCenter = true
                         )
 
                         OutlinedTextField(
@@ -308,13 +314,18 @@ fun ModalDialogForEdit(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.Center
                     ){
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text="Evènement en cours",
-                            fontSize = 12.sp,
+
+                        AppText(
+                            text = "Evènement en cours",
+                            fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            )
+                            fontStyle = FontStyle.Normal,
+                            color = colorResource(id = R.color.text),
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            ttsManager = ttsManager,
+                            isTextAlignCenter = true
+                        )
                         OutlinedTextField(
                             enabled = !(dateDebut.isNotBlank()||dateFin.isNotBlank()),
                             value =dateEncours,

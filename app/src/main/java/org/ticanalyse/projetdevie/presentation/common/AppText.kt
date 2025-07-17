@@ -1,6 +1,8 @@
 package org.ticanalyse.projetdevie.presentation.common
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,7 +14,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
@@ -28,7 +32,9 @@ fun AppText(
     color: Color = colorResource(id = R.color.primary_color),
     fontSize: TextUnit = 25.sp,
     style: TextStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-    ttsManager: TextToSpeechManager?
+    ttsManager: TextToSpeechManager?,
+    isTextAlignCenter: Boolean = false,
+    isDefineMaxLine: Boolean = false
 ) {
     Text(
         modifier = Modifier.clickable {
@@ -40,7 +46,12 @@ fun AppText(
         fontFamily = fontFamily,
         fontWeight = fontWeight,
         fontStyle = fontStyle,
-        fontSize = fontSize)
+        fontSize = fontSize,
+        overflow = TextOverflow.Ellipsis,
+        textAlign = if (isTextAlignCenter) TextAlign.Center else TextAlign.Unspecified,
+        maxLines = if (isDefineMaxLine) 1 else 5
+    )
+
 }
 
 @Composable

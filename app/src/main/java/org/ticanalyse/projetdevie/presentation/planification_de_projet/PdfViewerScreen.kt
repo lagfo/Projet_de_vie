@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Environment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -50,18 +51,11 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         mutableStateOf<List<Bitmap>>(emptyList())
     }
 
-    val viewModel = hiltViewModel<AppNavigationViewModel>()
-
-    val fileUri = viewModel.resumeUri.collectAsStateWithLifecycle().value
-    val file = remember { mutableStateOf( File(fileUri)) }
-    Timber.d("fileUri: $fileUri")
-
-    pdfUri = file.value.toUri()
+    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),"resume_planification.pdf")
+    pdfUri = file.toUri()
 
     LaunchedEffect(key1 = pdfUri) {
-        delay(1000)
         if (pdfUri != null) {
-            Timber.d("pdfUri: $pdfUri")
             renderedPages = pdfBitmapConverter.pdfToBitmap(pdfUri!!)
         }
     }
@@ -72,8 +66,7 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         LazyColumn (
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
         ) {
@@ -83,7 +76,7 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         }
 
         AppButton("Partager") {
-            sharePdf(file.value, context)
+            sharePdf(file, context)
         }
     }
 }
