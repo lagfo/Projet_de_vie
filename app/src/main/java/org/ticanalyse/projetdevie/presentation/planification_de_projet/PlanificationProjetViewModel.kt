@@ -49,7 +49,8 @@ class PlanificationViewModel @Inject constructor(
         competenceDisponible:List<String>?,
         competenceNonDisponible:List<String>?,
         ressourceDisponible: String,
-        ressourceNonDisponible:String
+        ressourceNonDisponible:String,
+        creationDate:String
         ){
 
         val projectInfo= ProjectInfo(
@@ -58,7 +59,8 @@ class PlanificationViewModel @Inject constructor(
             competenceDisponible = competenceDisponible,
             competenceNonDisponible = competenceNonDisponible,
             ressourceDisponible = ressourceDisponible,
-            ressourceNonDispnible = ressourceNonDisponible
+            ressourceNonDispnible = ressourceNonDisponible,
+            creationDate = creationDate
         )
         viewModelScope.launch {
             try{

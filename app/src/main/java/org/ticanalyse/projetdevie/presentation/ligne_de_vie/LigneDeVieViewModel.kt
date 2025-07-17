@@ -121,7 +121,11 @@ init{
     fun getPassedElements(){
         viewModelScope.launch {
             repository.getPassedElements().collect { listPassedElement->
-                _allPassedElement.value=listPassedElement
+                val sortedList = listPassedElement.sortedWith(
+                    compareBy<Element> { it.startYear }.thenBy { it.endYear }
+                )
+                _allPassedElement.value = sortedList
+                //_allPassedElement.value=listPassedElement
             }
         }
     }
@@ -131,7 +135,8 @@ init{
     fun getPresentElements(){
         viewModelScope.launch {
             repository.getPresentElements().collect { listPresentElement->
-                _allPresentElement.value=listPresentElement
+                val sortedList = listPresentElement.sortedBy { it.inProgressYear }
+                _allPresentElement.value=sortedList
             }
         }
     }

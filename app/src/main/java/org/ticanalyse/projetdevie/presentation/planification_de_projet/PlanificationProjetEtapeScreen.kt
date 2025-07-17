@@ -374,6 +374,15 @@ fun PlanificationProjetEtapeScreen(
 
             if(pagerState.currentPage==5){
                 AppButton("Voir tableau") {
+                    viewModel.addProjectInfo(
+                        projectIdee = PlanificationProjet.projectInfo.projetIdee,
+                        motivation= PlanificationProjet.projectInfo.motivation,
+                        competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
+                        competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                        ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                        ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
+                        creationDate = LocalDate.now().toString()
+                    )
                     onNavigate("tableau")
                 }
             }
