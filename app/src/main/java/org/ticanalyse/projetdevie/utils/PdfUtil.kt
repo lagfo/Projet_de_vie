@@ -36,6 +36,8 @@ import org.ticanalyse.projetdevie.domain.model.User
 import timber.log.Timber
 import java.io.File
 import androidx.core.net.toUri
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object PdfUtil {
     fun createResumePlanificationPdf(
@@ -113,6 +115,42 @@ object PdfUtil {
         onNavigate()
     }
 
+    fun createLienVieReelPdf(
+        context: Context,
+        user: User,
+        listQuestionsLienVieReel: List<Pair<String, String>>,
+        outputPath: String = "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+                "/lien_vie_reel_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf",
+        onNavigate: () -> Unit
+        ) {
+
+        Timber.tag("pdf").d(outputPath)
+        val pdfWriter = PdfWriter(outputPath)
+        val pdfDoc = PdfDocument(pdfWriter)
+        pdfDoc.defaultPageSize = PageSize.A4
+        val document = Document(pdfDoc, PageSize.A4)
+        document.setMargins(50f, 40f, 50f, 40f)
+
+        // watermark et footer handlers
+        val watermarkImageData = getImageDataFromResource(context, R.drawable.logo)
+        pdfDoc.addEventHandler(PdfDocumentEvent.START_PAGE, WatermarkImageEventHandler(watermarkImageData))
+        pdfDoc.addEventHandler(PdfDocumentEvent.END_PAGE, SimpleFooterEventHandler())
+
+        // --- Infos utilisateur
+        addUserInfoSection(document, user, context)
+
+        document.add(Paragraph("\n\n\n"))
+
+        // --- Lien de vie réel
+        addQuestions(document, "Lien avec la vie réel", listQuestionsLienVieReel)
+
+        document.close()
+
+        onNavigate()
+
+    }
+
     fun getImageDataFromPathOrResource(context: Context, imagePath: String?, fallbackResId: Int): ImageData {
         val bitmap = if (!imagePath.isNullOrEmpty()) {
             if (imagePath.startsWith("content://")) {
@@ -162,7 +200,7 @@ object PdfUtil {
                     return null
                 }
 
-                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val bitmap = createBitmap(width, height)
                 val canvas = Canvas(bitmap)
                 drawable.setBounds(0, 0, width, height)
                 drawable.draw(canvas)
