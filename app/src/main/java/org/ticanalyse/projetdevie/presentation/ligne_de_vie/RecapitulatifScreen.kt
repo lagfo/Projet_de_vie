@@ -814,7 +814,7 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text ="Année de début:${item.startYear}",
+                            text ="Année de début:${item.inProgressYear}",
                             textAlign = TextAlign.Center,
                             fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
@@ -822,15 +822,15 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                             color = Color.Black,
                             maxLines =1
                         )
-                        Text(
-                            text ="Année de fin:${item.endYear}",
-                            textAlign = TextAlign.Center,
-                            fontFamily = Roboto,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            color = Color.Black,
-                            maxLines = 1
-                        )
+//                        Text(
+//                            text ="Année de fin:${item.endYear}",
+//                            textAlign = TextAlign.Center,
+//                            fontFamily = Roboto,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 10.sp,
+//                            color = Color.Black,
+//                            maxLines = 1
+//                        )
                     }
 
                     ////
