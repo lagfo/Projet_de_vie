@@ -25,6 +25,7 @@ import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 
 @Composable
 fun AppText(
+    modifier: Modifier = Modifier,
     text: String,
     fontFamily: FontFamily = BelfastGrotesk,
     fontWeight: FontWeight = FontWeight.Black,
@@ -35,7 +36,7 @@ fun AppText(
     ttsManager: TextToSpeechManager?,
     isTextAlignCenter: Boolean = false,
     isDefineMaxLine: Boolean = false,
-    modifier: Modifier = Modifier
+
 ) {
     Text(
         modifier = modifier.clickable {
