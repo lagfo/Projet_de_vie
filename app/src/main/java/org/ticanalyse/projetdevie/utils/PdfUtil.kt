@@ -50,7 +50,7 @@ object PdfUtil {
         listQuestionsLigneDeVie: List<Pair<String, String>>,
         listBilanCompetence: List<String>?,
         listQuestionsLienVieReel: List<Pair<String, String>>,
-        outputPath: String = "${context.cacheDir}/resume_planification.pdf",
+        outputPath: String = "${context.filesDir}/${user.nom} ${user.prenom}.pdf",
         onNavigate: () -> Unit
     ) {
         val pdfWriter = PdfWriter(outputPath)

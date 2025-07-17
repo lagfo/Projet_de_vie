@@ -21,11 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.utils.PdfBitmapConverter
 import org.ticanalyse.projetdevie.utils.PdfUtil.sharePdf
 import java.io.File
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
+import timber.log.Timber
 
 @Composable
 fun PdfViewerScreen(modifier: Modifier = Modifier) {
@@ -43,11 +50,18 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         mutableStateOf<List<Bitmap>>(emptyList())
     }
 
-    val file = File(context.cacheDir,"resume_planification.pdf")
-    pdfUri = file.toUri()
+    val viewModel = hiltViewModel<AppNavigationViewModel>()
+
+    val fileUri = viewModel.resumeUri.collectAsStateWithLifecycle().value
+    val file = remember { mutableStateOf( File(fileUri)) }
+    Timber.d("fileUri: $fileUri")
+
+    pdfUri = file.value.toUri()
 
     LaunchedEffect(key1 = pdfUri) {
+        delay(1000)
         if (pdfUri != null) {
+            Timber.d("pdfUri: $pdfUri")
             renderedPages = pdfBitmapConverter.pdfToBitmap(pdfUri!!)
         }
     }
@@ -58,7 +72,8 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         LazyColumn (
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
         ) {
@@ -68,7 +83,7 @@ fun PdfViewerScreen(modifier: Modifier = Modifier) {
         }
 
         AppButton("Partager") {
-            sharePdf(file, context)
+            sharePdf(file.value, context)
         }
     }
 }

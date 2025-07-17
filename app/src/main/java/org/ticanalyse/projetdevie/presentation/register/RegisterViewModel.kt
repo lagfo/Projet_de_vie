@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.app_entry.AppEntryUseCases
 import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.GetResumeUriUseCase
 import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetResumeUriUseCase
 import org.ticanalyse.projetdevie.domain.usecase.user.UserUseCases
 import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
@@ -23,7 +25,7 @@ class RegisterViewModel @Inject constructor(
     private val appEntryUseCases: AppEntryUseCases,
     private val userUseCases: UserUseCases,
     private val setCurrentUserUseCase: SetCurrentUserUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
 ): ViewModel()  {
 
     fun onEvent(event: RegisterEvent){
@@ -56,6 +58,7 @@ class RegisterViewModel @Inject constructor(
             }
         }
     }
+
 
     fun logout() {
         viewModelScope.launch {

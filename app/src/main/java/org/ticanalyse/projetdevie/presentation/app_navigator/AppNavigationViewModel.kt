@@ -12,17 +12,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.GetResumeUriUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetResumeUriUseCase
 import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor(
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getResumeUriUseCase: GetResumeUriUseCase,
+    private val setResumeUriUseCase: SetResumeUriUseCase
 ): ViewModel() {
 
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser
+
+    private val _resumeUri = MutableStateFlow("")
+    val resumeUri: StateFlow<String> = _resumeUri
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -48,6 +55,19 @@ class AppNavigationViewModel @Inject constructor(
             }
         }
     }
+
+    fun setResumeUri(uri: String) {
+        viewModelScope.launch {
+            setResumeUriUseCase(uri)
+        }
+    }
+
+    suspend fun getResumeUri() {
+        viewModelScope.launch {
+            _resumeUri.value = getResumeUriUseCase()
+        }
+    }
+
 
     fun refreshCurrentUser() {
         getCurrentUser()
