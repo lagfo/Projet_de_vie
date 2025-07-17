@@ -15,6 +15,8 @@ import org.ticanalyse.projetdevie.data.local.dao.AppDao
 import org.ticanalyse.projetdevie.data.local.dao.LienVieReelDao
 import org.ticanalyse.projetdevie.data.local.dao.LigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.dao.MonReseauDao
+import org.ticanalyse.projetdevie.data.local.dao.PlanActionDao
+import org.ticanalyse.projetdevie.data.local.dao.PlanificationProjetDao
 import org.ticanalyse.projetdevie.data.local.dao.ReponseQuestionLigneDeVieDao
 import org.ticanalyse.projetdevie.data.local.dao.SkillsDao
 import org.ticanalyse.projetdevie.data.manager.LocalUserManager
@@ -159,6 +161,18 @@ object AppModule {
     fun provideLienVieReelDao(
         appDatabase: AppDatabase
     ): LienVieReelDao=appDatabase.lienVieReelDao
+
+    @Provides
+    @Singleton
+    fun providePlanificationProjetDao(
+        appDatabase: AppDatabase
+    ): PlanificationProjetDao=appDatabase.planificationProjetDao
+
+    @Provides
+    @Singleton
+    fun providePlanActionDao(
+        appDatabase: AppDatabase
+    ): PlanActionDao=appDatabase.planActionDao
 
 //    @Provides
 //    @Singleton
