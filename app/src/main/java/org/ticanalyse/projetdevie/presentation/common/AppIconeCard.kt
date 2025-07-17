@@ -242,7 +242,7 @@ fun AppSkillIconCard(
 fun AppSkillIconCardPreview() {
     ProjetDeVieTheme(dynamicColor = false) {
         val item = AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.agriculture)
-        AppSkillIconCard(icon  =item, onClick = {}, selected = true)
+        AppSkillIconCard(icon  =item, onClick = {}, selected = false)
     }
 }
 

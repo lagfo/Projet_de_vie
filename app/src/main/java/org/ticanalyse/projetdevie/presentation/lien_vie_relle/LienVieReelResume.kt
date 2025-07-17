@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.lien_vie_relle
 
 import android.os.Environment
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,13 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -31,8 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -58,6 +69,9 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    val scope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -69,6 +83,16 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
             contentScale = ContentScale.FillBounds,
             alpha = 0.07f
         )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
         LazyColumn (
             modifier = modifier.fillMaxSize()
@@ -169,28 +193,35 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
 
             item {
                 AppButton("Telecharger pdf") {
-                    createLienVieReelPdf(
-                        context = context,
-                        user = currentUser!!,
-                        listQuestionsLienVieReel = listOf(
-                            Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                listLienVieReelle.value.first().firstResponse
-                            } else {
-                                "Aucune reponse renseignée"
-                            }
-                            ),
-                            Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                listLienVieReelle.value.first().secondResponse
-                            } else {
-                                "Aucune reponse renseignée"
-                            }),
-                            Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
-                                listLienVieReelle.value.first().thirdResponse
-                            } else {
-                                "Aucune reponse renseignée"
-                            })
-                        ),
-                    )
+                    scope.launch {
+                        isLoading = true  // démarre le loader
+                        withContext(Dispatchers.IO) {
+                            createLienVieReelPdf(
+                                context = context,
+                                user = currentUser!!,
+                                listQuestionsLienVieReel = listOf(
+                                    Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                        listLienVieReelle.value.first().firstResponse
+                                    } else {
+                                        "Aucune reponse renseignée"
+                                    }
+                                    ),
+                                    Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                        listLienVieReelle.value.first().secondResponse
+                                    } else {
+                                        "Aucune reponse renseignée"
+                                    }),
+                                    Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                        listLienVieReelle.value.first().thirdResponse
+                                    } else {
+                                        "Aucune reponse renseignée"
+                                    })
+                                ),
+                            )
+                        }
+                        isLoading = false  // arrête le loader
+                    }
+
 //                    {
 //                        viewModel.setResumeUri(
 //                            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +

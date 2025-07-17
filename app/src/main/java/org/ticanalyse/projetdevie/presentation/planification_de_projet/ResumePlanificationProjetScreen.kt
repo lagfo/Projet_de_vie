@@ -1,7 +1,11 @@
 package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
+import android.content.ClipData
+import android.content.Intent
 import android.os.Environment
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -40,17 +46,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.PlanAction
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
+import org.ticanalyse.projetdevie.presentation.common.AppSkillIconCard
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -91,13 +103,18 @@ fun ResumePlanificationProjetScreen(
     val  avalaibleSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
     val  unAvailableSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
 
+    val file = remember { mutableStateOf<File?>(null) }
+
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    Timber.d("projectInfo: ${projectInfo.value}")
 
-    LaunchedEffect(Unit) {
-        projectInfo.value.firstOrNull()?.competenceDisponible?.let { stored ->
+    LaunchedEffect(projectInfo.value) {
+        if (projectInfo.value.isEmpty()) return@LaunchedEffect
+        Timber.d("competence disponible: ${projectInfo.value.first().competenceDisponible}")
+        projectInfo.value.first().competenceDisponible?.let { stored ->
             Timber.d("Stored1: $stored")
             val storedLower = stored.map(String::lowercase).toSet()
 
@@ -143,8 +160,10 @@ fun ResumePlanificationProjetScreen(
         }
         Timber.d("avalaibleSkills: $avalaibleSkills")
     }
-    LaunchedEffect(Unit) {
-        projectInfo.value.firstOrNull()?.competenceNonDisponible?.let { stored ->
+    LaunchedEffect(projectInfo.value) {
+        Timber.d("competence non disponible: ${projectInfo.value.firstOrNull()?.competenceNonDisponible}")
+        if (projectInfo.value.isEmpty()) return@LaunchedEffect
+        projectInfo.value.first().competenceNonDisponible?.let { stored ->
 
             Timber.d("Stored: $stored")
             val storedLower = stored.map(String::lowercase).toSet()
@@ -203,6 +222,16 @@ fun ResumePlanificationProjetScreen(
             contentScale = ContentScale.FillBounds,
             alpha = 0.07f
         )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
         LazyColumn (
             modifier = Modifier
@@ -214,7 +243,8 @@ fun ResumePlanificationProjetScreen(
 
             item {
                 Row (
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(bottom = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
                     verticalAlignment = Alignment.CenterVertically
@@ -225,7 +255,7 @@ fun ResumePlanificationProjetScreen(
                             .clip(CircleShape)
                             .border(
                                 width = 1.dp,
-                                color =colorResource(R.color.secondary_color),
+                                color = colorResource(R.color.secondary_color),
                                 shape = CircleShape
                             ),
                         painter = painter,
@@ -353,7 +383,8 @@ fun ResumePlanificationProjetScreen(
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
-                    //BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceDisponible ?: emptyList(), ttsManager = ttsManager)
+                    BilanCompetenceElement(listItems = avalaibleSkills, ttsManager = ttsManager)
+//                    BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceDisponible ?: emptyList(), ttsManager = ttsManager)
                 }
             }
 
@@ -364,14 +395,15 @@ fun ResumePlanificationProjetScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     AppText(
-                        text = "Mes compétences indisponibles",
+                        text = "Mes compétences non disponibles",
                         style = MaterialTheme.typography.titleMedium,
                         isTextAlignCenter = true,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),
                         ttsManager = ttsManager
                     )
-                    //BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceNonDisponible ?: emptyList(), ttsManager = ttsManager)
+                    BilanCompetenceElement(listItems = unAvailableSkills, ttsManager = ttsManager)
+//                    BilanCompetenceElement(default = defaultSkills, listItems = projectInfo.value.firstOrNull()?.competenceNonDisponible ?: emptyList(), ttsManager = ttsManager)
                 }
             }
 
@@ -382,7 +414,7 @@ fun ResumePlanificationProjetScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     AppText(
-                        text = "Ressources disponibles",
+                        text = "Mes ressources disponibles",
                         style = MaterialTheme.typography.titleMedium,
                         isTextAlignCenter = true,
                         fontWeight = FontWeight.Bold,
@@ -417,7 +449,7 @@ fun ResumePlanificationProjetScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     AppText(
-                        text = "Ressources non disponibles",
+                        text = "Mes ressources non disponibles",
                         style = MaterialTheme.typography.titleMedium,
                         isTextAlignCenter = true,
                         fontWeight = FontWeight.Bold,
@@ -465,18 +497,38 @@ fun ResumePlanificationProjetScreen(
             }
 
             item {
-                AppButton(text = "Télécharger pdf") {
-                    createPlanificationProjetPdf(
-                        context = context,
-                        user = currentUser!!,
-                        ideeProjet = projectInfo.value.firstOrNull()?.projetIdee ?: "Pas d'information",
-                        motivation = projectInfo.value.firstOrNull()?.motivation ?: "Pas d'information",
-                        ressourceDisponible = projectInfo.value.firstOrNull()?.ressourceDisponible ?: "Pas d'information",
-                        ressourceIndisponible = projectInfo.value.firstOrNull()?.ressourceNonDispnible ?: "Pas d'information",
-                        competenceDisponible = avalaibleSkills,
-                        competenceIndisponible = unAvailableSkills,
-                        planAction = listPlanAction.value
-                    )
+//                Row (
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ){
+                    AppButton(text = "Télécharger pdf") {
+                        scope.launch {
+                            isLoading = true  // démarre le loader
+                            withContext(Dispatchers.IO) {
+                                createPlanificationProjetPdf(
+                                    context = context,
+                                    user = currentUser!!,
+                                    ideeProjet = projectInfo.value.firstOrNull()?.projetIdee ?: "Pas d'information",
+                                    motivation = projectInfo.value.firstOrNull()?.motivation ?: "Pas d'information",
+                                    ressourceDisponible = projectInfo.value.firstOrNull()?.ressourceDisponible ?: "Pas d'information",
+                                    ressourceIndisponible = projectInfo.value.firstOrNull()?.ressourceNonDispnible ?: "Pas d'information",
+                                    competenceDisponible = avalaibleSkills,
+                                    competenceIndisponible = unAvailableSkills,
+                                    planAction = listPlanAction.value
+                                ){
+//                                    file.value = it
+                                    sharePdf(it, context)
+                                }
+                            }
+//                            withContext(Dispatchers.Main) {
+//                                Toast.makeText(context, "Pdf téléchargé", Toast.LENGTH_SHORT).show()
+//                            }
+                            isLoading = false  // arrête le loader
+                        }
+
 
 //                    {
 //                        viewModel.setResumeUri("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
@@ -485,7 +537,30 @@ fun ResumePlanificationProjetScreen(
 //                        , "planificationProjet")
 //                        onNavigate()
 //                    }
-                }
+                    }
+//                    AppButton("Partager PDF") {
+//                        if (file.value != null) {
+//                            val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", file.value!!)
+//
+//                            if (file.value!!.exists()) {
+//                                Timber.d("uri: $uri")
+//                                val intent = Intent(Intent.ACTION_SEND)
+//                                intent.setType("application/pdf")
+//                                intent.clipData = ClipData.newRawUri(file.value!!.name, uri)
+//                                intent.putExtra(Intent.EXTRA_STREAM, uri)
+//                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//                                intent.setDataAndType(uri, "application/pdf")
+//                                context.startActivity(Intent.createChooser(intent, "Veuillez choisir une application"))
+//                            } else {
+//                                Toast.makeText(context, "C'est vide", Toast.LENGTH_SHORT).show()
+//                            }
+//
+//                        } else {
+//                            Toast.makeText(context, "Télécharger le pdf d'abord", Toast.LENGTH_SHORT).show()
+//
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -652,7 +727,9 @@ fun MonReseauSousCategorieElement(nomSousCategorie: String, listElement: List<St
         if (listElement.isNotEmpty() ) {
             listElement.chunked(2).forEach { element ->
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(start = 6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 6.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
@@ -791,12 +868,13 @@ fun LienVieReelComponent(question: String = "Questions", response: String = "Des
 }
 
 @Composable
-fun BilanCompetenceElement(modifier: Modifier = Modifier, default: List<AppSkillCardIcon>, listItems: List<String>, ttsManager: TextToSpeechManager) {
+fun BilanCompetenceElement(modifier: Modifier = Modifier, listItems: List<AppSkillCardIcon>, ttsManager: TextToSpeechManager) {
 
-    Box (
+    FlowRow (
         modifier = modifier
             .fillMaxWidth(),
-        contentAlignment = Alignment.CenterStart
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (listItems.isEmpty()) {
             AppText(
@@ -807,12 +885,13 @@ fun BilanCompetenceElement(modifier: Modifier = Modifier, default: List<AppSkill
                 ttsManager = ttsManager
             )
         } else {
-            AppSkillGrid(
-                icons = default,
-                column = 2,
-                selectedIcons = listItems,
-                onSkillClick = {}
-            )
+            listItems.forEach { element ->
+                AppSkillIconCard(
+                    icon = element,
+                    selected = false,
+                    onClick = {}
+                )
+            }
         }
     }
 }

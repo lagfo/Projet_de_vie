@@ -152,10 +152,7 @@ object PdfUtil {
 
         document.close()
 
-        val file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}",
-                "lien_vie_reel_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf")
+        val file = File(outputPath)
         sharePdf(file, context)
 //        onNavigate()
 
@@ -175,7 +172,7 @@ object PdfUtil {
         outputPath: String = "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
                 "/planification_projet_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf",
-//        onNavigate: () -> Unit
+        onEnd: (File) -> Unit
         ) {
 
         Timber.tag("pdf").d(outputPath)
@@ -400,11 +397,8 @@ object PdfUtil {
 
         document.close()
 
-        val file = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}",
-                "planification_projet_${user.nom}_${user.prenom}_${LocalDateTime.now().format(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf")
-        sharePdf(file, context)
-//        onNavigate()
+        val file = File(outputPath)
+        onEnd(file)
 
     }
 
