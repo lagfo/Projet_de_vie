@@ -2,8 +2,10 @@ package org.ticanalyse.projetdevie.presentation.lien_vie_relle
 
 import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +49,11 @@ import org.ticanalyse.projetdevie.ui.theme.Roboto
 import java.time.LocalDate
 
 @Composable
-fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->Unit) {
+fun RecapitulatifLienVieReelScreen(
+    modifier: Modifier = Modifier,
+    onNavigate:()->Unit,
+    onNavigatePdf:()->Unit
+) {
 
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
@@ -211,12 +218,24 @@ fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->
 
             }
 
-            AppButton("Planification du projet") {
-                viewModel.addLienDeVieReelLine(
-                    firstResponse = reponse1,
-                    secondResponse = reponse2,
-                    thirdResponse = reponse3, creationDate = LocalDate.now().toString())
-                onNavigate()
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ){
+                AppButton("Planification du projet") {
+                    viewModel.addLienDeVieReelLine(
+                        firstResponse = reponse1,
+                        secondResponse = reponse2,
+                        thirdResponse = reponse3, creationDate = LocalDate.now().toString())
+                    onNavigate()
+                }
+
+                AppButton("Generer Pdf") {
+                    onNavigatePdf()
+                }
             }
         }
 
@@ -227,5 +246,5 @@ fun RecapitulatifLienVieReelScreen(modifier: Modifier = Modifier,onNavigate:()->
 @Composable
 @Preview(showBackground = true)
 fun RecapitulatifLienVieReelScreenPreview(modifier: Modifier = Modifier) {
-    RecapitulatifLienVieReelScreen(onNavigate = {})
+    RecapitulatifLienVieReelScreen(onNavigate = {}, onNavigatePdf = {})
 }

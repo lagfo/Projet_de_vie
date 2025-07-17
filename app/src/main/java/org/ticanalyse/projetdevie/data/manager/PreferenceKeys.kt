@@ -15,4 +15,5 @@ object PreferenceKeys {
     val email = stringPreferencesKey("user_email")
     val avatarUri = stringPreferencesKey("user_avatarUri")
     val resumeUri = stringPreferencesKey("user_resumeUri")
+    val lienVieReelUri = stringPreferencesKey("user_lienVieReelUri")
 }

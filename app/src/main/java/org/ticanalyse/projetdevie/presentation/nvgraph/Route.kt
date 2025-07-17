@@ -62,6 +62,12 @@ object FormulaireScreenRoute: AppRoute
 object RecapitulatifLienVieReelRoute:AppRoute
 
 @Serializable
+object ResumeLienVieReelRoute:AppRoute
+
+@Serializable
+object LienVieReelPdfViewerRoute:AppRoute
+
+@Serializable
 object PlanificationProjetRoute:AppRoute
 
 @Serializable

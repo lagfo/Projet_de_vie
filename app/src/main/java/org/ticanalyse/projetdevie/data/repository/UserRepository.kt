@@ -13,4 +13,7 @@ interface UserRepository {
 
     suspend fun getUser(): User
 
+    suspend fun setResumeUri(uri: String, module: String)
+
+    suspend fun getResumeUri(module: String): String
 }

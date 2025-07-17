@@ -34,10 +34,11 @@ fun AppText(
     style: TextStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
     ttsManager: TextToSpeechManager?,
     isTextAlignCenter: Boolean = false,
-    isDefineMaxLine: Boolean = false
+    isDefineMaxLine: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     Text(
-        modifier = Modifier.clickable {
+        modifier = modifier.clickable {
             ttsManager?.speak(text)
         },
         text = text,

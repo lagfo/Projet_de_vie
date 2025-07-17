@@ -28,7 +28,7 @@ class AppNavigationViewModel @Inject constructor(
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser
 
-    private val _resumeUri = MutableStateFlow("")
+    private val _resumeUri = MutableStateFlow<String>("")
     val resumeUri: StateFlow<String> = _resumeUri
 
     private val _isLoading = MutableStateFlow(true)
@@ -56,15 +56,15 @@ class AppNavigationViewModel @Inject constructor(
         }
     }
 
-    fun setResumeUri(uri: String) {
+    fun setResumeUri(uri: String, module: String) {
         viewModelScope.launch {
-            setResumeUriUseCase(uri)
+            setResumeUriUseCase(uri, module)
         }
     }
 
-    suspend fun getResumeUri() {
+    fun getResumeUri(module: String) {
         viewModelScope.launch {
-            _resumeUri.value = getResumeUriUseCase()
+            _resumeUri.value = getResumeUriUseCase(module)
         }
     }
 

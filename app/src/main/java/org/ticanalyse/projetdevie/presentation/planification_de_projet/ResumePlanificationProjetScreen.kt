@@ -1,5 +1,6 @@
 package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
+import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,8 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
 import timber.log.Timber
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.text.ifEmpty
 
 @Composable
@@ -350,7 +353,9 @@ fun ResumePlanificationProjetScreen(
                                 })
                             ),
                         ) {
-                            viewModel.setResumeUri("${context.filesDir}/${currentUser?.nom} ${currentUser?.prenom}.pdf")
+                            viewModel.setResumeUri("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)}" +
+                                    "/lien_vie_reel_${currentUser!!.nom}_${currentUser!!.prenom}_${LocalDateTime.now().format(
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))}.pdf", "planificationProjet")
                             onNavigate()
                         }
                     })

@@ -34,6 +34,8 @@ import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.FormulaireScreen
+import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelPdfViewerScreen
+import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelResume
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelScreen
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.RecapitulatifLienVieReelScreen
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LienDeVieIntroductionScreen
@@ -52,6 +54,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.HomeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionCharacterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.IntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LienVieReelIntroductionScreenRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.LienVieReelPdfViewerRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieElementRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.LigneDeVieRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
@@ -64,6 +67,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ProfileRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.ResumeLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PdfViewerScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
@@ -187,6 +191,14 @@ fun AppNavigator() {
                     )
 
                     backStackState?.destination?.route == RecapitulatifLienVieReelRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.lien_vie_reelle,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route == ResumeLienVieReelRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.lien_vie_reelle,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route == LienVieReelPdfViewerRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.lien_vie_reelle,
                         R.color.primary_color
                     )
@@ -434,8 +446,21 @@ fun AppNavigator() {
                 RecapitulatifLienVieReelScreen(
                     onNavigate = {
                         navController.navigate(PlanificationProjetRoute)
+                    },
+                    onNavigatePdf = {
+                        navController.navigate(ResumeLienVieReelRoute)
                     }
                 )
+            }
+            composable<ResumeLienVieReelRoute> {
+                LienVieReelResume (
+                    onNavigate = {
+                        navController.navigate(LienVieReelPdfViewerRoute)
+                    }
+                )
+            }
+            composable<LienVieReelPdfViewerRoute> {
+                LienVieReelPdfViewerScreen()
             }
 
             composable<BilanCompetanceIntroductionRoute> {
