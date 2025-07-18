@@ -73,8 +73,6 @@ fun CompetenceNonDisponibleScreen() {
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
-
-
     fun syncBadges() {
         defaultSkills.replaceAll { skill ->
             val skillName = when (val txt = skill.txt) {
@@ -86,36 +84,35 @@ fun CompetenceNonDisponibleScreen() {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.getSkill { stored ->
-            stored?.let {
-                val storedLower = it.map(String::lowercase)
-                defaultSkills.replaceAll { skill ->
-                    val skillName = when (val txt = skill.txt) {
+        PlanificationProjet.projectInfo.competenceNonDisponible?.let {
+            val storedLower = it.map(String::lowercase)
+            defaultSkills.replaceAll { skill ->
+                val skillName = when (val txt = skill.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+                skill.copy(badgeStatus = storedLower.contains(skillName.lowercase()))
+            }
+            it.filter { skillName ->
+                defaultSkills.none { skill ->
+                    val name = when (val txt = skill.txt) {
                         is Txt.Res -> context.getString(txt.id)
                         is Txt.Raw -> txt.text
                     }
-                    skill.copy(badgeStatus = storedLower.contains(skillName.lowercase()))
+                    name.equals(skillName, ignoreCase = true)
                 }
-                it.filter { skillName ->
-                    defaultSkills.none { skill ->
-                        val name = when (val txt = skill.txt) {
-                            is Txt.Res -> context.getString(txt.id)
-                            is Txt.Raw -> txt.text
-                        }
-                        name.equals(skillName, ignoreCase = true)
-                    }
-                }.forEach { skillName ->
-                    defaultSkills.add(
-                        0,
-                        AppSkillCardIcon(
-                            txt = Txt.Raw(skillName),
-                            strokeColor = R.color.primary_color,
-                            paint = R.drawable.default_competence,
-                            badgeStatus =true
-                        )
+            }.forEach { skillName ->
+                defaultSkills.add(
+                    0,
+                    AppSkillCardIcon(
+                        txt = Txt.Raw(skillName),
+                        strokeColor = R.color.primary_color,
+                        paint = R.drawable.default_competence,
+                        badgeStatus =true
                     )
-                }
+                )
             }
+            selectedSkills = it
         }
     }
 

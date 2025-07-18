@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                 val systemUiController = rememberSystemUiController()
                 SideEffect {
                     systemUiController.setSystemBarsColor(
-                        color = Color.Transparent,
+                        color = Color.White,
                         darkIcons = !isSystemInDarkMode
                     )
                 }
