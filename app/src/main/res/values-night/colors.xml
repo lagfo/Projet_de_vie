@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary_color">#023351</color>
-    <color name="secondary_color">#680E05</color>
+    <color name="secondary_color">#A31d23</color>
     <color name="thirty_color">#C86516</color>
     <color name="fourty_color">#E3CE9C</color>
     <color name="third_color">#C1c6cA</color>
-    <color name="text">#E4E6EB</color>
-    <color name="input_background">#3A3B3C</color>
-    <color name="placeholder">#DDDDDD</color>
-    <color name="shimmer">#414243</color>
-    <color name="bg">#1C1E21</color>
-    <color name="card">#000</color>
+    <color name="text">#FF000000</color>
+    <color name="input_background">#fff</color>
+    <color name="placeholder">#A0A3BD</color>
+    <color name="shimmer">#C3C3C3</color>
+    <color name="bg">#fff</color>
+    <color name="card">#fff</color>
+    <color name="ellipsis_separator">#AC0300</color>
+    <color name="selected">#008000</color>
 </resources>

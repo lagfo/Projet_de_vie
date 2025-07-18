@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,18 +18,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.ProjectInfo
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 
@@ -42,12 +50,13 @@ fun CompetenceDisponibleScreen() {
 
     val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
 
+    val  finalSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
+
 
 
     LaunchedEffect(Unit) {
         viewModel.getSkill { storedSkills ->
 
-            //Store list of  competences
             PlanificationProjet.projectInfo.competenceDisponible=storedSkills
             storedSkills?.let { stored ->
 
@@ -63,7 +72,11 @@ fun CompetenceDisponibleScreen() {
                 }
 
                 defaultSkills.replaceAll { skill ->
+                    finalSkills.add(
+                        skill.copy(badgeStatus = true)
+                    )
                     skill.copy(badgeStatus = true)
+
                 }
 
                 stored.filter { skillName ->
@@ -72,6 +85,14 @@ fun CompetenceDisponibleScreen() {
                     }
                 }.forEach { skillName ->
                     defaultSkills.add(
+                        AppSkillCardIcon(
+                            txt = Txt.Raw(skillName),
+                            strokeColor = R.color.primary_color,
+                            paint = R.drawable.default_competence,
+                            badgeStatus = true
+                        )
+                    )
+                    finalSkills.add(
                         AppSkillCardIcon(
                             txt = Txt.Raw(skillName),
                             strokeColor = R.color.primary_color,
@@ -102,13 +123,25 @@ fun CompetenceDisponibleScreen() {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    if(selectedSkills.isNotEmpty())
                     AppSkillGrid(
                         icons = defaultSkills,
                         column = 2,
                         selectedIcons = selectedSkills,
                         onSkillClick = {}
                     )
+                    else
+                        AppText(
+                            text = "Aucune compétence sélectionnée",
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Black,
+                            fontStyle = FontStyle.Normal,
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            ttsManager = ttsManager
+                        )
                 }
             }
 
