@@ -22,7 +22,7 @@ import org.ticanalyse.projetdevie.domain.model.User
 
 @Database(
     entities = [User::class,MonReseau::class, Element::class,ReponseQuestionLigneDeVie::class, Skill::class, LienVieReel::class, ProjectInfo::class, PlanAction::class],
-    version = 5
+    version = 1
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
