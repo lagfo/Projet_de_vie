@@ -46,7 +46,6 @@ class LigneDeVieViewModel @Inject constructor(
         inProgressYear:Int,
         duration:Int,
         labelDescription:String,
-        userId:Int=1,
         status: Boolean
         ,creationDate:String){
 
@@ -58,7 +57,6 @@ class LigneDeVieViewModel @Inject constructor(
             inProgressYear =inProgressYear ,
             duration = duration,
             labelDescription =labelDescription,
-            userId =userId,
             status =status,
             creationDate =creationDate
         )
@@ -76,7 +74,6 @@ class LigneDeVieViewModel @Inject constructor(
     }
     fun addResponsesLigneDeVie(
         id:Int=1,
-        userId:Int=1,
         firstResponse:String,
         secondResponse:String,
         creationDate: String,
@@ -84,7 +81,6 @@ class LigneDeVieViewModel @Inject constructor(
 
         val response= ReponseQuestionLigneDeVie(
             id = id,
-            userId =userId,
             firstResponse = firstResponse,
             secondResponse = secondResponse,
             creationDate =creationDate
