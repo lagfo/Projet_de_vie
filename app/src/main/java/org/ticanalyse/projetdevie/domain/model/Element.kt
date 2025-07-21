@@ -9,19 +9,7 @@ import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
-@Entity(
-    tableName ="Element",
-    foreignKeys=[
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index(value = ["userId"])]
-    )
+@Entity(tableName ="Element")
 data class Element(
     @PrimaryKey
     val id:Int=0,
@@ -31,7 +19,6 @@ data class Element(
     var inProgressYear:Int=0,
     var duration:Int=0,
     var labelDescription:String="",
-    var userId:Int=1,
     var status: Boolean=false, // 0 when it 's the pass and 1 when it's the present
     var creationDate: String=""
 ): Parcelable
