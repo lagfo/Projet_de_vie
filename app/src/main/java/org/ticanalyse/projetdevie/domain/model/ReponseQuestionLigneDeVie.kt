@@ -9,24 +9,11 @@ import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
-@Entity(
-    tableName ="ReponseQuestionLigneDeVie",
-    foreignKeys=[
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index(value = ["userId"])]
-    )
+@Entity(tableName ="ReponseQuestionLigneDeVie")
 data class ReponseQuestionLigneDeVie(
     @PrimaryKey(autoGenerate = true)
     val id:Int=1,
     var firstResponse:String,
     var secondResponse:String,
-    var userId:Int=1,
     var creationDate: String
 ): Parcelable
