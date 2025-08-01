@@ -2,6 +2,7 @@ package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,7 @@ import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDe
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ResponseLigneDeVieElementRepository
 import timber.log.Timber
+import java.time.LocalDate
 
 enum class  DISPLAY_TYPE{
     ALL,
@@ -44,13 +46,13 @@ class PlanificationViewModel @Inject constructor(
         _upsertSuccess.value=false
     }
     fun addProjectInfo(
-        projectIdee:String,
-        motivation:String,
-        competenceDisponible:List<String>?,
-        competenceNonDisponible:List<String>?,
-        ressourceDisponible: String,
-        ressourceNonDisponible:String,
-        creationDate:String
+        projectIdee:String="",
+        motivation:String="",
+        competenceDisponible:List<String>?=emptyList(),
+        competenceNonDisponible:List<String>?=emptyList(),
+        ressourceDisponible: String="",
+        ressourceNonDisponible:String="",
+        creationDate:String= LocalDate.now().toString()
         ){
 
         val projectInfo= ProjectInfo(
@@ -77,12 +79,12 @@ class PlanificationViewModel @Inject constructor(
 
     val uiState=mutableStateOf(ScreenState())
 init{
-    getPlanificationLineLine()
+    getPlanificationLine()
     getPlanActionLines()
 }
     private val _allElement = MutableStateFlow<List<ProjectInfo>>(emptyList())
     val planificationInfo: StateFlow<List<ProjectInfo>> = _allElement.asStateFlow()
-    fun getPlanificationLineLine(){
+    fun getPlanificationLine(){
         viewModelScope.launch {
             repository.getProjectInfo().collect { listElement ->
                 _allElement.value=listElement
@@ -116,6 +118,21 @@ init{
             repository.getPlanAction().collect { listElement ->
                 _allPlanActionElement.value=listElement
             }
+        }
+    }
+
+
+    fun getPlanActionLine(id: Int,callback: (PlanAction?) -> Unit){
+        viewModelScope.launch {
+            repository.getPlanActionById(id).collect { listElement ->
+                callback(listElement)
+            }
+        }
+    }
+
+    fun deleteLine(id :Int){
+        viewModelScope.launch {
+            repository.deletePlanActionLine(id)
         }
     }
 

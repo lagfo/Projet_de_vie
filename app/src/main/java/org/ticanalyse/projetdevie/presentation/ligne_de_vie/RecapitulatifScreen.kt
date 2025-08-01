@@ -140,7 +140,7 @@ fun RecapitulatifScreen(
     var isLoading by remember { mutableStateOf(false) }
     val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
     val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
-
+    val setOfIds = setOf(10, 12, 16, 19)
 
 
     LaunchedEffect(reponseQuestion,isClicked,context) {
@@ -350,7 +350,7 @@ fun RecapitulatifScreen(
 
                                                             }
 
-                                                        }
+                                                        },setOfIds
                                                     )
 
                                                     if(index <listOfPassedElement.lastIndex) {
@@ -475,7 +475,8 @@ fun RecapitulatifScreen(
 
                                                             }
 
-                                                        }
+                                                        },
+                                                        setOfIds
                                                     )
 
                                                     if(index2 <listOfPresentElement.lastIndex) {
@@ -692,8 +693,8 @@ fun RecapitulatifScreen(
 }
 
 @Composable
-fun CustomedElementLayout(item: Element, onClick:()->Unit) {
-    if(!item.status){
+fun CustomedElementLayout(item: Element, onClick:()->Unit,setOfIds:Set<Int>) {
+    if(!item.status && item.id !in setOfIds){
 
         Card(
             modifier = Modifier
@@ -828,7 +829,7 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
             }
 
         }
-    }else{
+    }else if(item.status && item.id !in setOfIds){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -918,6 +919,132 @@ fun CustomedElementLayout(item: Element, onClick:()->Unit) {
                         )
                         Text(
                             text ="Année de début:${item.inProgressYear}",
+                            textAlign = TextAlign.Center,
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            color = Color.Black,
+                            maxLines =1
+                        )
+                    }
+
+                    ////
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        OutlinedTextField(
+                            value =if(item.labelDescription.isNotEmpty()||item.labelDescription.isNotBlank()) item.labelDescription else "Pas de commentaire pour cet élément",
+                            onValueChange = {},
+                            enabled = false,
+                            readOnly = true,
+                            colors=OutlinedTextFieldDefaults.colors(
+                                disabledTextColor= Color.Black,
+                                disabledContainerColor = Color.White,
+                                disabledBorderColor = colorResource(R.color.primary_color)
+                            )
+                        )
+                    }
+
+                }
+            }
+
+        }
+
+    }else{
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ){
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment =Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .size(width = 35.dp, height = 35.dp)
+                                .align(Alignment.Center),
+                            shape = CircleShape,
+                            color = Color.White                                      // ← solid background
+                        ) {
+                            Image(
+                                painter =when(item.id){
+                                    1->painterResource(R.drawable.ecole_primaire)
+                                    2->painterResource(R.drawable.ecole_secondaire)
+                                    3->painterResource(R.drawable.universite_ecole_superieur)
+                                    4->painterResource(R.drawable.alphabetisation_langue_locale)
+                                    5->painterResource(R.drawable.ecole_coranique)
+                                    6->painterResource(R.drawable.ecole_formation_prof)
+                                    7->painterResource(R.drawable.abandon_scolarite)
+                                    8->painterResource(R.drawable.reprise_interruption_etude)
+                                    9->painterResource(R.drawable.premier_apprentissage)
+                                    10->painterResource(R.drawable.naissance_enfant)
+                                    11->painterResource(R.drawable.mariage)
+                                    12->painterResource(R.drawable.depart_foyer_familial)
+                                    13->painterResource(R.drawable.ecole_coranique)
+                                    14->painterResource(R.drawable.premier_emploi)
+                                    15->painterResource(R.drawable.projet)
+                                    16->painterResource(R.drawable.deces)
+                                    17->painterResource(R.drawable.depart_migration)
+                                    18->painterResource(R.drawable.retrouvaille)
+                                    19->painterResource(R.drawable.grande_decision_personnel)
+                                    else -> {painterResource(R.drawable.ecole_primaire)}
+                                },
+                                contentDescription =item.label,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.background(Color.White)
+                            )
+                        }
+
+                        IconButton(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            onClick={
+                                onClick
+                            }
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .clickable(
+                                        onClick = onClick
+                                    ),
+                                painter = painterResource(R.drawable.edit),
+                                contentDescription = "edit",
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+
+                    }
+
+                    ////
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text =item.label,
+                            textAlign = TextAlign.Center,
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color.Black,
+                            maxLines =1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text ="Année:${item.inProgressYear}",
                             textAlign = TextAlign.Center,
                             fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,

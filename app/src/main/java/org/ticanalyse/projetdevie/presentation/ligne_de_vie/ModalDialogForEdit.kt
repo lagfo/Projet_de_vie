@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,7 +76,19 @@ fun ModalDialogForEdit(
     viewModel: LigneDeVieViewModel
 ) {
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
+    var selectedElement by remember { mutableStateOf<Element?>(null) }
     val context = LocalContext.current
+    val setOfIds = setOf(10, 12, 16, 19)
+    var dateFin by rememberSaveable { mutableStateOf("") }
+    var dateDebut by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var dateEncours by rememberSaveable { mutableStateOf("") }
+    var isdateDebutValide by rememberSaveable { mutableStateOf(false) }
+    var isdateFinValide by rememberSaveable { mutableStateOf(false) }
+    var isdateEncoursValide by rememberSaveable { mutableStateOf(false) }
+    val ttsManager = appTTSManager()
+    val sttManager = appSTTManager()
+    val currentYear= LocalDate.now().year
     LaunchedEffect(status){
         Log.d("TAG", "ModalDialog: status value is $status ")
         if(status){
@@ -84,6 +97,29 @@ fun ModalDialogForEdit(
             onDismiss()
         }
     }
+
+    // Fetch the data
+    LaunchedEffect(item.id) {
+        viewModel.getElementById(item.id) { element ->
+            selectedElement = element
+        }
+    }
+    LaunchedEffect(selectedElement) {
+        selectedElement?.let {
+            if(!it.status && it.id !in setOfIds){
+                dateDebut=it.startYear.toString()
+                dateFin=it.endYear.toString()
+                description=it.labelDescription
+            }else if(it.status && it.id !in setOfIds){
+                dateEncours=it.inProgressYear.toString()
+                description=it.labelDescription
+            }else{
+                dateEncours=it.inProgressYear.toString()
+                description=it.labelDescription
+            }
+        }
+    }
+
 
     ModalBottomSheet(
         sheetState =rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -103,16 +139,7 @@ fun ModalDialogForEdit(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ){
-                var dateDebut by rememberSaveable { mutableStateOf("") }
-                var isdateDebutValide by rememberSaveable { mutableStateOf(false) }
-                var dateFin by rememberSaveable { mutableStateOf("") }
-                var isdateFinValide by rememberSaveable { mutableStateOf(false) }
-                var dateEncours by rememberSaveable { mutableStateOf("") }
-                var isdateEncoursValide by rememberSaveable { mutableStateOf(false) }
-                val ttsManager = appTTSManager()
-                val sttManager = appSTTManager()
-                var description by rememberSaveable { mutableStateOf("") }
-                var currentYear= LocalDate.now().year
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -250,7 +277,7 @@ fun ModalDialogForEdit(
                             },
                             supportingText = {
                                 Text(
-                                    text = if(dateFin.isNotEmpty()&&dateFin.isNotBlank()){
+                                    text = if(dateFin.isNotEmpty()&&dateFin.isNotBlank()&&isdateDebutValide){
                                         if(dateFin.length==4&&dateFin.first()=='1'&&dateFin.toInt()<=currentYear||dateFin.length==4&&dateFin.first()=='2'&&dateFin.toInt()<=currentYear){
                                             if(dateFin.toInt()<dateDebut.toInt()){
                                                 isdateFinValide=false
@@ -395,7 +422,7 @@ fun ModalDialogForEdit(
                 )
                 //Validate button
                 AppButton(text="Valider", onClick ={
-                    if(isdateDebutValide&&isdateFinValide){
+                    if(isdateDebutValide&&isdateFinValide && item.id !in setOfIds){
                         viewModel.addElement(
                             id = item.id,
                             label = item.label,
@@ -407,7 +434,7 @@ fun ModalDialogForEdit(
                             status =false,
                             creationDate = LocalDate.now().toString()
                         )
-                    }else if(isdateEncoursValide){
+                    }else if(isdateEncoursValide && item.id !in setOfIds){
                         viewModel.addElement(
                             id = item.id,
                             label = item.label,
@@ -419,6 +446,19 @@ fun ModalDialogForEdit(
                             status =true,
                             creationDate = LocalDate.now().toString()
                         )
+                    }else if(isdateEncoursValide && item.id in setOfIds){
+                        viewModel.addElement(
+                            id = item.id,
+                            label = item.label,
+                            startYear =0,
+                            endYear = 0,
+                            inProgressYear =dateEncours.toInt(),
+                            duration =0,
+                            labelDescription = description,
+                            status =if(dateEncours.toInt()<currentYear) false else true,
+                            creationDate = LocalDate.now().toString()
+                        )
+
                     }
 
                 })
