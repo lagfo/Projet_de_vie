@@ -156,6 +156,7 @@ fun LigneDeVieScreen(
     var isResponseValide by remember { mutableStateOf(false) }
     var isClicked by remember { mutableStateOf(false) }
     var isButtonVisible by remember { mutableStateOf(false) }
+    var buttonLabel by remember { mutableStateOf("") }
     isButtonVisible=if(pagerState.currentPage==0) false else if(pagerState.currentPage==1) false else if(pagerState.currentPage==2) true else false
     val context = LocalContext.current
     val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
@@ -169,9 +170,13 @@ fun LigneDeVieScreen(
     LaunchedEffect(reponseQuestion,isClicked,context) {
 
         if(reponseQuestion.isNotEmpty()){
+            buttonLabel="Suivant"
             Log.d("TAG", "RecapitulatifScreen: $reponseQuestion ")
             reponse1=reponseQuestion[0].firstResponse
             reponse2=reponseQuestion[0].secondResponse
+        }else{
+            buttonLabel="Enregistrer"
+
         }
         if(!isResponseValide && isClicked){
             Toast.makeText(context, "Vous devriez obligatoirement repondre aux deux questions", Toast.LENGTH_SHORT).show()
@@ -530,7 +535,7 @@ fun LigneDeVieScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             if(isButtonVisible){
-                AppButton (text = "Voir récapitulatif", onClick = {
+                AppButton (text =buttonLabel, onClick = {
                     if(Global.isValideResponse(reponse1,reponse2)){
                         isResponseValide=true
                         viewModel.addResponsesLigneDeVie(

@@ -21,4 +21,7 @@ interface LigneDeVieDao {
 
     @Query("SELECT * FROM  Element where status=1")
     fun getPresentElement(): Flow<List<Element>>
+
+    @Query("SELECT * FROM  Element where id=:id")
+    fun getElementById(id:Int): Flow<Element?>
 }

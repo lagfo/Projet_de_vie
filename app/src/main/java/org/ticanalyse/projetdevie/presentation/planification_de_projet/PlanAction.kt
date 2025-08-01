@@ -56,19 +56,20 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
 
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
-    var reponse1 by remember { mutableStateOf("") }
-    var reponse2 by remember { mutableStateOf("") }
-    var reponse3 by remember { mutableStateOf("") }
-    var reponse4 by remember { mutableStateOf("") }
+    var reponse1 by rememberSaveable{ mutableStateOf("") }
+    var reponse2 by rememberSaveable{ mutableStateOf("") }
+    var reponse3 by rememberSaveable{ mutableStateOf("") }
+    var reponse4 by rememberSaveable{ mutableStateOf("") }
+    var descriptionActivite by rememberSaveable{ mutableStateOf("") }
     var isResponseValide by remember { mutableStateOf(false) }
     var isClicked by remember { mutableStateOf(false) }
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     val planAction = PlanAction()
     val context = LocalContext.current
     val viewModel= hiltViewModel<PlanificationViewModel>()
-    val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
-    LaunchedEffect(status){
-        if(status){
+    val statusPlanAction by viewModel.upsertSuccess.collectAsStateWithLifecycle()
+    LaunchedEffect(statusPlanAction){
+        if(statusPlanAction){
             Toast.makeText(context, "Planification enregistrée", Toast.LENGTH_SHORT).show()
             viewModel.resetUpsertStatus()
         }
@@ -138,6 +139,39 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
                                             value =reponse1,
                                             onValueChange = {
                                                 reponse1=it
+                                            },
+                                            label ="",
+                                            ttsManager =ttsManager,
+                                            sttManager =sttManager,
+                                            onSubmit=onSubmit.value
+                                        )
+
+                                    }
+
+                                }
+                                Box(
+                                    modifier= Modifier.weight(1f)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(10.dp,0.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+
+                                    ) {
+                                        AppText(
+                                            text = "Description de l'activité",
+                                            fontFamily = Roboto,
+                                            fontWeight = FontWeight.Black,
+                                            fontStyle = FontStyle.Normal,
+                                            color =Color.White,
+                                            fontSize = 12.sp,
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                            ttsManager = ttsManager,
+                                            isDefineMaxLine = true
+                                        )
+                                        AppInputFieldMultiLine(
+                                            value =descriptionActivite,
+                                            onValueChange = {
+                                                descriptionActivite=it
                                             },
                                             label ="",
                                             ttsManager =ttsManager,
@@ -258,10 +292,11 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
                             ),
                         onClick = {
                             isClicked=true
-                            if(reponse1.isNotEmpty()&&reponse1.isNotBlank()&&reponse2.isNotEmpty()&&reponse2.isNotBlank()&&reponse3.isNotEmpty()&&reponse3.isNotBlank()&&reponse4.isNotEmpty()&&reponse4.isNotBlank()){
+                            if(reponse1.isNotEmpty()&&reponse1.isNotBlank()&&reponse2.isNotEmpty()&&reponse2.isNotBlank()&&reponse3.isNotEmpty()&&reponse3.isNotBlank()&&reponse4.isNotEmpty()&&reponse4.isNotBlank()&&descriptionActivite.isNotEmpty()&&descriptionActivite.isNotBlank()){
                                 isResponseValide=true
                                 //Enregsitrer ligne
                                 planAction.activite=reponse1
+                                planAction.activiteDescription=descriptionActivite
                                 planAction.acteur=reponse2
                                 planAction.financement=reponse3
                                 planAction.periode=reponse4
@@ -272,6 +307,7 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
                                 reponse2=""
                                 reponse3=""
                                 reponse4=""
+                                descriptionActivite=""
 
                             }else{
                                 isResponseValide=false

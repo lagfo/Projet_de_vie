@@ -62,6 +62,7 @@ import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetRoute
 import org.ticanalyse.projetdevie.ui.theme.Roboto
+import org.ticanalyse.projetdevie.utils.Global
 import timber.log.Timber
 import java.time.LocalDate
 
@@ -81,29 +82,63 @@ fun PlanificationProjetEtapeScreen(
     val sttManager = appSTTManager()
     val scope = rememberCoroutineScope()
     var isButtonVisible by remember { mutableStateOf(false) }
+    var isRegisterButtonVisible by remember { mutableStateOf(false) }
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     isButtonVisible = pagerState.currentPage == 2
+    isRegisterButtonVisible=if(pagerState.currentPage==0||pagerState.currentPage==1||pagerState.currentPage==4) true else false
     var isClicked by remember { mutableStateOf(false) }
     var isResponseValide by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    var ideeProjet by remember { mutableStateOf("") }
-    var motivation by remember { mutableStateOf("") }
-    var reponse1 by remember { mutableStateOf("") }
-    var reponse2 by remember { mutableStateOf("") }
+    var ideeProjet by rememberSaveable{ mutableStateOf("") }
+    var motivation by rememberSaveable{ mutableStateOf("") }
+    var reponse1 by rememberSaveable{ mutableStateOf("") }
+    var reponse2 by rememberSaveable{ mutableStateOf("") }
     val ligneDeVieviewModel = hiltViewModel<LigneDeVieViewModel>()
     val viewModel=hiltViewModel<PlanificationViewModel>()
     val reponseQuestion by ligneDeVieviewModel.allResponse.collectAsStateWithLifecycle()
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
     val viewModelBilanCompetance = hiltViewModel<BilanCompetenceViewModel>()
     val planActions by viewModel.planAction.collectAsStateWithLifecycle()
+    val planInfo by viewModel.planificationInfo.collectAsStateWithLifecycle()
 
     LaunchedEffect(status){
         if(status){
-            Toast.makeText(context, "Planification enregistrée", Toast.LENGTH_SHORT).show()
+            if(pagerState.currentPage==0||pagerState.currentPage==1||pagerState.currentPage==4){
+                Toast.makeText(context, "Idée de projet enregistrée", Toast.LENGTH_SHORT).show()
+            }
             viewModel.resetUpsertStatus()
         }
     }
 
+    LaunchedEffect(planInfo, pagerState.currentPage) { // Add currentPage as dependency
+        if(planInfo.isNotEmpty()){
+            Log.d("TAG", "PlanificationProjetEtapeScreen planInfo: $planInfo, currentPage: ${pagerState.currentPage}")
+            when(pagerState.currentPage) {
+                0 -> {
+                    if(planInfo.first().projetIdee.isNotEmpty()){
+                        ideeProjet = planInfo.first().projetIdee
+                        Log.d("TAG", "PlanificationProjetEtapeScreen planInfo 1")
+                    }
+                }
+                1 -> {
+                    if(planInfo.first().motivation.isNotEmpty()){
+                        motivation = planInfo.first().motivation
+                        Log.d("TAG", "PlanificationProjetEtapeScreen planInfo 2")
+                    }
+                }
+                4 -> {
+                    if(planInfo.first().ressourceDisponible.isNotEmpty()){
+                        reponse1 = planInfo.first().ressourceDisponible
+                        Log.d("TAG", "PlanificationProjetEtapeScreen planInfo 3")
+                    }
+                    if(planInfo.first().ressourceNonDispnible.isNotEmpty()){
+                        reponse2 = planInfo.first().ressourceNonDispnible
+                        Log.d("TAG", "PlanificationProjetEtapeScreen planInfo 4")
+                    }
+                }
+            }
+        }
+    }
     LaunchedEffect(Unit) {
         viewModelBilanCompetance.getSkill {
             skill->
@@ -111,13 +146,20 @@ fun PlanificationProjetEtapeScreen(
         }
     }
 
-    LaunchedEffect(ideeProjet,motivation) {
+    LaunchedEffect(ideeProjet,motivation,reponse1,reponse2) {
         if(ideeProjet.isNotEmpty()||ideeProjet.isNotBlank()){
             PlanificationProjet.projectInfo.projetIdee=ideeProjet
         }
 
         if(motivation.isNotEmpty()||motivation.isNotBlank()){
             PlanificationProjet.projectInfo.motivation=motivation
+        }
+
+        if(reponse1.isNotEmpty() || reponse1.isNotBlank()){
+            PlanificationProjet.projectInfo.ressourceDisponible=reponse1
+        }
+        if(reponse2.isNotEmpty() || reponse2.isNotBlank()){
+            PlanificationProjet.projectInfo.ressourceNonDispnible=reponse2
         }
     }
     LaunchedEffect(reponseQuestion,isClicked,context) {
@@ -349,7 +391,10 @@ fun PlanificationProjetEtapeScreen(
                                 onClick = {
                                 onNavigate("planification")
                             },
-                                modifier = Modifier.size(48.dp).align(Alignment.BottomEnd).offset(((-10).dp),0.dp),
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .align(Alignment.BottomEnd)
+                                    .offset(((-10).dp), 0.dp),
                                 containerColor =Color.Black,
                                 shape = CircleShape
                             ){
@@ -374,6 +419,49 @@ fun PlanificationProjetEtapeScreen(
                 currentPage = pagerState.currentPage,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+            if(isRegisterButtonVisible){
+                AppButton (text ="Enregistrer", onClick = {
+                    if(pagerState.currentPage==0){
+                        if(PlanificationProjet.projectInfo.projetIdee.isNotEmpty()&&PlanificationProjet.projectInfo.projetIdee.isNotBlank()){
+                            viewModel.addProjectInfo(
+                                projectIdee =PlanificationProjet.projectInfo.projetIdee,
+                                motivation =PlanificationProjet.projectInfo.motivation,
+                                competenceDisponible =PlanificationProjet.projectInfo.competenceDisponible,
+                                competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                                ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                                ressourceNonDisponible =PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            )
+                        }
+                    }
+                    if(pagerState.currentPage==1){
+                        if(PlanificationProjet.projectInfo.motivation.isNotEmpty()&&PlanificationProjet.projectInfo.motivation.isNotBlank()){
+                            viewModel.addProjectInfo(
+                                projectIdee =PlanificationProjet.projectInfo.projetIdee,
+                                motivation =PlanificationProjet.projectInfo.motivation,
+                                competenceDisponible =PlanificationProjet.projectInfo.competenceDisponible,
+                                competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                                ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                                ressourceNonDisponible =PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            )
+
+                        }
+                    }
+                    if(pagerState.currentPage==4){
+                        if(PlanificationProjet.projectInfo.ressourceDisponible.isNotEmpty()&&PlanificationProjet.projectInfo.ressourceDisponible.isNotBlank() && PlanificationProjet.projectInfo.ressourceNonDispnible.isNotEmpty()&&PlanificationProjet.projectInfo.ressourceNonDispnible.isNotBlank() ){
+                            viewModel.addProjectInfo(
+                                projectIdee =PlanificationProjet.projectInfo.projetIdee,
+                                motivation =PlanificationProjet.projectInfo.motivation,
+                                competenceDisponible =PlanificationProjet.projectInfo.competenceDisponible,
+                                competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                                ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                                ressourceNonDisponible =PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            )
+
+                        }
+                    }
+                })
+            }
+
 
             if(pagerState.currentPage==5){
                 Row(

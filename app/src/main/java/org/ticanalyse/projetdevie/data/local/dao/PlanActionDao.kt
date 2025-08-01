@@ -17,4 +17,11 @@ interface PlanActionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlanAction(planAction: PlanAction)
+
+    @Query("DELETE FROM PlanAction WHERE id = :id")
+    suspend fun deletePlanActionById(id: Int)
+
+    @Query("SELECT * FROM PlanAction WHERE id = :id")
+     fun getPlanActionById(id: Int): Flow<PlanAction>
+
 }

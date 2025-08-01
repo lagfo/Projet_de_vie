@@ -147,4 +147,11 @@ init{
         }
     }
 
+    fun getElementById(id: Int, callback: (Element?) -> Unit) {
+        viewModelScope.launch {
+            repository.getElementById(id).collect { element ->
+                callback(element)
+            }
+        }
+    }
 }
