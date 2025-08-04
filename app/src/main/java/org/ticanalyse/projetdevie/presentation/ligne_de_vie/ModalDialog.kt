@@ -95,7 +95,7 @@ fun ModalDialog(
     val sttManager = appSTTManager()
     var description by rememberSaveable { mutableStateOf("") }
     val currentYear= LocalDate.now().year
-    val setOfIds = setOf(10, 12, 16, 19)
+    val setOfIds = setOf(10,11, 12, 16, 19)
     val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
 
 

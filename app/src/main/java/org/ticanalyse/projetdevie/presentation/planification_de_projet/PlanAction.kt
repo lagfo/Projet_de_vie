@@ -21,6 +21,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,14 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val viewModel= hiltViewModel<PlanificationViewModel>()
     val statusPlanAction by viewModel.upsertSuccess.collectAsStateWithLifecycle()
+
+    // Reset status when the screen is disposed (user leaves the screen)
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUpsertStatus()
+        }
+    }
+
     LaunchedEffect(statusPlanAction){
         if(statusPlanAction){
             Toast.makeText(context, "Planification enregistrée", Toast.LENGTH_SHORT).show()

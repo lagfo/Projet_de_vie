@@ -103,8 +103,16 @@ fun PlanificationProjetEtapeScreen(
 
     LaunchedEffect(status){
         if(status){
-            if(pagerState.currentPage==0||pagerState.currentPage==1||pagerState.currentPage==4){
-                Toast.makeText(context, "Idée de projet enregistrée", Toast.LENGTH_SHORT).show()
+            when (pagerState.currentPage) {
+                0 -> {
+                    Toast.makeText(context, "Idée de projet enregistrée", Toast.LENGTH_SHORT).show()
+                }
+                1 -> {
+                    Toast.makeText(context, "Modivation  enregistrée", Toast.LENGTH_SHORT).show()
+                }
+                4 -> {
+                    Toast.makeText(context, "Ressources enregistrées", Toast.LENGTH_SHORT).show()
+                }
             }
             viewModel.resetUpsertStatus()
         }
