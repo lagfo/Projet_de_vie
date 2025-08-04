@@ -204,10 +204,6 @@ val acteurInstitutionnelSubCategories = listOf(
 )
 
 val skills = listOf(
-    AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.im1),
-    AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.im2),
-    AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.im3),
-    AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.im4),
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_agriculture), strokeColor = R.color.primary_color, paint = R.drawable.agriculture),
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_apiculture), strokeColor = R.color.primary_color, paint = R.drawable.apiculture),
     AppSkillCardIcon(txt = Txt.Res(R.string.skill_arts), strokeColor = R.color.primary_color, paint = R.drawable.arts),
