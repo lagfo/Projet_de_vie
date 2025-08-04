@@ -78,7 +78,7 @@ fun ModalDialogForEdit(
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
     var selectedElement by remember { mutableStateOf<Element?>(null) }
     val context = LocalContext.current
-    val setOfIds = setOf(10, 12, 16, 19)
+    val setOfIds = setOf(10,11, 12, 16, 19)
     var dateFin by rememberSaveable { mutableStateOf("") }
     var dateDebut by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
