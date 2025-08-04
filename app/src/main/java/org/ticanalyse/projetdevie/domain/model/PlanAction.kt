@@ -8,8 +8,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity
 data class PlanAction(
-    @PrimaryKey(autoGenerate = true) val id:Int=0,
+    @PrimaryKey(autoGenerate = true) var id:Int=0,
     var activite:String="",
+    var activiteDescription:String="",
     var acteur:String="",
     var financement:String="",
     var periode:String="",

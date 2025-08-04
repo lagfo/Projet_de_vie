@@ -12,5 +12,6 @@ class LigneDeVieRepository @Inject constructor(
     fun getElements()=ligneDeVieDao.getElement()
     fun getPassedElements()=ligneDeVieDao.getPassedElement()
     fun getPresentElements()=ligneDeVieDao.getPresentElement()
+    fun getElementById(id:Int)=ligneDeVieDao.getElementById(id)
 
 }

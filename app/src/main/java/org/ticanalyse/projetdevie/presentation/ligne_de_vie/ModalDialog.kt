@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppText
@@ -83,6 +84,20 @@ fun ModalDialog(
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     val status by viewModel.upsertSuccess.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var selectedElement by remember { mutableStateOf<Element?>(null) }
+    var dateDebut by rememberSaveable { mutableStateOf("") }
+    var isdateDebutValide by rememberSaveable { mutableStateOf(false) }
+    var dateFin by rememberSaveable { mutableStateOf("") }
+    var isdateFinValide by rememberSaveable { mutableStateOf(false) }
+    var dateEncours by rememberSaveable { mutableStateOf("") }
+    var isdateEncoursValide by rememberSaveable { mutableStateOf(false) }
+    val ttsManager = appTTSManager()
+    val sttManager = appSTTManager()
+    var description by rememberSaveable { mutableStateOf("") }
+    val currentYear= LocalDate.now().year
+    val setOfIds = setOf(10, 12, 16, 19)
+    val reponseQuestion by viewModel.allResponse.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(status){
         Log.d("TAG", "ModalDialog: status value is $status ")
@@ -92,6 +107,31 @@ fun ModalDialog(
             onDismiss()
         }
     }
+
+    // Fetch the data
+    LaunchedEffect(item.id) {
+        viewModel.getElementById(item.id) { element ->
+            selectedElement = element
+        }
+    }
+
+    LaunchedEffect(selectedElement) {
+        selectedElement?.let {
+            if(!it.status && it.id !in setOfIds){
+                dateDebut=it.startYear.toString()
+                dateFin=it.endYear.toString()
+                description=it.labelDescription
+            }else if(it.status && it.id !in setOfIds){
+                dateEncours=it.inProgressYear.toString()
+                description=it.labelDescription
+            }else{
+                dateEncours=it.inProgressYear.toString()
+                description=it.labelDescription
+            }
+        }
+    }
+
+
 
     ModalBottomSheet(
         modifier = modifier.fillMaxSize(),
@@ -111,16 +151,7 @@ fun ModalDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ){
-                var dateDebut by rememberSaveable { mutableStateOf("") }
-                var isdateDebutValide by rememberSaveable { mutableStateOf(false) }
-                var dateFin by rememberSaveable { mutableStateOf("") }
-                var isdateFinValide by rememberSaveable { mutableStateOf(false) }
-                var dateEncours by rememberSaveable { mutableStateOf("") }
-                var isdateEncoursValide by rememberSaveable { mutableStateOf(false) }
-                val ttsManager = appTTSManager()
-                val sttManager = appSTTManager()
-                var description by rememberSaveable { mutableStateOf("") }
-                var currentYear= LocalDate.now().year
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -151,158 +182,235 @@ fun ModalDialog(
                     )
                 }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Column(
-                        modifier = Modifier.weight(1f)
+                if(item.id !in setOfIds){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ){
-                        AppText(
-                            text = "Evènement passé",
-                            fontFamily = Roboto,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Normal,
-                            color = colorResource(id = R.color.text),
-                            fontSize = 12.sp,
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                            ttsManager = ttsManager,
-                            isTextAlignCenter = true
-                        )
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ){
+                            AppText(
+                                text = "Evènement passé",
+                                fontFamily = Roboto,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Normal,
+                                color = colorResource(id = R.color.text),
+                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                ttsManager = ttsManager,
+                                isTextAlignCenter = true
+                            )
 
-                        OutlinedTextField(
-                            enabled = dateEncours.isBlank(),
-                            value =dateDebut,
-                            onValueChange = { it ->
-                                if(it.length<=4){
-                                    dateDebut=it
-                                }
-                            },
-                            label = {
+                            OutlinedTextField(
+                                enabled = dateEncours.isBlank(),
+                                value =dateDebut,
+                                onValueChange = { it ->
+                                    if(it.length<=4){
+                                        dateDebut=it
+                                    }
+                                },
+                                label = {
 
-                                Text(
-                                    text="Année de début",
-                                    fontSize = 9.99.sp,
-                                    maxLines = 1,
-                                    fontWeight = FontWeight.Bold
+                                    Text(
+                                        text="Année de début",
+                                        fontSize = 9.99.sp,
+                                        maxLines = 1,
+                                        fontWeight = FontWeight.Bold
 
-                                )
-                            },
-                            textStyle = TextStyle(color = Color.Black),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.NumberPassword
-                            ),
-                            shape =RoundedCornerShape(50),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
-                                focusedLabelColor = Color.Black,
-                                unfocusedLabelColor =Color.Black,
-                                focusedBorderColor = colorResource(R.color.secondary_color),
-                            ),
-                            trailingIcon = {
-                                IconButton(onClick = {  }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.DateRange,
-                                        contentDescription = "calendar"
                                     )
-                                }
-                            },
-                            supportingText = {
-                                Text(
-                                    text = if(dateDebut.isNotEmpty()&&dateDebut.isNotBlank()){
-                                        if(dateDebut.length==4&&dateDebut.first()=='1'&&dateDebut.toInt()<=currentYear||dateDebut.length==4&&dateDebut.first()=='2'&&dateDebut.toInt()<=currentYear){
-                                            isdateDebutValide=true
-                                            ""
-                                        } else {
-                                            isdateDebutValide=false
-                                            "Année invalide"
-                                        }
-                                    } else {
-                                        ""
-                                    },
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        )
-                        OutlinedTextField(
-                            enabled = dateEncours.isBlank(),
-                            value =dateFin,
-                            onValueChange = { it ->
-                                if(it.length<=4){
-                                    dateFin=it
-
-                                }
-                            },
-                            supportingText = {
-                                Text(
-                                    text = if(dateFin.isNotEmpty()&&dateFin.isNotBlank()){
-                                        if(dateFin.length==4&&dateFin.first()=='1'&&dateFin.toInt()<=currentYear||dateFin.length==4&&dateFin.first()=='2'&&dateFin.toInt()<=currentYear){
-                                            if(dateFin.toInt()<dateDebut.toInt()){
-                                                isdateFinValide=false
-                                                "L'année de fin est toujours supérieure à l'année de début"
-                                            }else{
-                                                isdateFinValide=true
+                                },
+                                textStyle = TextStyle(color = Color.Black),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.NumberPassword
+                                ),
+                                shape =RoundedCornerShape(50),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedLabelColor = Color.Black,
+                                    unfocusedLabelColor =Color.Black,
+                                    focusedBorderColor = colorResource(R.color.secondary_color),
+                                ),
+                                trailingIcon = {
+                                    IconButton(onClick = {  }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.DateRange,
+                                            contentDescription = "calendar"
+                                        )
+                                    }
+                                },
+                                supportingText = {
+                                    Text(
+                                        text = if(dateDebut.isNotEmpty()&&dateDebut.isNotBlank()){
+                                            if(dateDebut.length==4&&dateDebut.first()=='1'&&dateDebut.toInt()<=currentYear||dateDebut.length==4&&dateDebut.first()=='2'&&dateDebut.toInt()<=currentYear){
+                                                isdateDebutValide=true
                                                 ""
+                                            } else {
+                                                isdateDebutValide=false
+                                                "Année invalide"
                                             }
                                         } else {
-                                            isdateFinValide=false
-                                            "Année invalide"
-                                        }
-                                    } else {
-                                        ""
-                                    },
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text="Année de fin",
-                                    fontSize = 9.99.sp,
-                                    maxLines = 1,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            },
+                                            ""
+                                        },
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+                            OutlinedTextField(
+                                enabled = dateEncours.isBlank(),
+                                value =dateFin,
+                                onValueChange = { it ->
+                                    if(it.length<=4){
+                                        dateFin=it
+
+                                    }
+                                },
+                                supportingText = {
+                                    Text(
+                                        text = if(dateFin.isNotEmpty()&&dateFin.isNotBlank()&&isdateDebutValide){
+                                            if(dateFin.length==4&&dateFin.first()=='1'&&dateFin.toInt()<=currentYear||dateFin.length==4&&dateFin.first()=='2'&&dateFin.toInt()<=currentYear){
+                                                if(dateFin.toInt()<dateDebut.toInt()){
+                                                    isdateFinValide=false
+                                                    "L'année de fin est toujours supérieure à l'année de début"
+                                                }else{
+                                                    isdateFinValide=true
+                                                    ""
+                                                }
+                                            } else {
+                                                isdateFinValide=false
+                                                "Année invalide"
+                                            }
+                                        } else {
+                                            ""
+                                        },
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text="Année de fin",
+                                        fontSize = 9.99.sp,
+                                        maxLines = 1,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                },
 //                        supportingText ={
 //                            if(Global.validateAnneeDeFin(dateFin.toInt())){
 //                                Text(text = "Année invalide")
 //                            }
 //                        },
-                            textStyle = TextStyle(color = Color.Black),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.NumberPassword
-                            ),
-                            shape =RoundedCornerShape(50),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
-                                focusedLabelColor = Color.Black,
-                                unfocusedLabelColor =Color.Black,
-                                focusedBorderColor = colorResource(R.color.secondary_color),
-                            ),
-                            trailingIcon = {
-                                IconButton(onClick = {  }) {
-                                    Icon(
-                                        imageVector = Icons.Default.DateRange,
-                                        contentDescription = "calendar"
+                                textStyle = TextStyle(color = Color.Black),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.NumberPassword
+                                ),
+                                shape =RoundedCornerShape(50),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedLabelColor = Color.Black,
+                                    unfocusedLabelColor =Color.Black,
+                                    focusedBorderColor = colorResource(R.color.secondary_color),
+                                ),
+                                trailingIcon = {
+                                    IconButton(onClick = {  }) {
+                                        Icon(
+                                            imageVector = Icons.Default.DateRange,
+                                            contentDescription = "calendar"
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                        VerticalDivider(
+                            modifier = Modifier.height(150.dp), // Adjust height as needed
+                            thickness = 1.dp,
+                            color = colorResource(R.color.primary_color)
+                        )
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            AppText(
+                                text = "Evènement en cours",
+                                fontFamily = Roboto,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Normal,
+                                color = colorResource(id = R.color.text),
+                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                ttsManager = ttsManager,
+                                isTextAlignCenter = true
+                            )
+
+
+                            OutlinedTextField(
+                                enabled = !(dateDebut.isNotBlank()||dateFin.isNotBlank()),
+                                value =dateEncours,
+                                onValueChange = { it ->
+                                    if(it.length<=4){
+                                        dateEncours=it
+                                    }
+                                },
+                                label = {
+                                    Text(
+                                        text="Année de début",
+                                        fontSize = 9.99.sp,
+                                        maxLines = 1,
+                                        fontWeight = FontWeight.Bold
+
+                                    )
+                                },
+                                textStyle = TextStyle(color = Color.Black),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.NumberPassword
+                                ),
+                                shape =RoundedCornerShape(50),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedLabelColor = Color.Black,
+                                    unfocusedLabelColor =Color.Black,
+                                    focusedBorderColor = colorResource(R.color.secondary_color),
+                                ),
+                                trailingIcon = {
+                                    IconButton(onClick = {  }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.DateRange,
+                                            contentDescription = "calendar"
+                                        )
+                                    }
+                                },
+                                supportingText = {
+                                    Text(
+                                        text = if(dateEncours.isNotEmpty()&&dateEncours.isNotBlank()){
+                                            if(dateEncours.length==4 && dateEncours.first()=='1'&&dateEncours.toInt()<=currentYear|| dateEncours.length==4 && dateEncours.first()=='2'&&dateEncours.toInt()<=currentYear){
+                                                isdateEncoursValide=true
+                                                ""
+                                            } else {
+                                                isdateEncoursValide=false
+                                                "Année invalide"
+                                            }
+                                        } else {
+                                            ""
+                                        },
+                                        color = MaterialTheme.colorScheme.error
                                     )
                                 }
-                            },
-                        )
-                    }
-                    VerticalDivider(
-                        modifier = Modifier.height(150.dp), // Adjust height as needed
-                        thickness = 1.dp,
-                        color = colorResource(R.color.primary_color)
-                    )
+                            )
+                        }
 
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.Center
-                    ){
+                    }
+
+                }else{
+
+                    Column{
+                        Spacer(modifier = Modifier.height(5.dp))
                         AppText(
-                            text = "Evènement en cours",
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Renseigner l'année",
                             fontFamily = Roboto,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Normal,
@@ -310,12 +418,9 @@ fun ModalDialog(
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                             ttsManager = ttsManager,
-                            isTextAlignCenter = true
                         )
 
-
                         OutlinedTextField(
-                            enabled = !(dateDebut.isNotBlank()||dateFin.isNotBlank()),
                             value =dateEncours,
                             onValueChange = { it ->
                                 if(it.length<=4){
@@ -324,7 +429,7 @@ fun ModalDialog(
                             },
                             label = {
                                 Text(
-                                    text="Année de début",
+                                    text="année",
                                     fontSize = 9.99.sp,
                                     maxLines = 1,
                                     fontWeight = FontWeight.Bold
@@ -372,6 +477,7 @@ fun ModalDialog(
 
                 }
 
+
                 AppInputFieldMultiLine(
                     value =description,
                     onValueChange = {
@@ -384,7 +490,7 @@ fun ModalDialog(
                 )
                 //Validate button
                 AppButton(text="Valider", onClick ={
-                    if(isdateDebutValide&&isdateFinValide){
+                    if(isdateDebutValide&&isdateFinValide && item.id !in setOfIds){
                         viewModel.addElement(
                             id = item.id,
                             label = item.topicTitle,
@@ -396,7 +502,7 @@ fun ModalDialog(
                             status =false,
                             creationDate = LocalDate.now().toString()
                         )
-                    }else if(isdateEncoursValide){
+                    }else if(isdateEncoursValide && item.id !in setOfIds){
                         viewModel.addElement(
                             id = item.id,
                             label = item.topicTitle,
@@ -408,6 +514,19 @@ fun ModalDialog(
                             status =true,
                             creationDate = LocalDate.now().toString()
                         )
+                    }else if(isdateEncoursValide && item.id in setOfIds){
+                        viewModel.addElement(
+                            id = item.id,
+                            label = item.topicTitle,
+                            startYear =0,
+                            endYear = 0,
+                            inProgressYear =dateEncours.toInt(),
+                            duration =0,
+                            labelDescription = description,
+                            status =if(dateEncours.toInt()<currentYear) false else true,
+                            creationDate = LocalDate.now().toString()
+                        )
+
                     }
                 })
             }

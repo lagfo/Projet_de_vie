@@ -1,6 +1,7 @@
 package org.ticanalyse.projetdevie.presentation.nvgraph
 
 import kotlinx.serialization.Serializable
+import org.ticanalyse.projetdevie.domain.model.PlanAction
 
 @Serializable
 sealed interface AppRoute
@@ -87,6 +88,9 @@ object PlanActionTableRoute: AppRoute
 
 @Serializable
 object MonReseauResumeRoute:AppRoute
+
+@Serializable
+data class PlanActionEditRoute(val id:Int):AppRoute
 
 
 

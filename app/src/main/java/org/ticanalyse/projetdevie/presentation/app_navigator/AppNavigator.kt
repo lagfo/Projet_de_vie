@@ -61,6 +61,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauCategoriesRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauIntroductionRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauResumeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.MonReseauSubCategoriesRoute
+import org.ticanalyse.projetdevie.presentation.nvgraph.PlanActionEditRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanActionTableRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetEtapeRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.PlanificationProjetPdfViewerRoute
@@ -71,6 +72,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifLienVieReelR
 import org.ticanalyse.projetdevie.presentation.nvgraph.RecapitulatifRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.ResumeLienVieReelRoute
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PdfViewerScreen
+import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanActionEdit
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanActionTable
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetEtapeScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
@@ -113,6 +115,7 @@ fun AppNavigator() {
         backStackState?.destination?.route == RecapitulatifRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanActionEditRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == RecapitulatifLienVieReelRoute::class.qualifiedName ->-1
         backStackState?.destination?.route?.startsWith(
             MonReseauSubCategoriesRoute::class.qualifiedName ?: ""
@@ -123,6 +126,7 @@ fun AppNavigator() {
         backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanActionEditRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == MonReseauResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
@@ -259,6 +263,10 @@ fun AppNavigator() {
                         R.color.primary_color
                     )
                     backStackState?.destination?.route == PlanificationProjetEtapeRoute::class.qualifiedName -> AppModuleTopBar(
+                        title = R.string.planification_projet_title,
+                        R.color.primary_color
+                    )
+                    backStackState?.destination?.route ==PlanActionEditRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.planification_projet_title,
                         R.color.primary_color
                     )
@@ -516,7 +524,15 @@ fun AppNavigator() {
                 }
             }
             composable<PlanActionTableRoute>{
-                PlanActionTable()
+                PlanActionTable{
+                    it->
+                    navController.navigate(PlanActionEditRoute(it))
+                }
+            }
+
+            composable<PlanActionEditRoute>{
+                val args=it.toRoute<PlanActionEditRoute>()
+                PlanActionEdit(id=args.id)
             }
             composable<PlanificationProjetEtapeRoute> {
 //                ResumePlanificationProjetScreen {
