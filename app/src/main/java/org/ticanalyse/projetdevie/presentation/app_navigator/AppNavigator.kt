@@ -115,7 +115,6 @@ fun AppNavigator() {
         backStackState?.destination?.route == RecapitulatifRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == LienVieReelIntroductionScreenRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == FormulaireScreenRoute::class.qualifiedName -> -1
-        backStackState?.destination?.route == PlanActionEditRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == RecapitulatifLienVieReelRoute::class.qualifiedName ->-1
         backStackState?.destination?.route?.startsWith(
             MonReseauSubCategoriesRoute::class.qualifiedName ?: ""
@@ -126,7 +125,11 @@ fun AppNavigator() {
         backStackState?.destination?.route == BilanCompetenceResumeRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetResumeRoute::class.qualifiedName -> -1
-        backStackState?.destination?.route == PlanActionEditRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanificationProjetEtapeRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route == PlanActionTableRoute::class.qualifiedName -> -1
+        backStackState?.destination?.route?.startsWith(
+            PlanActionEditRoute::class.qualifiedName ?: ""
+        ) == true -> -1
         backStackState?.destination?.route == MonReseauResumeRoute::class.qualifiedName -> -1
         else -> 0
     }
@@ -266,14 +269,21 @@ fun AppNavigator() {
                         title = R.string.planification_projet_title,
                         R.color.primary_color
                     )
-                    backStackState?.destination?.route ==PlanActionEditRoute::class.qualifiedName -> AppModuleTopBar(
-                        title = R.string.planification_projet_title,
-                        R.color.primary_color
-                    )
                     backStackState?.destination?.route == PlanActionTableRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.planification_projet_title,
                         R.color.primary_color
                     )
+
+
+                    backStackState?.destination?.route?.startsWith(
+                        PlanActionEditRoute::class.qualifiedName ?: ""
+                    ) == true -> {
+                        AppModuleTopBar(
+                            title = R.string.planification_projet_title,
+                            R.color.primary_color
+                        )
+
+                    }
 
                     backStackState?.destination?.route == MonReseauResumeRoute::class.qualifiedName -> AppModuleTopBar(
                         title = R.string.mon_reseau_title,

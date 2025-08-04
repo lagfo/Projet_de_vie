@@ -140,7 +140,7 @@ fun RecapitulatifScreen(
     var isLoading by remember { mutableStateOf(false) }
     val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
     val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
-    val setOfIds = setOf(10, 12, 16, 19)
+    val setOfIds = setOf(10,11, 12, 16, 19)
 
 
     LaunchedEffect(reponseQuestion,isClicked,context) {
