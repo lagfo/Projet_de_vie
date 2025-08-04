@@ -18,6 +18,9 @@ class PlanificationProjetRepository @Inject constructor(
 
     suspend fun insertPlanAction(planAction: PlanAction)=planActionDao.insertPlanAction(planAction)
     fun getPlanAction()=planActionDao.getPlanAction()
+    fun getPlanActionById(id: Int)=planActionDao.getPlanActionById(id)
+
+    suspend fun deletePlanActionLine(id:Int)=planActionDao.deletePlanActionById(id)
 
 
 }
