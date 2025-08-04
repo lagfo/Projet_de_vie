@@ -644,17 +644,14 @@ fun RecapitulatifScreen(
                                         listOfPassedElement = listOfPassedElement,
                                         listOfPresentElement  = listOfPresentElement,
                                         listQuestionsLigneDeVie = listOf(
-                                            Pair("Qu'ai-je déjà réalisé ?", if (reponse1.isNotEmpty()) {
-                                                reponse1
-                                            } else {
+                                            Pair("Qu'ai-je déjà réalisé ?", reponse1.ifBlank {
                                                 "Aucune reponse renseignée"
                                             }
                                             ),
-                                            Pair("Qu'est ce que je suis capable de faire ?", if (reponse2.isNotEmpty()) {
-                                                reponse2
-                                            } else {
-                                                "Aucune reponse renseignée"
-                                            })
+                                            Pair("Qu'est ce que je suis capable de faire ?",
+                                                reponse2.ifBlank {
+                                                    "Aucune reponse renseignée"
+                                                })
                                         )
                                     )
                                 }
