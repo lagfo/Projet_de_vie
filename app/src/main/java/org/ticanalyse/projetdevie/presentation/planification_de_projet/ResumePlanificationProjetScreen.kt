@@ -70,8 +70,11 @@ import org.ticanalyse.projetdevie.presentation.common.skills
 import org.ticanalyse.projetdevie.presentation.lien_vie_relle.LienVieReelViewModel
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
+import org.ticanalyse.projetdevie.presentation.mon_reseau.ReseauSection
+import org.ticanalyse.projetdevie.presentation.mon_reseau.ReseauSubSection
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
+import org.ticanalyse.projetdevie.utils.PdfUtil.createAllProjectPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.createPlanificationProjetPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.sharePdf
@@ -87,11 +90,303 @@ fun ResumePlanificationProjetScreen(
     onNavigate: () -> Unit = {},
 ) {
 
+    val context = LocalContext.current
     val planificationViewModel = hiltViewModel<PlanificationViewModel>()
     val viewModel = hiltViewModel<AppNavigationViewModel>()
 
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
+
+    val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
+    val ligneDeVieViewModel= hiltViewModel<LigneDeVieViewModel>()
+    val bilanCompetenceViewModel = hiltViewModel<BilanCompetenceViewModel>()
+    val lienVieReelle = hiltViewModel<LienVieReelViewModel>()
+    monReseauViewModel.getMonReseau()
+
+    val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
+    Timber.tag("reseau").d("${listActeursFamiliauxEtSociaux.value}")
+    val listActeursEducatifs = monReseauViewModel.listActeursEducatifs.collectAsStateWithLifecycle()
+    val listActeursProfessionnels = monReseauViewModel.listActeursProfessionel.collectAsStateWithLifecycle()
+    val listActeursInstitutionnelsEtDeSoutien = monReseauViewModel.listActeursInstitutionel.collectAsStateWithLifecycle()
+
+    val listOfPassedElement by ligneDeVieViewModel.allPassedElement.collectAsStateWithLifecycle()
+    val listOfPresentElement by ligneDeVieViewModel.allPresentElement.collectAsStateWithLifecycle()
+    val reponseQuestion by ligneDeVieViewModel.allResponse.collectAsStateWithLifecycle()
+
+    val defaultSkillsBilanCompetence = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
+
+    val  finalSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
+    val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
+
+
+
+// Suppression des remember - calcul direct à partir des états observés
+    val acteurFamiliauxSociaux = ReseauSection(
+        category = "Acteurs familiaux et sociaux",
+        categoryPaint = R.drawable.acteur_familiaux_sociaux,
+        reseauSubSection = listOf(
+            ReseauSubSection(
+                subCategory = "Parents ou tuteurs: ",
+                subCategoryPaint = R.drawable.acteur_familiaux_sociaux,
+                listActeur = listActeursFamiliauxEtSociaux.value?.parentsTuteurs
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() && it.isNotEmpty() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Frères, soeurs, cousins ou cousines: ",
+                subCategoryPaint = R.drawable.freres_soeurs,
+                listActeur = listActeursFamiliauxEtSociaux.value?.freresSoeursCousinsCousines
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Voisins",
+                subCategoryPaint = R.drawable.voisin,
+                listActeur = listActeursFamiliauxEtSociaux.value?.voisins
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Chefs coutumiers ou religieux: ",
+                subCategoryPaint = R.drawable.chef_religieux_coutumier,
+                listActeur = listActeursFamiliauxEtSociaux.value?.chefsCoutumiersReligieux
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Grands-parents: ",
+                subCategoryPaint = R.drawable.grands_parents,
+                listActeur = listActeursFamiliauxEtSociaux.value?.grandsParents
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Amis proches: ",
+                subCategoryPaint = R.drawable.amis_proche,
+                listActeur = listActeursFamiliauxEtSociaux.value?.amisProches
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Mentor ou modèle dans la communauté: ",
+                subCategoryPaint = R.drawable.mentor,
+                listActeur = listActeursFamiliauxEtSociaux.value?.mentorModeleCommunaute
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Leaders communautaires ou d'associations locales: ",
+                subCategoryPaint = R.drawable.leaders,
+                listActeur = listActeursFamiliauxEtSociaux.value?.leadersCommunautairesAssociationsLocales
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            )
+        )
+    )
+
+    val acteurEducatifs = ReseauSection(
+        category = "Acteurs éducatifs",
+        categoryPaint = R.drawable.acteur_educatif,
+        reseauSubSection = listOf(
+            ReseauSubSection(
+                subCategory = "Enseignants ou professeurs: ",
+                subCategoryPaint = R.drawable.acteur_educatif,
+                listActeur = listActeursEducatifs.value?.EnseignantsProfesseurs
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Encadreurs de centres de formation professionnelle: ",
+                subCategoryPaint = R.drawable.encadreurs_centres_formation_professionnelle,
+                listActeur = listActeursEducatifs.value?.EncadreursCentresFormationProfessionnelle
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Anciens camarades de classe: ",
+                subCategoryPaint = R.drawable.anciens_camarades_classe,
+                listActeur = listActeursEducatifs.value?.anciensCamaradesClasse
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Conseillers d'orientation scolaire ou professionnelle: ",
+                subCategoryPaint = R.drawable.conseiller_educatif,
+                listActeur = listActeursEducatifs.value?.ConseillersOrientationScolaireProfessionnelle
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Animateurs d'ONG éducatives: ",
+                subCategoryPaint = R.drawable.animateurs_ong_educatives,
+                listActeur = listActeursEducatifs.value?.animateursONGEducatives
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            )
+        )
+    )
+
+    val acteurProfessionnels = ReseauSection(
+        category = "Acteurs professionnels",
+        categoryPaint = R.drawable.acteur_professionnel,
+        reseauSubSection = listOf(
+            ReseauSubSection(
+                subCategory = "Anciens employeurs ou maîtres d'apprentissage: ",
+                subCategoryPaint = R.drawable.acteur_professionnel,
+                listActeur = listActeursProfessionnels.value?.anciensEmployeursMaitresApprentissage
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Employé d'ONG ou de projets de développement: ",
+                subCategoryPaint = R.drawable.employes_ong_projets_developpement,
+                listActeur = listActeursProfessionnels.value?.employesONGProjetsDeveloppement
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Artisans ou entrepreneurs locaux: ",
+                subCategoryPaint = R.drawable.artisans_entrepreneurs_locaux,
+                listActeur = listActeursProfessionnels.value?.artisansEntrepreneursLocaux
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Personnes ressources dans les coopérative, groupements ou mutuelles: ",
+                subCategoryPaint = R.drawable.personnes_ressources_cooperatives_groupements_mutuelles,
+                listActeur = listActeursProfessionnels.value?.personnesRessourcesCooperativesGroupementsMutuelles
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            )
+        )
+    )
+
+    val acteurInstitutionnelsEtDeSoutien = ReseauSection(
+        category = "Acteurs institutionnels et de soutient",
+        categoryPaint = R.drawable.acteur_institutionnel,
+        reseauSubSection = listOf(
+            ReseauSubSection(
+                subCategory = "Agents des services sociaux ou administratifs: ",
+                subCategoryPaint = R.drawable.acteur_institutionnel,
+                listActeur = listActeursInstitutionnelsEtDeSoutien.value?.agentsServicesSociauxAdministratifs
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Représentants de structures comme une agence Nationale pour l'emploi: ",
+                subCategoryPaint = R.drawable.repr_sentants_structures_agence_nationale_emploi,
+                listActeur = listActeursInstitutionnelsEtDeSoutien.value?.representantsStructuresCommeAgenceNationaleEmploi
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Formateurs des programmes publics ou privés de formation et insertion: ",
+                subCategoryPaint = R.drawable.formateurs_programmes_publics_prives_formation_insertion,
+                listActeur = listActeursInstitutionnelsEtDeSoutien.value?.formateursProgrammesPublicsPrivesFormationInsertion
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            ),
+            ReseauSubSection(
+                subCategory = "Personnel de santé: ",
+                subCategoryPaint = R.drawable.personnel_sante,
+                listActeur = listActeursInstitutionnelsEtDeSoutien.value?.personnelSante
+                    ?.split("|")
+                    ?.filter { it.isNotBlank() }
+                    ?.map { it.trimStart() }
+                    ?: emptyList()
+            )
+        )
+    )
+
+    LaunchedEffect(Unit) {
+        bilanCompetenceViewModel.getSkill { storedSkills ->
+            storedSkills?.let { stored ->
+
+                val storedLower = stored.map(String::lowercase).toSet()
+
+                fun getSkillName(skill: AppSkillCardIcon): String = when (val txt = skill.txt) {
+                    is Txt.Res -> context.getString(txt.id)
+                    is Txt.Raw -> txt.text
+                }
+
+                defaultSkillsBilanCompetence.retainAll { skill ->
+                    storedLower.contains(getSkillName(skill).lowercase())
+                }
+
+                defaultSkillsBilanCompetence.replaceAll { skill ->
+                    finalSkills.add(
+                        skill.copy(badgeStatus = true)
+                    )
+                    skill.copy(badgeStatus = true)
+
+                }
+
+                stored.filter { skillName ->
+                    defaultSkillsBilanCompetence.none { skill ->
+                        getSkillName(skill).equals(skillName, ignoreCase = true)
+                    }
+                }.forEach { skillName ->
+                    defaultSkillsBilanCompetence.add(
+                        AppSkillCardIcon(
+                            txt = Txt.Raw(skillName),
+                            strokeColor = R.color.primary_color,
+                            paint = R.drawable.default_competence,
+                            badgeStatus = true
+                        )
+                    )
+                    finalSkills.add(
+                        AppSkillCardIcon(
+                            txt = Txt.Raw(skillName),
+                            strokeColor = R.color.primary_color,
+                            paint = R.drawable.default_competence,
+                            badgeStatus = true
+                        )
+                    )
+                }
+
+            }
+        }
+    }
 
     val projectInfo = planificationViewModel.planificationInfo.collectAsStateWithLifecycle()
     val listPlanAction = planificationViewModel.planAction.collectAsStateWithLifecycle()
@@ -103,11 +398,9 @@ fun ResumePlanificationProjetScreen(
     val  avalaibleSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
     val  unAvailableSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
 
-    val file = remember { mutableStateOf<File?>(null) }
-
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+
 
     Timber.d("projectInfo: ${projectInfo.value}")
 
@@ -497,14 +790,14 @@ fun ResumePlanificationProjetScreen(
             }
 
             item {
-//                Row (
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp),
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ){
-                    AppButton(text = "Télécharger pdf") {
+                Column (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    AppButton(text = "Télécharger pdf planification de projet") {
                         scope.launch {
                             isLoading = true  // démarre le loader
                             withContext(Dispatchers.IO) {
@@ -538,29 +831,72 @@ fun ResumePlanificationProjetScreen(
 //                        onNavigate()
 //                    }
                     }
-//                    AppButton("Partager PDF") {
-//                        if (file.value != null) {
-//                            val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", file.value!!)
-//
-//                            if (file.value!!.exists()) {
-//                                Timber.d("uri: $uri")
-//                                val intent = Intent(Intent.ACTION_SEND)
-//                                intent.setType("application/pdf")
-//                                intent.clipData = ClipData.newRawUri(file.value!!.name, uri)
-//                                intent.putExtra(Intent.EXTRA_STREAM, uri)
-//                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-//                                intent.setDataAndType(uri, "application/pdf")
-//                                context.startActivity(Intent.createChooser(intent, "Veuillez choisir une application"))
-//                            } else {
-//                                Toast.makeText(context, "C'est vide", Toast.LENGTH_SHORT).show()
+                    AppButton("Telecharger PDF projet de vie complet") {
+                        scope.launch {
+                            isLoading = true  // démarre le loader
+                            withContext(Dispatchers.IO) {
+                                createAllProjectPdf(
+                                    context = context,
+                                    user = currentUser!!,
+                                    listActeursFamiliaux = acteurFamiliauxSociaux,
+                                    listActeursEducatifs = acteurEducatifs,
+                                    listActeursProfessionnels = acteurProfessionnels,
+                                    listActeursInstitutionnelsEtDeSoutien = acteurInstitutionnelsEtDeSoutien,
+                                    listOfPassedElement = listOfPassedElement,
+                                    listOfPresentElement  = listOfPresentElement,
+                                    listQuestionsLigneDeVie = listOf(
+                                        Pair("Qu'ai-je déjà réalisé ?", if (reponseQuestion.isNotEmpty()) {
+                                            reponseQuestion[0].firstResponse.ifBlank {
+                                                "Aucune reponse renseignée"
+                                            }
+                                        } else {
+                                            "Aucune reponse renseignée"
+                                        }
+                                        ),
+                                        Pair("Qu'est ce que je suis capable de faire ?",
+                                            if (reponseQuestion.isNotEmpty()) {
+                                                reponseQuestion[0].secondResponse.ifBlank {
+                                                    "Aucune reponse renseignée"
+                                                }
+                                            } else {
+                                                "Aucune reponse renseignée"
+                                            })
+                                    ),
+                                    competences = finalSkills,
+                                    listQuestionsLienVieReel = listOf(
+                                        Pair("Qu'est ce que j'ai actuellement ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                            listLienVieReelle.value.first().firstResponse
+                                        } else {
+                                            "Aucune reponse renseignée"
+                                        }
+                                        ),
+                                        Pair("Qu'est ce qui me manque ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                            listLienVieReelle.value.first().secondResponse
+                                        } else {
+                                            "Aucune reponse renseignée"
+                                        }),
+                                        Pair("Où puis-je trouver de l'aide ? Quelles personnes peuvent t'aider ?", if (listLienVieReelle.value.isNotEmpty()) {
+                                            listLienVieReelle.value.first().thirdResponse
+                                        } else {
+                                            "Aucune reponse renseignée"
+                                        })
+                                    ),
+                                    ideeProjet = projectInfo.value.firstOrNull()?.projetIdee ?: "Pas d'information",
+                                    motivation = projectInfo.value.firstOrNull()?.motivation ?: "Pas d'information",
+                                    ressourceDisponible = projectInfo.value.firstOrNull()?.ressourceDisponible ?: "Pas d'information",
+                                    ressourceIndisponible = projectInfo.value.firstOrNull()?.ressourceNonDispnible ?: "Pas d'information",
+                                    competenceDisponible = avalaibleSkills,
+                                    competenceIndisponible = unAvailableSkills,
+                                    planAction = listPlanAction.value
+                                )
+                            }
+//                            withContext(Dispatchers.Main) {
+//                                Toast.makeText(context, "Pdf téléchargé", Toast.LENGTH_SHORT).show()
 //                            }
-//
-//                        } else {
-//                            Toast.makeText(context, "Télécharger le pdf d'abord", Toast.LENGTH_SHORT).show()
-//
-//                        }
-//                    }
-//                }
+                            isLoading = false  // arrête le loader
+                        }
+                    }
+                }
             }
         }
     }
