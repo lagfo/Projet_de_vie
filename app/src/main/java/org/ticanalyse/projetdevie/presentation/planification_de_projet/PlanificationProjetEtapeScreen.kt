@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,7 +86,7 @@ fun PlanificationProjetEtapeScreen(
     var isRegisterButtonVisible by remember { mutableStateOf(false) }
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     isButtonVisible = pagerState.currentPage == 2
-    isRegisterButtonVisible=if(pagerState.currentPage==0||pagerState.currentPage==1||pagerState.currentPage==4) true else false
+    isRegisterButtonVisible=if(pagerState.currentPage==0||pagerState.currentPage==1||pagerState.currentPage==3||pagerState.currentPage==4) true else false
     var isClicked by remember { mutableStateOf(false) }
     var isResponseValide by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -101,8 +102,15 @@ fun PlanificationProjetEtapeScreen(
     val planActions by viewModel.planAction.collectAsStateWithLifecycle()
     val planInfo by viewModel.planificationInfo.collectAsStateWithLifecycle()
 
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUpsertStatus()
+        }
+    }
+
     LaunchedEffect(status){
         if(status){
+            viewModel.resetUpsertStatus()
             when (pagerState.currentPage) {
                 0 -> {
                     Toast.makeText(context, "Idée de projet enregistrée", Toast.LENGTH_SHORT).show()
@@ -110,11 +118,13 @@ fun PlanificationProjetEtapeScreen(
                 1 -> {
                     Toast.makeText(context, "Modivation  enregistrée", Toast.LENGTH_SHORT).show()
                 }
+                3 -> {
+                    Toast.makeText(context, "Compétences enregistrées", Toast.LENGTH_SHORT).show()
+                }
                 4 -> {
                     Toast.makeText(context, "Ressources enregistrées", Toast.LENGTH_SHORT).show()
                 }
             }
-            viewModel.resetUpsertStatus()
         }
     }
 
@@ -454,6 +464,20 @@ fun PlanificationProjetEtapeScreen(
 
                         }
                     }
+                    if(pagerState.currentPage==3){
+                        if(PlanificationProjet.projectInfo.competenceNonDisponible!!.isNotEmpty()){
+                            viewModel.addProjectInfo(
+                                projectIdee =PlanificationProjet.projectInfo.projetIdee,
+                                motivation =PlanificationProjet.projectInfo.motivation,
+                                competenceDisponible =PlanificationProjet.projectInfo.competenceDisponible,
+                                competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                                ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                                ressourceNonDisponible =PlanificationProjet.projectInfo.ressourceNonDispnible,
+                            )
+
+                        }
+                    }
+
                     if(pagerState.currentPage==4){
                         if(PlanificationProjet.projectInfo.ressourceDisponible.isNotEmpty()&&PlanificationProjet.projectInfo.ressourceDisponible.isNotBlank() && PlanificationProjet.projectInfo.ressourceNonDispnible.isNotEmpty()&&PlanificationProjet.projectInfo.ressourceNonDispnible.isNotBlank() ){
                             viewModel.addProjectInfo(

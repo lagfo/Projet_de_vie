@@ -542,7 +542,10 @@ fun AppNavigator() {
 
             composable<PlanActionEditRoute>{
                 val args=it.toRoute<PlanActionEditRoute>()
-                PlanActionEdit(id=args.id)
+                PlanActionEdit(
+                    id=args.id,
+                    onNavigate={navController.navigateUp()
+                })
             }
             composable<PlanificationProjetEtapeRoute> {
 //                ResumePlanificationProjetScreen {

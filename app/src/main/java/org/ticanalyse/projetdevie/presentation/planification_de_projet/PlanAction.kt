@@ -29,9 +29,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -364,9 +366,8 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
 
                     }
 
-                    FloatingActionButton(
+                    ExtendedFloatingActionButton(
                         modifier = Modifier
-                            .size(48.dp)
                             .align(Alignment.BottomEnd)
                             .offset(
                                 ((-10).dp),
@@ -399,6 +400,8 @@ fun PlanActionScreen(modifier: Modifier = Modifier) {
                         contentColor = Color.White,
                         shape = CircleShape
                     ) {
+                        Text("Ajouter")
+                        Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = "Ajouter",

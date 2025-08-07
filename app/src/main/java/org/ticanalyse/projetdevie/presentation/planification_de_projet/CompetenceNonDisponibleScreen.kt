@@ -21,6 +21,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -57,6 +58,7 @@ import org.ticanalyse.projetdevie.presentation.nvgraph.BilanCompetenceResumeRout
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
+import java.time.LocalDate
 
 
 @Composable
@@ -64,6 +66,7 @@ fun CompetenceNonDisponibleScreen() {
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
+    val viewModelPlan=hiltViewModel<PlanificationViewModel>()
     val planificationViewModel=hiltViewModel<PlanificationViewModel>()
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
     var navigateToBilan by remember {  mutableStateOf(false) }
@@ -72,6 +75,8 @@ fun CompetenceNonDisponibleScreen() {
     val defaultSkills = remember { mutableStateListOf<AppSkillCardIcon>().apply { addAll(skills) } }
 
     var showBottomSheet by remember { mutableStateOf(false) }
+
+
 
     fun syncBadges() {
         defaultSkills.replaceAll { skill ->
@@ -136,6 +141,16 @@ fun CompetenceNonDisponibleScreen() {
 //            }
         }
         navigateToBilan = selectedSkills.isNotEmpty()
+//        viewModelPlan.addProjectInfo(
+//            projectIdee = PlanificationProjet.projectInfo.projetIdee,
+//            motivation= PlanificationProjet.projectInfo.motivation,
+//            competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
+//            competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+//            ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+//            ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
+//            creationDate = LocalDate.now().toString()
+//        )
+
     }
 
     fun onAddSkills(newSkills: List<String>) {
