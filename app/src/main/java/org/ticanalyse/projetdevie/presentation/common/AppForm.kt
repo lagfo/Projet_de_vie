@@ -267,37 +267,22 @@ fun AppProfileForm(
                                 )
                             }
                             item {
-                                Row (
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceAround
-                                ) {
-
-                                    Box (modifier= Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.5f)
-                                        .padding(end = 2.dp)){
-                                        AppSelection(
-                                            value = genre.value,
-                                            onValueChange = { genre.value = it },
-                                            label = stringResource(id = R.string.genre),
-                                            options = genres,
-                                            onReadClick = { ttsManager.speak(genre.value) },
-                                            onSubmit=onSubmit.value
-                                        )
-                                    }
-                                    Box (modifier= Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.45f)
-                                        .padding(start = 2.dp)){
-                                        AppBirthDateInput(
-                                            value = dateNaissance.value,
-                                            onValueChange = { dateNaissance.value = it },
-                                            label = "Date",
-                                            onSubmit = onSubmit.value
-                                        )
-                                    }
-
-                                }
+                                AppSelection(
+                                    value = genre.value,
+                                    onValueChange = { genre.value = it },
+                                    label = stringResource(id = R.string.genre),
+                                    options = genres,
+                                    onReadClick = { ttsManager.speak(genre.value) },
+                                    onSubmit=onSubmit.value
+                                )
+                            }
+                            item {
+                                AppBirthDateInput(
+                                    value = dateNaissance.value,
+                                    onValueChange = { dateNaissance.value = it },
+                                    label = "Date de naissance",
+                                    onSubmit = onSubmit.value
+                                )
 
                             }
                             item {

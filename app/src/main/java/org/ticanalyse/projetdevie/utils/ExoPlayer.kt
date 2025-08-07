@@ -93,7 +93,7 @@ fun ExoPlayer(
         },
         modifier = Modifier
             .background(Color.Black)
-//            .aspectRatio(16 / 12f)
+            .aspectRatio(14 / 9f)
             .fillMaxWidth(),
         update = {
             when(lifecycle.value) {
