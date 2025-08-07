@@ -53,7 +53,7 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import java.time.LocalDate
 
 @Composable
-fun PlanActionEdit(modifier: Modifier = Modifier,id:Int) {
+fun PlanActionEdit(modifier: Modifier = Modifier,id:Int,onNavigate:()->Unit) {
 
     val ttsManager = appTTSManager()
     val sttManager = appSTTManager()
@@ -325,6 +325,7 @@ fun PlanActionEdit(modifier: Modifier = Modifier,id:Int) {
                     reponse3=""
                     reponse4=""
                     descriptionActivite=""
+                    onNavigate()
 
                 }else{
                     isResponseValide=false
