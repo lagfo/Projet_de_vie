@@ -78,7 +78,7 @@ val acteurFamiliauxSociauxSubCategories = listOf(
         category = "acteurFamiliauxSociaux",
         txt = R.string.voisins,
         strokeColor = R.color.thirty_color,
-        paint = R.drawable.voisins
+        paint = R.drawable.voisin
     ),
     AppSubIcon(
         category = "acteurFamiliauxSociaux",
