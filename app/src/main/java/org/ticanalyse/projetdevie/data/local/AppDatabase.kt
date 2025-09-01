@@ -34,5 +34,4 @@ abstract class AppDatabase: RoomDatabase() {
     abstract val lienVieReelDao: LienVieReelDao
     abstract val planificationProjetDao: PlanificationProjetDao
     abstract val planActionDao: PlanActionDao
-
 }

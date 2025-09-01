@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,7 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.data.local.AppDatabase
+import org.ticanalyse.projetdevie.presentation.main.MainViewModel
 import org.ticanalyse.projetdevie.presentation.mon_reseau.MonReseauViewModel
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Global.validateTextEntries
@@ -295,4 +300,86 @@ fun AppSkillModal(
         }
     }
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppResetModal(
+    showBottomSheet: Boolean,
+    onDismissRequest: () -> Unit,
+){
+    val context = LocalContext.current
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            modifier = Modifier
+                .fillMaxSize(),
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = false
+            ),
+        ) {
+            val ttsManager = appTTSManager()
+            val viewModel= hiltViewModel<MainViewModel>()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppText(
+                    text = "Réinitialisation de compte",
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Black,
+                    fontStyle = FontStyle.Normal,
+                    color = colorResource(id = R.color.text),
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    ttsManager = ttsManager
+                )
+                Spacer(modifier = Modifier.height(75.dp))
+                AppText(
+                    text = "Vous êtes sur le point de supprimer les données de l'utilisateur courant",
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Black,
+                    fontStyle = FontStyle.Normal,
+                    fontSize = 15.sp,
+                    color = colorResource(id = R.color.text),
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    ttsManager = ttsManager
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    AppTextButton(
+                        text = "Annuler",
+                        onClick = {
+                            onDismissRequest()
+
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AppButton(
+                        text = "Valider",
+                        onClick = {
+                            try {
+
+
+                                viewModel.resetDatabase(context)
+                                onDismissRequest()
+                            } catch (e: Exception) {
+                                onDismissRequest()
+                            }
+                        }
+                    )
+
+                }
+            }
+        }
+    }
 }
