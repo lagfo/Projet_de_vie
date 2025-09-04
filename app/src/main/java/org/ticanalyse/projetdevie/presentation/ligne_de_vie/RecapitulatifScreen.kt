@@ -86,10 +86,12 @@ import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
@@ -139,8 +141,10 @@ fun RecapitulatifScreen(
     val pdfscope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
-    val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    var showUserDialog by remember { mutableStateOf(false) }
     val setOfIds = setOf(10,11, 12, 16, 19)
+
 
 
     LaunchedEffect(reponseQuestion,isClicked,context) {
@@ -635,29 +639,9 @@ fun RecapitulatifScreen(
                     FloatingActionButton(
                         modifier = Modifier.size(45.dp),
                         onClick = {
-                            pdfscope.launch {
-                                isLoading = true
-                                withContext(Dispatchers.IO) {
-                                    generatePdf(
-                                        context=context,
-                                        user = currentUser!!,
-                                        listOfPassedElement = listOfPassedElement,
-                                        listOfPresentElement  = listOfPresentElement,
-                                        listQuestionsLigneDeVie = listOf(
-                                            Pair("Qu'ai-je déjà réalisé ?", reponse1.ifBlank {
-                                                "Aucune reponse renseignée"
-                                            }
-                                            ),
-                                            Pair("Qu'est ce que je suis capable de faire ?",
-                                                reponse2.ifBlank {
-                                                    "Aucune reponse renseignée"
-                                                })
-                                        )
-                                    )
-                                }
-                                isLoading = false
-                            }
-                        },
+                            showUserDialog = true
+
+                                  },
                         containerColor = colorResource(id = R.color.secondary_color),
                         contentColor = Color.White,
                         shape = CircleShape
@@ -667,6 +651,44 @@ fun RecapitulatifScreen(
                             contentDescription = "Generer le PDF",
                         )
                     }
+
+
+                    // Dialog pour saisir les informations utilisateur
+                    if (showUserDialog) {
+                        UserInfoDialog(
+                            onDismiss = { showUserDialog = false },
+                            onConfirm = { nom, prenom, telephone ->
+                                scope.launch {
+                                    // Sauvegarder l'utilisateur
+                                    val newUser = User(nom = nom, prenom = prenom, numTel = telephone)
+                                    viewModel.setCurrentUser(newUser)
+                                    showUserDialog = false
+                                    // Générer le PDF avec les nouvelles informations
+                                    isLoading = true
+                                    withContext(Dispatchers.IO) {
+                                        generatePdf(
+                                            context=context,
+                                            user = currentUser!!,
+                                            listOfPassedElement = listOfPassedElement,
+                                            listOfPresentElement  = listOfPresentElement,
+                                            listQuestionsLigneDeVie = listOf(
+                                                Pair("Qu'ai-je déjà réalisé ?", reponse1.ifBlank {
+                                                    "Aucune reponse renseignée"
+                                                }
+                                                ),
+                                                Pair("Qu'est ce que je suis capable de faire ?",
+                                                    reponse2.ifBlank {
+                                                        "Aucune reponse renseignée"
+                                                    })
+                                            )
+                                        )
+                                    }
+                                    isLoading = false
+                                }
+                            }
+                        )
+                    }
+
 
                 }
 
@@ -1088,6 +1110,7 @@ fun generatePdf(
     listOfPresentElement: List<Element>,
     listQuestionsLigneDeVie: List<Pair<String, String>>
 ){
+    val setOfIds = setOf(10,11, 12, 16, 19)
     val currentDateTime = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault()).format(Date())
     val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
     val file = File(directory, "Projet_de_vie_ligne_de_vie_${user.nom.replace(" ","_")}${user.prenom.replace(" ","_")}_$currentDateTime.pdf")
@@ -1107,9 +1130,9 @@ fun generatePdf(
 
     document.add(Paragraph("\n"))
     val pageWidth = pdfDoc.defaultPageSize.width
-    addLigneDeVieSection(context,document, "Évènements du passé", listOfPassedElement,pageWidth)
+    addLigneDeVieSection(context,document, "Évènements du passé", listOfPassedElement,pageWidth,setOfIds)
     document.add(Paragraph("\n\n\n"))
-    addLigneDeVieSection(context,document, "Évènements du présent", listOfPresentElement,pageWidth)
+    addLigneDeVieSection(context,document, "Évènements du présent", listOfPresentElement,pageWidth,setOfIds)
     document.add(Paragraph("\n\n\n"))
     addQuestions(document, "Questions sur la ligne de vie", listQuestionsLigneDeVie)
 
@@ -1130,7 +1153,7 @@ fun generatePdf(
 }
 
 
-private fun addLigneDeVieSection(context: Context,document: Document, titre: String, elements: List<Element>,pageWidth: Float) {
+private fun addLigneDeVieSection(context: Context,document: Document, titre: String, elements: List<Element>,pageWidth: Float,setOfIds:Set<Int>) {
     val tableWidth = pageWidth - 80f
     document.add(Paragraph(titre)
         .setFontSize(17.5f)
@@ -1195,10 +1218,12 @@ private fun addLigneDeVieSection(context: Context,document: Document, titre: Str
             container.add(labelTable)
 
 
-            val yearText = if (element.status) {
+            val yearText = if (element.status && element.id !in setOfIds) {
                 "Année: ${element.inProgressYear}"
-            } else {
+            } else if(!element.status && element.id !in setOfIds) {
                 "De ${element.startYear} à ${element.endYear}"
+            }else{
+                "Année: ${element.inProgressYear}"
             }
 
             val fullText = "▪ $yearText : ${element.labelDescription}"

@@ -14,10 +14,14 @@ import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.LienVieReel
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.repository.lienVieReelRepository.LienVieReelRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ResponseLigneDeVieElementRepository
+import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
+import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
 
 enum class  DISPLAY_TYPE{
@@ -33,7 +37,16 @@ data  class ScreenState(
 @HiltViewModel
 class LienVieReelViewModel @Inject constructor(
     private val repository: LienVieReelRepository,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val setCurrentUserUseCase: SetCurrentUserUseCase
 ): ViewModel() {
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser = _currentUser.asStateFlow()
+
+    init {
+        getCurrentUser()
+    }
 
     private val _upsertSuccess = MutableStateFlow(false)
     val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
@@ -75,6 +88,36 @@ init{
         viewModelScope.launch {
             repository.getLineLienVieReel().collect { listElement ->
                 _allElement.value=listElement
+            }
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            when (val result = getCurrentUserUseCase()) {
+                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                    _currentUser.value = null
+                }
+
+                is org.ticanalyse.projetdevie.utils.Result.Loading<*> -> true
+            }
+        }
+    }
+
+    fun setCurrentUser(user: User) {
+        viewModelScope.launch {
+            when (val result = setCurrentUserUseCase(user)) {
+                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                    Timber.e("Erreur lors de la sauvegarde de l'utilisateur: ${result.message}")
+                }
+
+                is Result.Loading<*> -> true
             }
         }
     }

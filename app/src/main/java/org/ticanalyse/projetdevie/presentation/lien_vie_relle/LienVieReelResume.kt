@@ -63,7 +63,7 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     val lienVieReelle = hiltViewModel<LienVieReelViewModel>()
     val viewModel = hiltViewModel<AppNavigationViewModel>()
 
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val currentUser by lienVieReelle.currentUser.collectAsStateWithLifecycle()
 
     val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
     val context = LocalContext.current

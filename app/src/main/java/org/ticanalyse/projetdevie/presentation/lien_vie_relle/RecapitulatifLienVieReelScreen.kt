@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,12 +37,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
+import org.ticanalyse.projetdevie.domain.model.User
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.ligne_de_vie.LigneDeVieViewModel
@@ -63,6 +70,10 @@ fun RecapitulatifLienVieReelScreen(
     val onSubmit = rememberSaveable { mutableStateOf (false) }
     val viewModel= hiltViewModel<LienVieReelViewModel>()
     val element by viewModel.allElement.collectAsStateWithLifecycle()
+    var showUserDialog by remember { mutableStateOf(false) }
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(element) {
         if(element.isNotEmpty()){
@@ -234,11 +245,28 @@ fun RecapitulatifLienVieReelScreen(
                 }
 
                 AppButton("Generer Pdf") {
-                    onNavigatePdf()
+                    showUserDialog = true
                 }
             }
         }
 
+    }
+
+    // Dialog pour saisir les informations utilisateur
+    if (showUserDialog) {
+        UserInfoDialog(
+            onDismiss = { showUserDialog = false },
+            onConfirm = { nom, prenom, telephone ->
+                scope.launch {
+                    // Sauvegarder l'utilisateur
+                    val newUser = User(nom = nom, prenom = prenom, numTel = telephone)
+                    viewModel.setCurrentUser(newUser)
+                    onNavigatePdf()
+                    showUserDialog = false
+                    // Générer le PDF avec les nouvelles informations
+                }
+            }
+        )
     }
 
 }
