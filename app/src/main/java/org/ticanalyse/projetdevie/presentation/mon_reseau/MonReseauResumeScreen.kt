@@ -98,7 +98,6 @@ fun MonReseauResumeScreen(navController: NavController,onNavigate: () -> Unit) {
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     monReseauViewModel.getMonReseau()
 
-    val currentUser by monReseauViewModel.currentUser.collectAsStateWithLifecycle()
     var showUserDialog by remember { mutableStateOf(false) }
 
     val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
@@ -418,20 +417,8 @@ fun MonReseauResumeScreen(navController: NavController,onNavigate: () -> Unit) {
                 FloatingActionButton(
                     modifier = Modifier.size(45.dp),
                     onClick = {
-                        scope.launch {
-                            isLoading = true
-                            withContext(Dispatchers.IO) {
-                                generatePdf(
-                                    context=context,
-                                    user = currentUser!!,
-                                    listActeursFamiliaux = acteurFamiliauxSociaux,
-                                    listActeursEducatifs = acteurEducatifs,
-                                    listActeursProfessionnels = acteurProfessionnels,
-                                    listActeursInstitutionnelsEtDeSoutien = acteurInstitutionnelsEtDeSoutien
-                                )
-                            }
-                            isLoading = false
-                        }
+                        // Afficher le dialog pour saisir les informations utilisateur
+                        showUserDialog = true
                     },
                     containerColor = colorResource(id = R.color.secondary_color),
                     contentColor = Color.White,
@@ -471,7 +458,7 @@ fun MonReseauResumeScreen(navController: NavController,onNavigate: () -> Unit) {
                     withContext(Dispatchers.IO) {
                         generatePdf(
                             context=context,
-                            user = currentUser!!,
+                            user = newUser,
                             listActeursFamiliaux = acteurFamiliauxSociaux,
                             listActeursEducatifs = acteurEducatifs,
                             listActeursProfessionnels = acteurProfessionnels,

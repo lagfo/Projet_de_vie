@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -40,6 +41,7 @@ import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceS
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceResumeScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
+import org.ticanalyse.projetdevie.presentation.common.AppResetModal
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
@@ -103,7 +105,7 @@ fun AppNavigator() {
     }
 
     val viewModel = hiltViewModel<AppNavigationViewModel>()
-    val currentUserState by viewModel.currentUser.collectAsStateWithLifecycle()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
@@ -155,12 +157,7 @@ fun AppNavigator() {
             .fillMaxSize(),
         topBar = {
             if (isHomeTopBarVisible) {
-                /*TopBarComponent(
-                    currentUserState?.nom ?: "",
-                    currentUserState?.prenom ?: "",
-                    currentUserState?.avatarUri ?: ""
-                )
-                 */
+
                 TopAppBar(
                     title= {
                         AppText(
@@ -183,7 +180,9 @@ fun AppNavigator() {
                     ),
                     actions={
                         IconButton(
-                            onClick = {}
+                            onClick = {
+                                showBottomSheet = true
+                            }
                         ){
                             Icon(imageVector = Icons.Filled.ChangeCircle,contentDescription = null, tint=Color.White, modifier = Modifier.size(30.dp))
                         }
@@ -599,6 +598,11 @@ fun AppNavigator() {
         }
 
     }
+
+    AppResetModal(
+        showBottomSheet = showBottomSheet,
+        onDismissRequest = { showBottomSheet = false }
+    )
 }
 
 

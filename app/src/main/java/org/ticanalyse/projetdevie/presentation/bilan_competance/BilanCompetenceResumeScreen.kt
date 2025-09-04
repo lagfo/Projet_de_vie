@@ -102,7 +102,6 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     var showUserDialog by remember { mutableStateOf(false) }
 
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -234,9 +233,9 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
                 FloatingActionButton(
                     modifier = Modifier.size(45.dp),
                     onClick = {
-                        // Vérifier si l'utilisateur existe avant de générer le PDF
+                        // Afficher le dialog pour saisir les informations utilisateur
                         showUserDialog = true
-                              },
+                    },
                     containerColor = colorResource(id = R.color.secondary_color),
                     contentColor = Color.White,
                     shape = CircleShape

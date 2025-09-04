@@ -17,11 +17,15 @@ import org.ticanalyse.projetdevie.domain.model.LienVieReel
 import org.ticanalyse.projetdevie.domain.model.PlanAction
 import org.ticanalyse.projetdevie.domain.model.ProjectInfo
 import org.ticanalyse.projetdevie.domain.model.ReponseQuestionLigneDeVie
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.repository.PlanificationProjetRepository.PlanificationProjetRepository
 import org.ticanalyse.projetdevie.domain.repository.lienVieReelRepository.LienVieReelRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.LigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ReponseQuestionLigneDeVieRepository
 import org.ticanalyse.projetdevie.domain.repository.ligneDeVieRepository.ResponseLigneDeVieElementRepository
+import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
+import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
 import java.time.LocalDate
 
@@ -38,10 +42,19 @@ data  class ScreenState(
 @HiltViewModel
 class PlanificationViewModel @Inject constructor(
     private val repository: PlanificationProjetRepository,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val setCurrentUserUseCase: SetCurrentUserUseCase
 ): ViewModel() {
 
     private val _upsertSuccess = MutableStateFlow(false)
     val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser = _currentUser.asStateFlow()
+
+    init {
+        getCurrentUser()
+    }
     fun resetUpsertStatus(){
         _upsertSuccess.value=false
     }
@@ -133,6 +146,36 @@ init{
     fun deleteLine(id :Int){
         viewModelScope.launch {
             repository.deletePlanActionLine(id)
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            when (val result = getCurrentUserUseCase()) {
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is Result.Error -> {
+                    _currentUser.value = null
+                }
+
+                is Result.Loading<*> -> true
+            }
+        }
+    }
+
+    fun setCurrentUser(user: User) {
+        viewModelScope.launch {
+            when (val result = setCurrentUserUseCase(user)) {
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is Result.Error -> {
+                    Timber.e("Erreur lors de la sauvegarde de l'utilisateur: ${result.message}")
+                }
+
+                is Result.Loading<*> -> true
+            }
         }
     }
 
