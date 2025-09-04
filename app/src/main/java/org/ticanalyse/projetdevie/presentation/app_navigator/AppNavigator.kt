@@ -41,6 +41,7 @@ import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceS
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceResumeScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
+import org.ticanalyse.projetdevie.presentation.common.AppResetModal
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager

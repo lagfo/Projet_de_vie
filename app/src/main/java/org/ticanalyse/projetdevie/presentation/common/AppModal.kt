@@ -368,8 +368,6 @@ fun AppResetModal(
                         text = "Valider",
                         onClick = {
                             try {
-
-
                                 viewModel.resetDatabase(context)
                                 onDismissRequest()
                             } catch (e: Exception) {
