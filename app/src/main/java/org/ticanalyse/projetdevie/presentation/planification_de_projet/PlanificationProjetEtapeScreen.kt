@@ -49,14 +49,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.ProjectInfo
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppInputFieldMultiLine
 import org.ticanalyse.projetdevie.presentation.common.AppShape
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appSTTManager
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.introduction.PageIndicator
@@ -101,6 +106,7 @@ fun PlanificationProjetEtapeScreen(
     val viewModelBilanCompetance = hiltViewModel<BilanCompetenceViewModel>()
     val planActions by viewModel.planAction.collectAsStateWithLifecycle()
     val planInfo by viewModel.planificationInfo.collectAsStateWithLifecycle()
+    var showUserDialog by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -516,19 +522,38 @@ fun PlanificationProjetEtapeScreen(
                         onNavigate("tableau")
                     }
                     AppButton("Télécharger pdf") {
-                        viewModel.addProjectInfo(
-                            projectIdee = PlanificationProjet.projectInfo.projetIdee,
-                            motivation= PlanificationProjet.projectInfo.motivation,
-                            competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
-                            competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
-                            ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
-                            ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
-                            creationDate = LocalDate.now().toString()
-                        )
-                        onNavigate("pdf")
+                        // Afficher le dialog pour saisir les informations utilisateur
+                        showUserDialog = true
                     }
 
                 }
+            }
+
+            // Dialog pour saisir les informations utilisateur
+            if (showUserDialog) {
+                UserInfoDialog(
+                    onDismiss = { showUserDialog = false },
+                    onConfirm = { nom, prenom, telephone ->
+                        scope.launch {
+                            // Sauvegarder l'utilisateur
+                            val newUser = User(nom = nom, prenom = prenom, numTel = telephone)
+                            viewModel.setCurrentUser(newUser)
+
+                            showUserDialog = false
+
+                            viewModel.addProjectInfo(
+                                projectIdee = PlanificationProjet.projectInfo.projetIdee,
+                                motivation= PlanificationProjet.projectInfo.motivation,
+                                competenceDisponible = PlanificationProjet.projectInfo.competenceDisponible,
+                                competenceNonDisponible = PlanificationProjet.projectInfo.competenceNonDisponible,
+                                ressourceDisponible = PlanificationProjet.projectInfo.ressourceDisponible,
+                                ressourceNonDisponible = PlanificationProjet.projectInfo.ressourceNonDispnible,
+                                creationDate = LocalDate.now().toString()
+                            )
+                            onNavigate("pdf")
+                        }
+                    }
+                )
             }
 
 
