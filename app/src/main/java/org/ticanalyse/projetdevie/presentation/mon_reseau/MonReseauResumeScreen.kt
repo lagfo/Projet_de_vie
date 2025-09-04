@@ -71,8 +71,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
-import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
-import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog

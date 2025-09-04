@@ -196,7 +196,7 @@ class MonReseauViewModel @Inject constructor(
                monReseauUseCases.upsertMonReseau(updatedMonReseau)
                _upsertSuccess.value = true
                _errorMessage.value = null
-           }catch (e: Exception) {
+           }catch (_: Exception) {
                _errorMessage.value = "Une erreur est survenue lors de l'insertion"
                _upsertSuccess.value = false
            }
@@ -207,14 +207,14 @@ class MonReseauViewModel @Inject constructor(
     private fun getCurrentUser() {
         viewModelScope.launch {
             when (val result = getCurrentUserUseCase()) {
-                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                is Result.Success -> {
                     _currentUser.value = result.data
                 }
-                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                is Result.Error -> {
                     _currentUser.value = null
                 }
 
-                is org.ticanalyse.projetdevie.utils.Result.Loading<*> -> true
+                is Result.Loading<*> -> true
             }
         }
     }
@@ -222,10 +222,10 @@ class MonReseauViewModel @Inject constructor(
     fun setCurrentUser(user: User) {
         viewModelScope.launch {
             when (val result = setCurrentUserUseCase(user)) {
-                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                is Result.Success -> {
                     _currentUser.value = result.data
                 }
-                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                is Result.Error -> {
                     Timber.e("Erreur lors de la sauvegarde de l'utilisateur: ${result.message}")
                 }
 
