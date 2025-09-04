@@ -99,12 +99,10 @@ fun UserInfoDialog(
             )
         },
         dismissButton = {
-
             AppTextButton(
                 text = "Annuler",
-                onClick = {onDismiss}
+                onClick = onDismiss
             )
-
         }
     )
 }
