@@ -25,6 +25,12 @@ class LocalUserManagerImpl(
             preferences[PreferenceKeys.APP_ENTRY] ?: false
         }
     }
+
+    override suspend fun clearPreferences() {
+        context.dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 }
 
 private val readOnlyProperty = preferencesDataStore(name = USER_SETTINGS)

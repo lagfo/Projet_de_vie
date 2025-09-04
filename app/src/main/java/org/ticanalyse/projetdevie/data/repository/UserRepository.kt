@@ -5,7 +5,7 @@ import org.ticanalyse.projetdevie.utils.Result
 
 interface UserRepository {
 
-    suspend fun setCurrentUser(user: User?): org.ticanalyse.projetdevie.utils.Result<User?>
+    suspend fun setCurrentUser(user: User?): Result<User?>
 
     suspend fun getCurrentUser(): Result<User?>
 
@@ -13,7 +13,4 @@ interface UserRepository {
 
     suspend fun getUser(): User
 
-    suspend fun setResumeUri(uri: String, module: String)
-
-    suspend fun getResumeUri(module: String): String
 }

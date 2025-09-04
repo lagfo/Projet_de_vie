@@ -1,26 +1,16 @@
 package org.ticanalyse.projetdevie.presentation.planification_de_projet
 
-import android.content.ClipData
-import android.content.Intent
-import android.os.Environment
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,22 +24,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,10 +43,8 @@ import org.ticanalyse.projetdevie.domain.model.Element
 import org.ticanalyse.projetdevie.domain.model.PlanAction
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceViewModel
-import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
-import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
 import org.ticanalyse.projetdevie.presentation.common.AppSkillIconCard
 import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.Txt
@@ -76,14 +59,9 @@ import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding3
 import org.ticanalyse.projetdevie.utils.PdfUtil.createAllProjectPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.createPlanificationProjetPdf
-import org.ticanalyse.projetdevie.utils.PdfUtil.createResumePlanificationPdf
 import org.ticanalyse.projetdevie.utils.PdfUtil.sharePdf
 import org.ticanalyse.projetdevie.utils.TextToSpeechManager
 import timber.log.Timber
-import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import kotlin.text.ifEmpty
 
 @Composable
 fun ResumePlanificationProjetScreen(
@@ -95,7 +73,6 @@ fun ResumePlanificationProjetScreen(
     val viewModel = hiltViewModel<AppNavigationViewModel>()
 
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
-    val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
 
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     val ligneDeVieViewModel= hiltViewModel<LigneDeVieViewModel>()
@@ -542,19 +519,7 @@ fun ResumePlanificationProjetScreen(
                     horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .size(90.dp)
-                            .clip(CircleShape)
-                            .border(
-                                width = 1.dp,
-                                color = colorResource(R.color.secondary_color),
-                                shape = CircleShape
-                            ),
-                        painter = painter,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Profil image"
-                    )
+
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -566,28 +531,11 @@ fun ResumePlanificationProjetScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Sexe: ${currentUser?.genre}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "Date de naissance: ${currentUser?.dateNaissance}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
                             text = "Numero de telephone: ${currentUser?.numTel}",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        currentUser?.email?.let {
-                            Text(
-                                text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+
                     }
                 }
             }
@@ -890,10 +838,7 @@ fun ResumePlanificationProjetScreen(
                                     planAction = listPlanAction.value
                                 )
                             }
-//                            withContext(Dispatchers.Main) {
-//                                Toast.makeText(context, "Pdf téléchargé", Toast.LENGTH_SHORT).show()
-//                            }
-                            isLoading = false  // arrête le loader
+                            isLoading = false
                         }
                     }
                 }

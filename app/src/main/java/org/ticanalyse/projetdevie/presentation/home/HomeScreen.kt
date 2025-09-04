@@ -11,20 +11,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -41,15 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import org.ticanalyse.projetdevie.R
-import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.common.AppText
-import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.ui.theme.Roboto
@@ -79,20 +71,12 @@ fun HomeScreen(
                 .background(Color.White)
         ) {
 
-            Spacer(modifier= Modifier.height(40.dp))
+            Spacer(modifier= Modifier.height(20.dp))
             Column(
                 modifier = Modifier.fillMaxWidth().padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AppText(
-                    text = "Mon projet de vie !",
-                    fontFamily = Roboto,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Normal,
-                    color = colorResource(R.color.primary_color),
-                    fontSize = 33.sp,
-                    ttsManager = ttsManager
-                )
+
                 Spacer(modifier = Modifier.height(5.dp))
                 AppText(
                     text = "Veuillez cliquer sur l'un des items pour aborder une étape de votre projet de vie",

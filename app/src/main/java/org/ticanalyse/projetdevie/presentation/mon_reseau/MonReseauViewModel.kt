@@ -12,13 +12,27 @@ import org.ticanalyse.projetdevie.domain.model.ActeursFamiliauxEtSociaux
 import org.ticanalyse.projetdevie.domain.model.ActeursInstitutionnelsEtDeSoutien
 import org.ticanalyse.projetdevie.domain.model.ActeursProfessionnels
 import org.ticanalyse.projetdevie.domain.model.MonReseau
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.MonReseauUseCases
+import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
+import org.ticanalyse.projetdevie.utils.Result
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MonReseauViewModel @Inject constructor(
-    private val monReseauUseCases: MonReseauUseCases
+    private val monReseauUseCases: MonReseauUseCases,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val setCurrentUserUseCase: SetCurrentUserUseCase
 ): ViewModel() {
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser = _currentUser.asStateFlow()
+
+    init {
+        getCurrentUser()
+    }
 
     private val _upsertSuccess = MutableStateFlow(false)
     val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
@@ -182,11 +196,41 @@ class MonReseauViewModel @Inject constructor(
                monReseauUseCases.upsertMonReseau(updatedMonReseau)
                _upsertSuccess.value = true
                _errorMessage.value = null
-           }catch (e: Exception) {
+           }catch (_: Exception) {
                _errorMessage.value = "Une erreur est survenue lors de l'insertion"
                _upsertSuccess.value = false
            }
 
        }
    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            when (val result = getCurrentUserUseCase()) {
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is Result.Error -> {
+                    _currentUser.value = null
+                }
+
+                is Result.Loading<*> -> true
+            }
+        }
+    }
+
+    fun setCurrentUser(user: User) {
+        viewModelScope.launch {
+            when (val result = setCurrentUserUseCase(user)) {
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is Result.Error -> {
+                    Timber.e("Erreur lors de la sauvegarde de l'utilisateur: ${result.message}")
+                }
+
+                is Result.Loading<*> -> true
+            }
+        }
+    }
 }

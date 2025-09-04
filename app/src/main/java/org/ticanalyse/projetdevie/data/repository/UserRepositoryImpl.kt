@@ -21,11 +21,7 @@ class UserRepositoryImpl @Inject constructor(
             dataStore.edit { preferences ->
                 preferences[PreferenceKeys.nom] = user?.nom ?: ""
                 preferences[PreferenceKeys.prenom] = user?.prenom ?: ""
-                preferences[PreferenceKeys.dateNaissance] = user?.dateNaissance ?: ""
                 preferences[PreferenceKeys.numTel] = user?.numTel ?: ""
-                preferences[PreferenceKeys.genre] = user?.genre ?: ""
-                preferences[PreferenceKeys.avatarUri] = user?.avatarUri ?: ""
-                preferences[PreferenceKeys.email] = user?.email ?: ""
             }
             if (user != null) {
                 appDao.upsert(user)
@@ -42,11 +38,7 @@ class UserRepositoryImpl @Inject constructor(
                 User(
                     nom = preferences[PreferenceKeys.nom] ?: "",
                     prenom = preferences[PreferenceKeys.prenom] ?: "",
-                    dateNaissance = preferences[PreferenceKeys.dateNaissance] ?: "",
                     numTel = preferences[PreferenceKeys.numTel] ?: "",
-                    genre = preferences[PreferenceKeys.genre] ?: "",
-                    avatarUri = preferences[PreferenceKeys.avatarUri] ?: "",
-                    email = preferences[PreferenceKeys.email] ?: "",
                 )
             }.first()
             Result.Success(if (currentUser.nom.isNotEmpty() && currentUser.prenom.isNotEmpty()) currentUser else null)
@@ -60,29 +52,6 @@ class UserRepositoryImpl @Inject constructor(
         appDao.upsert(user)
     }
 
-    override suspend fun setResumeUri(uri: String, module: String) {
-        dataStore.edit { preferences ->
-            when (module) {
-                "lienVieReel" -> preferences[PreferenceKeys.lienVieReelUri] = uri
-                else -> preferences[PreferenceKeys.resumeUri] = uri
-            }
-        }
-    }
-
-    override suspend fun getResumeUri(module: String): String {
-        return try {
-            dataStore.data.map { preferences ->
-                when (module) {
-                    "lienVieReel" -> preferences[PreferenceKeys.lienVieReelUri] ?: ""
-                    "planificationProjet" -> preferences[PreferenceKeys.planifierProjet] ?: ""
-                    else -> preferences[PreferenceKeys.resumeUri] ?: ""
-                }
-            }.first()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
-    }
 
     override suspend fun getUser(): User {
         return appDao.getUser()

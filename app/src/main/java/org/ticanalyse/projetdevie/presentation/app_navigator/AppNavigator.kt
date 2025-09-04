@@ -1,12 +1,17 @@
 package org.ticanalyse.projetdevie.presentation.app_navigator
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -14,6 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -28,8 +40,9 @@ import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetanceS
 import org.ticanalyse.projetdevie.presentation.bilan_competance.BilanCompetenceResumeScreen
 import org.ticanalyse.projetdevie.presentation.common.AppBottomNavigation
 import org.ticanalyse.projetdevie.presentation.common.AppModuleTopBar
+import org.ticanalyse.projetdevie.presentation.common.AppText
 import org.ticanalyse.projetdevie.presentation.common.BottomNavigationItem
-import org.ticanalyse.projetdevie.presentation.common.TopBarComponent
+import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.home.HomeScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionCharactersScreen
 import org.ticanalyse.projetdevie.presentation.introduction.IntroductionHomeScreen
@@ -77,16 +90,15 @@ import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanActio
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetEtapeScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.PlanificationProjetScreen
 import org.ticanalyse.projetdevie.presentation.planification_de_projet.ResumePlanificationProjetScreen
-import org.ticanalyse.projetdevie.presentation.profile.ProfileScreen
-import timber.log.Timber
+import org.ticanalyse.projetdevie.ui.theme.Roboto
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigator() {
-
+    val ttsManager = appTTSManager()
     val bottomNavigationItems = remember {
         listOf(
-            BottomNavigationItem(icon = Icons.Filled.Home, description = "Accueil"),
-            BottomNavigationItem(icon = Icons.Filled.Person, description = "Profil")
+            BottomNavigationItem(icon = Icons.Filled.Home, description = "Accueil")
         )
     }
 
@@ -102,7 +114,6 @@ fun AppNavigator() {
 
     selectedItem = when {
         backStackState?.destination?.route == HomeRoute::class.qualifiedName -> 0
-        backStackState?.destination?.route == ProfileRoute::class.qualifiedName -> 1
         backStackState?.destination?.route == IntroductionRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == IntroductionCharacterRoute::class.qualifiedName -> -1
         backStackState?.destination?.route == PlanificationProjetRoute::class.qualifiedName -> -1
@@ -144,10 +155,39 @@ fun AppNavigator() {
             .fillMaxSize(),
         topBar = {
             if (isHomeTopBarVisible) {
-                TopBarComponent(
+                /*TopBarComponent(
                     currentUserState?.nom ?: "",
                     currentUserState?.prenom ?: "",
                     currentUserState?.avatarUri ?: ""
+                )
+                 */
+                TopAppBar(
+                    title= {
+                        AppText(
+                            text = "Mon projet de vie",
+                            fontFamily = Roboto,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Normal,
+                            color = Color.White,
+                            fontSize = 25.sp,
+                            ttsManager = ttsManager
+                        )
+                    },
+                    navigationIcon={
+                        Icon(painter = painterResource(id =R.drawable.logo),contentDescription = "logo", modifier = Modifier.size(20.dp))
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colorResource(R.color.primary_color),
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    ),
+                    actions={
+                        IconButton(
+                            onClick = {}
+                        ){
+                            Icon(imageVector = Icons.Filled.ChangeCircle,contentDescription = null, tint=Color.White, modifier = Modifier.size(30.dp))
+                        }
+                    }
                 )
             } else {
 
@@ -299,17 +339,10 @@ fun AppNavigator() {
                 items = bottomNavigationItems,
                 selectedItem = selectedItem,
                 onItemClick = { index ->
-                    Timber.tag("timber").d("index : $index")
                     when (index) {
                         0 -> navController.navigate(
                             HomeRoute
                         )
-
-                        1 -> navigateToScreen(
-                            navController = navController,
-                            route = ProfileRoute
-                        )
-
                     }
                 }
             )
@@ -352,13 +385,6 @@ fun AppNavigator() {
                             }
                         }
                     }
-                )
-            }
-
-            composable<ProfileRoute> {
-                ProfileScreen(
-                    navController = navController,
-                    sharedViewModel = viewModel
                 )
             }
 
@@ -575,16 +601,6 @@ fun AppNavigator() {
     }
 }
 
-
-@Composable
-fun OnBackClickStateSaver(navController: NavController, route: AppRoute) {
-    BackHandler(true) {
-        navigateToScreen(
-            navController = navController,
-            route = route
-        )
-    }
-}
 
 private fun navigateToScreen(navController: NavController, route: AppRoute) {
     navController.navigate(route) {

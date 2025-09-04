@@ -64,7 +64,6 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     val viewModel = hiltViewModel<AppNavigationViewModel>()
 
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
-    val painter = rememberAsyncImagePainter (currentUser?.avatarUri?.ifEmpty{R.drawable.avatar})
 
     val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -107,19 +106,7 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(MediumPadding1),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .size(90.dp)
-                            .clip(CircleShape)
-                            .border(
-                                width = 1.dp,
-                                color =colorResource(R.color.secondary_color),
-                                shape = CircleShape
-                            ),
-                        painter = painter,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Profil image"
-                    )
+
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -130,29 +117,12 @@ fun LienVieReelResume(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = "Sexe: ${currentUser?.genre}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
 
-                        Text(
-                            text = "Date de naissance: ${currentUser?.dateNaissance}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
                         Text(
                             text = "Numero de telephone: ${currentUser?.numTel}",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        currentUser?.email?.let {
-                            Text(
-                                text = "Email: ${currentUser?.email?.ifEmpty { "Non renseigné" }}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
                     }
                 }
             }

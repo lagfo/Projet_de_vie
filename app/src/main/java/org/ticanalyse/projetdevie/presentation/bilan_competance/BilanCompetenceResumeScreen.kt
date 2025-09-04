@@ -19,10 +19,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
@@ -73,7 +79,9 @@ import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.AppTextButton
 import org.ticanalyse.projetdevie.presentation.common.Txt
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
 import org.ticanalyse.projetdevie.ui.theme.Roboto
@@ -94,8 +102,8 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
     val ttsManager = appTTSManager()
     val context = LocalContext.current
     val viewModel = hiltViewModel<BilanCompetenceViewModel>()
-    val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
-    val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    var showUserDialog by remember { mutableStateOf(false) }
 
     var selectedSkills by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -226,16 +234,25 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
                 FloatingActionButton(
                     modifier = Modifier.size(45.dp),
                     onClick = {
-                        scope.launch {
-                            isLoading = true  // démarre le loader
-                            withContext(Dispatchers.IO) {
-                                generatePdf(
-                                    context = context,
-                                    user = currentUser!!,
-                                    competences = finalSkills,
-                                )
+                        // Vérifier si l'utilisateur existe avant de générer le PDF
+                        if (currentUser != null &&
+                            currentUser!!.nom.isNotBlank() &&
+                            currentUser!!.prenom.isNotBlank()) {
+                            // Générer le PDF directement
+                            scope.launch {
+                                isLoading = true
+                                withContext(Dispatchers.IO) {
+                                    generatePdf(
+                                        context = context,
+                                        user = currentUser!!,
+                                        competences = finalSkills,
+                                    )
+                                }
+                                isLoading = false
                             }
-                            isLoading = false  // arrête le loader
+                        } else {
+                            // Afficher le dialog pour saisir les informations utilisateur
+                            showUserDialog = true
                         }
                     },
                     containerColor = colorResource(id = R.color.secondary_color),
@@ -251,6 +268,33 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
             }
 
         }
+    }
+
+    // Dialog pour saisir les informations utilisateur
+    if (showUserDialog) {
+        UserInfoDialog(
+            onDismiss = { showUserDialog = false },
+            onConfirm = { nom, prenom, telephone ->
+                scope.launch {
+                    // Sauvegarder l'utilisateur
+                    val newUser = User(nom = nom, prenom = prenom, numTel = telephone)
+                    viewModel.setCurrentUser(newUser)
+
+                    showUserDialog = false
+
+                    // Générer le PDF avec les nouvelles informations
+                    isLoading = true
+                    withContext(Dispatchers.IO) {
+                        generatePdf(
+                            context = context,
+                            user = newUser,
+                            competences = finalSkills,
+                        )
+                    }
+                    isLoading = false
+                }
+            }
+        )
     }
 
 }
