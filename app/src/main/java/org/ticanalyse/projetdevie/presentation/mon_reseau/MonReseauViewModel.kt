@@ -12,13 +12,27 @@ import org.ticanalyse.projetdevie.domain.model.ActeursFamiliauxEtSociaux
 import org.ticanalyse.projetdevie.domain.model.ActeursInstitutionnelsEtDeSoutien
 import org.ticanalyse.projetdevie.domain.model.ActeursProfessionnels
 import org.ticanalyse.projetdevie.domain.model.MonReseau
+import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.mon_reseau.MonReseauUseCases
+import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
+import org.ticanalyse.projetdevie.domain.usecase.user.SetCurrentUserUseCase
+import org.ticanalyse.projetdevie.utils.Result
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MonReseauViewModel @Inject constructor(
-    private val monReseauUseCases: MonReseauUseCases
+    private val monReseauUseCases: MonReseauUseCases,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val setCurrentUserUseCase: SetCurrentUserUseCase
 ): ViewModel() {
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser = _currentUser.asStateFlow()
+
+    init {
+        getCurrentUser()
+    }
 
     private val _upsertSuccess = MutableStateFlow(false)
     val upsertSuccess: StateFlow<Boolean> = _upsertSuccess.asStateFlow()
@@ -189,4 +203,34 @@ class MonReseauViewModel @Inject constructor(
 
        }
    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            when (val result = getCurrentUserUseCase()) {
+                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                    _currentUser.value = null
+                }
+
+                is org.ticanalyse.projetdevie.utils.Result.Loading<*> -> true
+            }
+        }
+    }
+
+    fun setCurrentUser(user: User) {
+        viewModelScope.launch {
+            when (val result = setCurrentUserUseCase(user)) {
+                is org.ticanalyse.projetdevie.utils.Result.Success -> {
+                    _currentUser.value = result.data
+                }
+                is org.ticanalyse.projetdevie.utils.Result.Error -> {
+                    Timber.e("Erreur lors de la sauvegarde de l'utilisateur: ${result.message}")
+                }
+
+                is Result.Loading<*> -> true
+            }
+        }
+    }
 }

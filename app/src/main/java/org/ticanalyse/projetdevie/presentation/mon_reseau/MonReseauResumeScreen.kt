@@ -72,8 +72,10 @@ import kotlinx.coroutines.withContext
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigationViewModel
+import org.ticanalyse.projetdevie.presentation.bilan_competance.generatePdf
 import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.ui.theme.Roboto
 import org.ticanalyse.projetdevie.utils.Dimens.MediumPadding1
@@ -94,11 +96,12 @@ fun MonReseauResumeScreen(navController: NavController,onNavigate: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
-    val appNavigationViewModel = hiltViewModel<AppNavigationViewModel>()
-    val currentUser by appNavigationViewModel.currentUser.collectAsStateWithLifecycle()
 
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     monReseauViewModel.getMonReseau()
+
+    val currentUser by monReseauViewModel.currentUser.collectAsStateWithLifecycle()
+    var showUserDialog by remember { mutableStateOf(false) }
 
     val listActeursFamiliauxEtSociaux = monReseauViewModel.listActeursFamiliaux.collectAsStateWithLifecycle()
     Timber.tag("reseau").d("${listActeursFamiliauxEtSociaux.value}")
@@ -450,6 +453,37 @@ fun MonReseauResumeScreen(navController: NavController,onNavigate: () -> Unit) {
         }
 
 
+    }
+
+
+    // Dialog pour saisir les informations utilisateur
+    if (showUserDialog) {
+        UserInfoDialog(
+            onDismiss = { showUserDialog = false },
+            onConfirm = { nom, prenom, telephone ->
+                scope.launch {
+                    // Sauvegarder l'utilisateur
+                    val newUser = User(nom = nom, prenom = prenom, numTel = telephone)
+                    monReseauViewModel.setCurrentUser(newUser)
+
+                    showUserDialog = false
+
+                    // Générer le PDF avec les nouvelles informations
+                    isLoading = true
+                    withContext(Dispatchers.IO) {
+                        generatePdf(
+                            context=context,
+                            user = currentUser!!,
+                            listActeursFamiliaux = acteurFamiliauxSociaux,
+                            listActeursEducatifs = acteurEducatifs,
+                            listActeursProfessionnels = acteurProfessionnels,
+                            listActeursInstitutionnelsEtDeSoutien = acteurInstitutionnelsEtDeSoutien
+                        )
+                    }
+                    isLoading = false
+                }
+            }
+        )
     }
 }
 

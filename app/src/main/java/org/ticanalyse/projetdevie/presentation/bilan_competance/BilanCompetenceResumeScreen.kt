@@ -79,7 +79,9 @@ import org.ticanalyse.projetdevie.presentation.common.AppButton
 import org.ticanalyse.projetdevie.presentation.common.AppSkillCardIcon
 import org.ticanalyse.projetdevie.presentation.common.AppSkillGrid
 import org.ticanalyse.projetdevie.presentation.common.AppText
+import org.ticanalyse.projetdevie.presentation.common.AppTextButton
 import org.ticanalyse.projetdevie.presentation.common.Txt
+import org.ticanalyse.projetdevie.presentation.common.UserInfoDialog
 import org.ticanalyse.projetdevie.presentation.common.appTTSManager
 import org.ticanalyse.projetdevie.presentation.common.skills
 import org.ticanalyse.projetdevie.ui.theme.Roboto
@@ -295,96 +297,6 @@ fun BilanCompetenceResumeScreen(navController:NavController,onNavigate: () -> Un
         )
     }
 
-}
-
-@Composable
-fun UserInfoDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (nom: String, prenom: String, telephone: String) -> Unit
-) {
-    var nom by remember { mutableStateOf("") }
-    var prenom by remember { mutableStateOf("") }
-    var telephone by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Informations utilisateur",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        },
-        text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "Veuillez renseigner vos informations pour générer le PDF :",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                OutlinedTextField(
-                    value = nom,
-                    onValueChange = {
-                        nom = it
-                        showError = false
-                    },
-                    label = { Text("Nom *") },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = showError && nom.isBlank(),
-                    singleLine = true
-                )
-
-                OutlinedTextField(
-                    value = prenom,
-                    onValueChange = {
-                        prenom = it
-                        showError = false
-                    },
-                    label = { Text("Prénom *") },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = showError && prenom.isBlank(),
-                    singleLine = true
-                )
-
-                OutlinedTextField(
-                    value = telephone,
-                    onValueChange = { telephone = it },
-                    label = { Text("Numéro de téléphone") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    singleLine = true
-                )
-
-                if (showError) {
-                    Text(
-                        text = "Le nom et le prénom sont obligatoires",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (nom.isNotBlank() && prenom.isNotBlank()) {
-                        onConfirm(nom.trim(), prenom.trim(), telephone.trim())
-                    } else {
-                        showError = true
-                    }
-                }
-            ) {
-                Text("Confirmer")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Annuler")
-            }
-        }
-    )
 }
 
 
