@@ -1,19 +1,12 @@
 package org.ticanalyse.projetdevie.presentation.app_navigator
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.domain.model.User
 import org.ticanalyse.projetdevie.domain.usecase.user.GetCurrentUserUseCase
-import org.ticanalyse.projetdevie.domain.usecase.user.GetResumeUriUseCase
-import org.ticanalyse.projetdevie.domain.usecase.user.SetResumeUriUseCase
 import org.ticanalyse.projetdevie.utils.Result
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,8 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getResumeUriUseCase: GetResumeUriUseCase,
-    private val setResumeUriUseCase: SetResumeUriUseCase
 ): ViewModel() {
 
     private val _currentUser = MutableStateFlow<User?>(null)
@@ -53,18 +44,6 @@ class AppNavigationViewModel @Inject constructor(
                 }
                 is Result.Loading -> { /* Optionnel */ }
             }
-        }
-    }
-
-    fun setResumeUri(uri: String, module: String) {
-        viewModelScope.launch {
-            setResumeUriUseCase(uri, module)
-        }
-    }
-
-    fun getResumeUri(module: String) {
-        viewModelScope.launch {
-            _resumeUri.value = getResumeUriUseCase(module)
         }
     }
 

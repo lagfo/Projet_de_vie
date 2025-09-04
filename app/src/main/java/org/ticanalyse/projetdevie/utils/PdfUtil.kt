@@ -1102,33 +1102,19 @@ object PdfUtil {
     }
 
     fun addUserInfoSection(document: Document, user: User, context: Context) {
-        // Créer la photo en iText
-        val photoImageData = getImageDataFromPathOrResource(context, user.avatarUri, R.drawable.avatar)
-        val photo = com.itextpdf.layout.element.Image(photoImageData)
-            .scaleToFit(80f, 80f)
-            .setHorizontalAlignment(HorizontalAlignment.CENTER)
+
 
         // Tableau à 2 colonnes
         val table = Table(UnitValue.createPercentArray(floatArrayOf(1f, 3f)))
             .useAllAvailableWidth()
 
-        // Cellule pour la photo
-        table.addCell(
-            Cell().add(photo)
-            .setBorder(null)
-            .setVerticalAlignment(VerticalAlignment.MIDDLE)
-        )
-
         // Cellule pour les infos
         val infos = StringBuilder()
-        infos.append("Nom et prénoms: ${user.nom} ${user.prenom}\n")
-        infos.append("Sexe: ${user.genre}\n")
-        infos.append("Date de naissance: ${user.dateNaissance}\n")
-        infos.append("Téléphone: ${user.numTel}\n")
+        infos.append("Nom : ${user.nom} \n")
+        infos.append("Prénoms: ${user.prenom}\n")
 
-        Timber.tag("bd").d("Nom et prénoms: ${user.avatarUri} \n")
-        if (user.email.isNotEmpty() && user.email.isNotBlank())
-            infos.append("Email: ${user.email}\n")
+        if (user.numTel.isNotEmpty() && user.numTel.isNotBlank())
+            infos.append("Tel: ${user.numTel}\n")
 
         table.addCell(Cell().add(Paragraph(infos.toString()))
             .setBorder(null)

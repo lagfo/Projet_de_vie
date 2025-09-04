@@ -71,20 +71,12 @@ fun HomeScreen(
                 .background(Color.White)
         ) {
 
-            Spacer(modifier= Modifier.height(40.dp))
+            Spacer(modifier= Modifier.height(20.dp))
             Column(
                 modifier = Modifier.fillMaxWidth().padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AppText(
-                    text = "Mon projet de vie !",
-                    fontFamily = Roboto,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Normal,
-                    color = colorResource(R.color.primary_color),
-                    fontSize = 33.sp,
-                    ttsManager = ttsManager
-                )
+
                 Spacer(modifier = Modifier.height(5.dp))
                 AppText(
                     text = "Veuillez cliquer sur l'un des items pour aborder une étape de votre projet de vie",

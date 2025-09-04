@@ -20,28 +20,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.ticanalyse.projetdevie.presentation.app_navigator.AppNavigator
 import org.ticanalyse.projetdevie.presentation.nvgraph.AppNavigation
-import org.ticanalyse.projetdevie.presentation.nvgraph.RegisterRoute
 import org.ticanalyse.projetdevie.presentation.nvgraph.SplashRoute
-import org.ticanalyse.projetdevie.presentation.register.RegisterScreen
-import org.ticanalyse.projetdevie.presentation.register.RegisterViewModel
 import org.ticanalyse.projetdevie.presentation.splash.SplashScreen
 import org.ticanalyse.projetdevie.ui.theme.ProjetDeVieTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
-
-    private val viewModel by viewModels<RegisterViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,9 +52,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-
-            val isLoading = viewModel.isLoading.collectAsStateWithLifecycle()
-            val currentUser = viewModel.currentUser.collectAsStateWithLifecycle()
             val scope = rememberCoroutineScope()
 
             ProjetDeVieTheme {
@@ -83,57 +73,24 @@ class MainActivity : ComponentActivity() {
                         startDestination = SplashRoute
                     ) {
                         composable<SplashRoute> {
-                            LaunchedEffect(isLoading.value) {
-                                delay(1500)
-                                if (currentUser.value != null) {
-                                    navController.navigate(AppNavigation) {
-                                        popUpTo<SplashRoute> {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else if (currentUser.value == null && !isLoading.value) {
-                                    navController.navigate(RegisterRoute) {
-                                        popUpTo<SplashRoute> {
-                                            inclusive = true
-                                        }
+                            LaunchedEffect(Unit) {
+                                delay(2000)
+                                navController.navigate(AppNavigation) {
+                                    popUpTo<SplashRoute> {
+                                        inclusive = true
                                     }
                                 }
                             }
                             SplashScreen()
                         }
-                        composable<RegisterRoute> {
-                            RegisterScreen(
-                                onSubmitClick = { user ->
-                                    viewModel.onSubmit(user)
-                                    scope.launch {
-                                        delay(1500)
-                                        navController.navigate(AppNavigation) {
-                                            popUpTo<RegisterRoute> {
-                                                inclusive = true
-                                            }
-                                        }
-                                    }
-                                }
-                            )
-                        }
 
                         composable<AppNavigation> {
-                            LaunchedEffect(currentUser.value) {
-                                if (currentUser.value == null) {
-                                    navController.navigate(RegisterRoute) {
-                                        popUpTo<AppNavigation>{inclusive = true}
-                                    }
-                                }
-                            }
+
                             AppNavigator()
                         }
 
-
-
                         }
                     }
-//                    val startDestination = viewModel.startDestination
-//                    NavGraph(startDestination = startDestination)
                 }
             }
         }

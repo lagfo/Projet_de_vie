@@ -130,7 +130,6 @@ fun NewsBottomNavigationPreview() {
     ProjetDeVieTheme(dynamicColor = false) {
         val items = listOf(
             BottomNavigationItem(icon = Icons.Filled.Home, description = "Accueil"),
-            BottomNavigationItem(icon = Icons.Filled.Person, description = "Profil")
         )
         AppBottomNavigation(items=items,selectedItem = 0, onItemClick = {})
     }
