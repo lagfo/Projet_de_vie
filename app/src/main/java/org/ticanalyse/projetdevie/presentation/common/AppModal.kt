@@ -327,7 +327,7 @@ fun AppResetModal(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AppText(
-                    text = "Réinitialisation de compte",
+                    text = "⚠\uFE0F Remplacer l'utilisateur actuel ?",
                     fontFamily = Roboto,
                     fontWeight = FontWeight.Black,
                     fontStyle = FontStyle.Normal,
@@ -338,7 +338,7 @@ fun AppResetModal(
                 )
                 Spacer(modifier = Modifier.height(75.dp))
                 AppText(
-                    text = "Vous êtes sur le point de supprimer les données de l'utilisateur courant",
+                    text = "Les données précédentes seront définitivement perdues.",
                     fontFamily = Roboto,
                     fontWeight = FontWeight.Black,
                     fontStyle = FontStyle.Normal,
