@@ -327,14 +327,16 @@ fun AppResetModal(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AppText(
-                    text = "⚠\uFE0F Remplacer l'utilisateur actuel ?",
+                    text = "⚠\uFE0F Enregistrer un nouveau projet de vie ?",
                     fontFamily = Roboto,
                     fontWeight = FontWeight.Black,
                     fontStyle = FontStyle.Normal,
                     color = colorResource(id = R.color.text),
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    ttsManager = ttsManager
+                    ttsManager = ttsManager,
+                    isTextAlignCenter = true,
+                    isDefineLineHeight = true
                 )
                 Spacer(modifier = Modifier.height(75.dp))
                 AppText(

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itextpdf.layout.properties.LineHeight
 import org.ticanalyse.projetdevie.R
 import org.ticanalyse.projetdevie.ui.theme.BelfastGrotesk
 import org.ticanalyse.projetdevie.ui.theme.Roboto
@@ -36,6 +37,7 @@ fun AppText(
     ttsManager: TextToSpeechManager?,
     isTextAlignCenter: Boolean = false,
     isDefineMaxLine: Boolean = false,
+    isDefineLineHeight: Boolean = false
 
 ) {
     Text(
@@ -49,6 +51,7 @@ fun AppText(
         fontWeight = fontWeight,
         fontStyle = fontStyle,
         fontSize = fontSize,
+        lineHeight = if(isDefineLineHeight) fontSize * 1.2f else  fontSize * 1f,
         overflow = TextOverflow.Ellipsis,
         textAlign = if (isTextAlignCenter) TextAlign.Center else TextAlign.Unspecified,
         maxLines = if (isDefineMaxLine) 1 else 5
