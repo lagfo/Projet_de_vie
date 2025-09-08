@@ -668,7 +668,7 @@ fun RecapitulatifScreen(
                                     withContext(Dispatchers.IO) {
                                         generatePdf(
                                             context=context,
-                                            user = currentUser!!,
+                                            user = newUser,
                                             listOfPassedElement = listOfPassedElement,
                                             listOfPresentElement  = listOfPresentElement,
                                             listQuestionsLigneDeVie = listOf(
