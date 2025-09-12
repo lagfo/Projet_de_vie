@@ -203,7 +203,7 @@ fun AppInputFieldMultiLine(
         val data = result.data
         val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
         if (!matches.isNullOrEmpty()) {
-            onValueChange("${value.replaceFirstChar { it.uppercaseChar() }}. ${matches[0].replaceFirstChar { it.uppercaseChar() }}")
+            onValueChange("${value.replaceFirstChar { it.uppercaseChar() }} ${matches[0].replaceFirstChar { it.uppercaseChar() }}")
         }
     }
 
