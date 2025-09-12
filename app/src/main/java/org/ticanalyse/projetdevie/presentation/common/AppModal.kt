@@ -327,18 +327,20 @@ fun AppResetModal(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AppText(
-                    text = "Réinitialisation de compte",
+                    text = "⚠\uFE0F Enregistrer un nouveau projet de vie ?",
                     fontFamily = Roboto,
                     fontWeight = FontWeight.Black,
                     fontStyle = FontStyle.Normal,
                     color = colorResource(id = R.color.text),
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    ttsManager = ttsManager
+                    ttsManager = ttsManager,
+                    isTextAlignCenter = true,
+                    isDefineLineHeight = true
                 )
                 Spacer(modifier = Modifier.height(75.dp))
                 AppText(
-                    text = "Vous êtes sur le point de supprimer les données de l'utilisateur courant",
+                    text = "Les données précédentes seront définitivement perdues.",
                     fontFamily = Roboto,
                     fontWeight = FontWeight.Black,
                     fontStyle = FontStyle.Normal,
