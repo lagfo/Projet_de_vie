@@ -266,7 +266,7 @@ object PdfUtil {
         document.add(Paragraph("\n\n\n"))
 
         // --- Competences non disponible
-        document.add(Paragraph("Competences non disponible")
+        document.add(Paragraph("Competences non disponible ou à renforcer")
             .setTextAlignment(TextAlignment.CENTER)
             .setFontSize(17.5f)
             .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
