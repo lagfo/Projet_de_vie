@@ -427,6 +427,7 @@ object PdfUtil {
         competenceDisponible: List<AppSkillCardIcon>,
         competenceIndisponible: List<AppSkillCardIcon>,
         planAction: List<PlanAction>,
+        setOfIds:Set<Int>
 
         ) {
         Timber.tag("pdf").d(outputPath)
@@ -483,7 +484,8 @@ object PdfUtil {
             document,
             "Évènements du passé",
             listOfPassedElement,
-            pageWidth
+            pageWidth,
+            setOfIds
         )
         document.add(Paragraph("\n\n\n"))
         addLigneDeVieSection(
@@ -491,7 +493,8 @@ object PdfUtil {
             document,
             "Évènements du présent",
             listOfPresentElement,
-            pageWidth
+            pageWidth,
+            setOfIds
         )
         document.add(Paragraph("\n\n\n"))
         addQuestions(
@@ -622,7 +625,7 @@ object PdfUtil {
         document.add(Paragraph("\n\n\n"))
 
         // --- Competences non disponible
-        document.add(Paragraph("Competences non disponible")
+        document.add(Paragraph("Competences non disponible ou à renforcer")
             .setTextAlignment(TextAlignment.CENTER)
             .setFontSize(17.5f)
             .setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD)))
@@ -761,7 +764,7 @@ object PdfUtil {
 
     }
 
-    private fun addLigneDeVieSection(context: Context,document: Document, titre: String, elements: List<Element>,pageWidth: Float) {
+    private fun addLigneDeVieSection(context: Context,document: Document, titre: String, elements: List<Element>,pageWidth: Float,setOfIds:Set<Int>) {
         val tableWidth = pageWidth - 80f
         document.add(Paragraph(titre)
             .setFontSize(17.5f)
@@ -826,10 +829,12 @@ object PdfUtil {
                 container.add(labelTable)
 
 
-                val yearText = if (element.status) {
+                val yearText = if (element.status && element.id !in setOfIds) {
                     "Année: ${element.inProgressYear}"
-                } else {
+                } else if(!element.status && element.id !in setOfIds) {
                     "De ${element.startYear} à ${element.endYear}"
+                }else{
+                    "Année: ${element.inProgressYear}"
                 }
 
                 val fullText = "▪ $yearText : ${element.labelDescription}"

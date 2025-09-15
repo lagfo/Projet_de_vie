@@ -72,7 +72,7 @@ fun ResumePlanificationProjetScreen(
     val planificationViewModel = hiltViewModel<PlanificationViewModel>()
     val viewModel = hiltViewModel<AppNavigationViewModel>()
 
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val currentUser by planificationViewModel.currentUser.collectAsStateWithLifecycle()
 
     val monReseauViewModel = hiltViewModel<MonReseauViewModel>()
     val ligneDeVieViewModel= hiltViewModel<LigneDeVieViewModel>()
@@ -94,6 +94,7 @@ fun ResumePlanificationProjetScreen(
 
     val  finalSkills = remember { mutableStateListOf<AppSkillCardIcon>()}
     val listLienVieReelle = lienVieReelle.allElement.collectAsStateWithLifecycle()
+    val setOfIds = setOf(10,11, 12, 16, 19)
 
 
 
@@ -835,7 +836,8 @@ fun ResumePlanificationProjetScreen(
                                     ressourceIndisponible = projectInfo.value.firstOrNull()?.ressourceNonDispnible ?: "Pas d'information",
                                     competenceDisponible = avalaibleSkills,
                                     competenceIndisponible = unAvailableSkills,
-                                    planAction = listPlanAction.value
+                                    planAction = listPlanAction.value,
+                                    setOfIds = setOfIds
                                 )
                             }
                             isLoading = false
